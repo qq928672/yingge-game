@@ -577,7 +577,587 @@
 </div>
 
 <script>
-const STATIONS = [{"id": 1, "name": "站點一鶯歌車站的時光線索", "story": "一九〇三年，鶯歌車站在這裡設立，運煤的蒸汽火車日夜穿梭，帶動了整個小鎮的窯業興盛。你站在月台上，彷彿還能聽見當年礦車碰撞鐵軌的聲音……", "questions": [{"qtype": "簡答題", "question": "仔細觀察鶯歌火車站的鐵道，你能數出幾條軌道？", "options": [], "answer": ["七條", "七", "7"], "fact": "鶯歌車站曾是運煤鐵道的重要轉運站，最多曾有多條軌道同時作業，見證了當年礦業運輸的繁忙景象。"}, {"qtype": "選擇題", "question": "抬頭看看車站最上方，兩個相望的動物造型是什麼？", "options": ["魚", "貓", "狗", "鳥"], "answer": "鳥", "fact": "「鶯」與「歌」兩字合起來，正是「鶯歌」地名的由來，屋頂上的鳥形裝飾也呼應了這個典故。"}, {"qtype": "選擇題", "question": "你知道當時鶯歌車站主要轉運哪一種礦產嗎？", "options": ["金礦", "鐵礦", "煤礦", "石灰石"], "answer": "煤礦", "fact": "日治時期，鶯歌因鄰近煤層與陶土產地，車站曾是運煤與運送陶器的重要轉運站。"}, {"qtype": "選擇題", "question": "請問鶯歌車站最早的站名是什麼？", "options": ["尖山埔驛", "鷹哥石驛", "鶯歌庄驛", "大嵙崁驛"], "answer": "鷹哥石驛", "fact": "「鷹哥石驛」得名自附近「鶯歌石」的傳說，後來才逐漸改名為現在的「鶯歌」站名。"}], "dialogue": [{"type": "line", "char": "guide", "text": "（一陣風吹過，月台上的煤油燈忽明忽暗……）"}, {"type": "line", "char": "guide", "text": "喔？又一位旅人循著時光的軌跡找上門來了。歡迎回到一九〇三年的鶯歌驛。"}, {"type": "line", "char": "hero", "text": "這裡……怎麼感覺像走進了一張老照片裡？空氣中還有煤煙的味道。"}, {"type": "line", "char": "guide", "text": "我在這裡看守月台超過一世紀了，可惜大多數人都只是匆匆一瞥，沒有真正「看見」這座車站。"}, {"type": "line", "char": "guide", "text": "既然你來了，不如陪我走一趟——用你的眼睛，替我重新認識這個地方吧。"}, {"type": "question", "qIndex": 0, "char": "guide", "text": "先低頭看看腳下，仔細數數看：這月台邊，究竟鋪了幾條鐵軌？", "correctReaction": "答對了！沒錯，正是這七條軌道，當年日夜川流不息地運送著鶯歌燒出的陶器與挖出的煤炭。", "wrongHints": ["再靠近一點看，別漏數了最外側那一條……", "試著用手指一條一條數過去，仔細一點。"]}, {"type": "line", "char": "guide", "text": "呵，果然是個仔細的旅人。走，我們再往上瞧瞧。"}, {"type": "question", "qIndex": 1, "char": "guide", "text": "抬頭看看車站最頂端，那對相望的動物是什麼呢？", "correctReaction": "正是「鶯」與「歌」——這座車站的名字，就藏在屋頂上呢。", "wrongHints": ["再看清楚一點，牠們有翅膀、會唱歌……"]}, {"type": "line", "char": "hero", "text": "原來站名的由來一直都在我們頭上，只是很少有人抬頭看。"}, {"type": "line", "char": "guide", "text": "這座車站的一磚一瓦，其實都跟腳下的土地脫不了關係。"}, {"type": "question", "qIndex": 2, "char": "guide", "text": "你知道當時這座車站，主要轉運哪一種礦產嗎？", "correctReaction": "沒錯，正是煤礦撐起了整條鐵路線的忙碌。", "wrongHints": ["想想看，那個年代窯場燒陶，最需要什麼來生火？"]}, {"type": "line", "char": "guide", "text": "最後，讓我考考你這座車站的身世。"}, {"type": "question", "qIndex": 3, "char": "guide", "text": "你可知道，這座車站最早並不叫「鶯歌」，它原本的名字是？", "correctReaction": "「鷹哥石驛」——這才是這座車站最初的名字啊。時代變了，連名字都跟著換上了新裝。", "wrongHints": ["再想想，那是一個更古老、更貼近地形的名字……"]}, {"type": "line", "char": "guide", "text": "很高興今天有你陪我走這一趟。旅人，願你把這段時光，也一併帶往下一站。"}, {"type": "line", "char": "hero", "text": "謝謝你，楊嚮導。我會把今天看到的，好好記下來的。"}, {"type": "end"}], "background": "角色照片素材庫/台鐵鶯歌火車站.jpg", "characters": {"guide": {"name": "楊嚮導", "portrait": "角色照片素材庫/楊嚮導.png", "side": "left"}, "hero": {"name": "小承", "portrait": "角色照片素材庫/小承.png", "side": "right"}}, "location": {"lat": 24.95698366700082, "lng": 121.24059043154006, "radius": 80}}, {"id": 2, "name": "站點二走進市拿陶藝", "questions": [{"qtype": "選擇題", "question": "市拿陶藝的創辦人是誰？", "options": ["陳景蘭", "許自然", "邱錦和", "許朝宗"], "answer": "許自然"}, {"qtype": "選擇題", "question": "「市拿」這個名字有什麼特別的意涵？", "options": ["鶯歌的古地名", "一種傳統陶土名稱", "與英文China有關", "取自早期陶瓷業的製陶術語"], "answer": "與英文China有關"}, {"qtype": "選擇題", "question": "你知道市拿陶藝早期主要製作哪一類陶瓷？", "options": ["日用碗盤", "建築磁磚", "仿古藝術陶瓷", "陶製花盆"], "answer": "仿古藝術陶瓷"}, {"qtype": "選擇題", "question": "早期鶯歌窯場常以煤炭燒窯，黑煙曾是街區常見的景象。後來窯業逐漸改用較乾淨的能源。這項改變主要引進了哪種能源？", "options": ["石油", "天然氣", "電力", "木炭"], "answer": "天然氣"}]}, {"id": 3, "name": "站點三鶯歌石", "questions": [{"qtype": "選擇題", "question": "傳說中，鶯歌石為什麼會少了一截？", "options": ["巨石曾被山崩掩埋", "鄭成功下令開砲，轟斷了巨鳥的頭部", "後人開採石材造成缺口", "長年風吹雨淋自然斷裂"], "answer": "鄭成功下令開砲，轟斷了巨鳥的頭部"}, {"qtype": "選擇題", "question": "找到鶯歌石岩洞旁的石碑，仔細觀察碑文。碑文中提到，這塊石頭最初為什麼被稱為「鸚哥石」？", "options": ["附近曾有許多鸚哥", "石頭形狀像鸚哥", "傳說鸚哥住在洞裡", "因為鄭成功曾在此養鸚哥"], "answer": "石頭形狀像鸚哥"}, {"qtype": "選擇題", "question": "觀察登山地圖,鶯歌除了「鶯歌石」這顆鳥形巨石外,哪座廟宇因供奉這顆「龜公石」,又被稱為「龜公廟」？", "options": ["妙善宮", "宏德宮", "碧龍宮", "福德宮"], "answer": "碧龍宮"}, {"qtype": "選擇題", "question": "現在的孫龍步道是一條登山步道,但在百年前這裡曾經有另一種用途,你知道孫龍步道的前身是什麼嗎？", "options": ["運送陶土的道路", "採礦台車行駛的輕便鐵道", "軍事運輸道路", "茶葉運輸道路"], "answer": "採礦台車行駛的輕便鐵道"}]}, {"id": 4, "name": "站點四尋找老煙囪", "questions": [{"qtype": "選擇題", "question": "仔細觀察眼前的老煙囪，它最明顯的外觀特色是什麼？", "options": ["圓形", "三角形", "四角形", "六角形"], "answer": "四角形"}, {"qtype": "選擇題", "question": "鶯歌四角窯主要使用什麼作為燃料？", "options": ["木材", "天然氣", "煤炭", "柴薪"], "answer": "煤炭"}, {"qtype": "選擇題", "question": "鶯歌四角窯改良了傳統窯燒方式，採用哪一種窯型設計？", "options": ["直焰式", "平焰式", "倒焰式", "旋焰式"], "answer": "倒焰式"}, {"qtype": "選擇題", "question": "煙囪為何逐漸消失？主要原因是什麼", "options": ["碗盤生產技術逐漸改良", "陶瓷工廠開始集中於特定區域", "陶窯陸續改用瓦斯窯", "陶瓷產品種類逐漸增加"], "answer": "陶窯陸續改用瓦斯窯"}]}, {"id": 5, "name": "站點五烘爐窯", "questions": [{"qtype": "選擇題", "question": "仔細觀察附近古厝的牆面,會發現磚瓦的種類並不完全相同,為什麼一面牆上會出現不同種類的磚瓦？", "options": ["不同工匠使用不同材料", "窯廠的瑕疵品被作為建材", "為了讓牆面更加美觀", "不同時期的居民刻意收集"], "answer": "窯廠的瑕疵品被作為建材"}, {"qtype": "選擇題", "question": "過去烘爐窯主要燒製哪一類陶瓷？", "options": ["藝術雕塑", "建築磚瓦", "碗盤等生活器皿", "陶瓷玩具"], "answer": "碗盤等生活器皿"}, {"qtype": "選擇題", "question": "這座烘爐窯建於日治時期,見證了鶯歌陶業的發展。誰在1929年建造了這座烘爐窯？", "options": ["當地陶工", "政治人物", "賴婆", "附近居民"], "answer": "賴婆"}, {"qtype": "選擇題", "question": "窯廠燒壞的器皿被打碎掩埋後，後來重新出現在故事巷。這些老瓷片被如何再利用？", "options": ["製作新陶器", "製作牆面裝飾", "鑲嵌於步道路面", "製作陶瓷藝術品"], "answer": "鑲嵌於步道路面"}]}, {"id": 6, "name": "站點六益成記", "questions": [{"qtype": "選擇題", "question": "益成記窯場是由誰創辦？", "options": ["吳鞍", "王龜生", "陳斐然", "許自強"], "answer": "陳斐然"}, {"qtype": "選擇題", "question": "益成記曾被稱為鶯歌的「陶瓷大學」,主要與什麼有關？", "options": ["成為鶯歌陶瓷技術的重要傳承地", "培養許多製陶師傅與技術", "生產種類繁多的陶瓷生活用品", "成為當時鶯歌重要的陶瓷交易場所"], "answer": "培養許多製陶師傅與技術"}, {"qtype": "選擇題", "question": "益成記曾引進哪裡的陶藝師傅？", "options": ["景德鎮", "泉州", "福州", "廣州"], "answer": "福州"}]}, {"id": 7, "name": "站點七大榕樹和窯工聚落遺址", "questions": [{"qtype": "選擇題", "question": "早期鶯歌文化路有「兩陳一余」三大地主，兩陳家土地廣大。當時兩大家族以什麼作為土地分界？", "options": ["以道路作為分界", "以窯廠煙囪作為分界", "以兩棵大榕樹連成一線作為界線", "以溪流作為分界"], "answer": "以兩棵大榕樹連成一線作為界線"}, {"qtype": "選擇題", "question": "早期鶯歌窯場缺乏工人，為了吸引外地陶工前來工作，窯廠老闆採取了什麼方式？", "options": ["提供免費餐食", "提供土地讓陶工自行蓋房子", "提供交通工具接送", "提供陶瓷製作工具"], "answer": "提供土地讓陶工自行蓋房子"}, {"qtype": "選擇題", "question": "經過幾代人的傳承後，這些老屋最容易面臨什麼問題？", "options": ["老屋缺乏修繕，逐漸老化", "土地與房屋產權複雜，難以整合", "聚落人口逐漸增加，居住空間不足", "老屋保存與都市開發產生衝突"], "answer": "土地與房屋產權複雜，難以整合"}]}, {"id": 8, "name": "站點八陳映真故居", "questions": [{"qtype": "選擇題", "question": "陳映真童年在鶯歌生活，身邊有許多陶工、礦工與搬運工。這段經歷對他的創作有何影響？", "options": ["讓他專門研究陶瓷技術", "讓他成為煤礦工程師", "使他更能體會勞動階級的生活", "讓他開始收藏古老陶器"], "answer": "使他更能體會勞動階級的生活"}, {"qtype": "選擇題", "question": "陳映真創辦《人間》雜誌,主要希望透過報導為哪一群人發聲？", "options": ["社會名人", "企業家", "社會底層與弱勢族群", "藝術工作者"], "answer": "社會底層與弱勢族群"}, {"qtype": "選擇題", "question": "下列哪一項曾出現在《山路》所描寫的鶯歌景象中？", "options": ["鶯歌石與臺車道", "鶯歌老街與陶瓷博物館", "鶯歌車站與碧龍宮", "成發居與益成記"], "answer": "鶯歌石與臺車道"}]}, {"id": 9, "name": "站點九鶯歌福興宮", "questions": [{"qtype": "選擇題", "question": "仔細觀察福興宮,你會發現有什麼特別之處?", "options": ["廟中廟", "內殿", "子母廟", "祀神閣"], "answer": "廟中廟"}, {"qtype": "選擇題", "question": "傳說羅文擅長「手陶」，羅明擅長「車陶」。哪種現代工作方式最接近「車陶」？", "options": ["手工雕刻師", "操作機器製作陶器的陶藝師", "純手工編織師", "手工木雕師"], "answer": "操作機器製作陶器的陶藝師"}, {"qtype": "選擇題", "question": "鶯歌窯場過去會在福興宮祭拜陶神羅明。羅明的誕辰是哪一天？", "options": ["農曆四月十一日", "農曆六月六日", "農曆九月九日", "農曆十月十五日"], "answer": "農曆九月九日"}]}, {"id": 10, "name": "站點十鶯歌老街-古早窯(觀察)", "questions": [{"qtype": "選擇題", "question": "走進「古早窯」，他是屬於哪一種窯？", "options": ["蛇窯", "登窯", "四角窯", "隧道窯"], "answer": "隧道窯"}, {"qtype": "選擇題", "question": "仔細觀察古早窯,主要生產哪些產品？", "options": ["碗盤、茶具", "磁磚、馬賽克", "花器、陶偶", "水缸、陶甕"], "answer": "磁磚、馬賽克"}, {"qtype": "選擇題", "question": "隧道窯燒製完成後,工人如何將成品運出窯外？", "options": ["人力搬運", "用鐵鈎勾出窯車，沿軌道拉出", "用繩索吊出", "從窯頂取出"], "answer": "用鐵鈎勾出窯車，沿軌道拉出"}, {"qtype": "選擇題", "question": "隧道窯引進臺灣後，為提升燒製效率，燃料也有所改變。早期使用煤炭，後來改用什麼？", "options": ["木柴", "柴油", "重油", "天然氣"], "answer": "重油"}]}];
+const STATIONS = [
+  {
+    "id": 1,
+    "name": "站點一鶯歌車站的時光線索",
+    "story": "一九〇三年，鶯歌車站在這裡設立，運煤的蒸汽火車日夜穿梭，帶動了整個小鎮的窯業興盛。你站在月台上，彷彿還能聽見當年礦車碰撞鐵軌的聲音……",
+    "questions": [
+      {
+        "qtype": "簡答題",
+        "question": "仔細觀察鶯歌火車站的鐵道，你能數出幾條軌道？",
+        "options": [],
+        "answer": [
+          "七條",
+          "七",
+          "7"
+        ],
+        "fact": "鶯歌車站曾是運煤鐵道的重要轉運站，最多曾有多條軌道同時作業，見證了當年礦業運輸的繁忙景象。"
+      },
+      {
+        "qtype": "選擇題",
+        "question": "抬頭看看車站最上方，兩個相望的動物造型是什麼？",
+        "options": [
+          "魚",
+          "貓",
+          "狗",
+          "鳥"
+        ],
+        "answer": "鳥",
+        "fact": "「鶯」與「歌」兩字合起來，正是「鶯歌」地名的由來，屋頂上的鳥形裝飾也呼應了這個典故。"
+      },
+      {
+        "qtype": "選擇題",
+        "question": "你知道當時鶯歌車站主要轉運哪一種礦產嗎？",
+        "options": [
+          "金礦",
+          "鐵礦",
+          "煤礦",
+          "石灰石"
+        ],
+        "answer": "煤礦",
+        "fact": "日治時期，鶯歌因鄰近煤層與陶土產地，車站曾是運煤與運送陶器的重要轉運站。"
+      },
+      {
+        "qtype": "選擇題",
+        "question": "請問鶯歌車站最早的站名是什麼？",
+        "options": [
+          "尖山埔驛",
+          "鷹哥石驛",
+          "鶯歌庄驛",
+          "大嵙崁驛"
+        ],
+        "answer": "鷹哥石驛",
+        "fact": "「鷹哥石驛」得名自附近「鶯歌石」的傳說，後來才逐漸改名為現在的「鶯歌」站名。"
+      }
+    ],
+    "dialogue": [
+      {
+        "type": "line",
+        "char": "guide",
+        "text": "（一陣風吹過，月台上的煤油燈忽明忽暗……）"
+      },
+      {
+        "type": "line",
+        "char": "guide",
+        "text": "喔？又一位旅人循著時光的軌跡找上門來了。歡迎回到一九〇三年的鶯歌驛。"
+      },
+      {
+        "type": "line",
+        "char": "hero",
+        "text": "這裡……怎麼感覺像走進了一張老照片裡？空氣中還有煤煙的味道。"
+      },
+      {
+        "type": "line",
+        "char": "guide",
+        "text": "我在這裡看守月台超過一世紀了，可惜大多數人都只是匆匆一瞥，沒有真正「看見」這座車站。"
+      },
+      {
+        "type": "line",
+        "char": "guide",
+        "text": "既然你來了，不如陪我走一趟——用你的眼睛，替我重新認識這個地方吧。"
+      },
+      {
+        "type": "question",
+        "qIndex": 0,
+        "char": "guide",
+        "text": "先低頭看看腳下，仔細數數看：這月台邊，究竟鋪了幾條鐵軌？",
+        "correctReaction": "答對了！沒錯，正是這七條軌道，當年日夜川流不息地運送著鶯歌燒出的陶器與挖出的煤炭。",
+        "wrongHints": [
+          "再靠近一點看，別漏數了最外側那一條……",
+          "試著用手指一條一條數過去，仔細一點。"
+        ]
+      },
+      {
+        "type": "line",
+        "char": "guide",
+        "text": "呵，果然是個仔細的旅人。走，我們再往上瞧瞧。"
+      },
+      {
+        "type": "question",
+        "qIndex": 1,
+        "char": "guide",
+        "text": "抬頭看看車站最頂端，那對相望的動物是什麼呢？",
+        "correctReaction": "正是「鶯」與「歌」——這座車站的名字，就藏在屋頂上呢。",
+        "wrongHints": [
+          "再看清楚一點，牠們有翅膀、會唱歌……"
+        ]
+      },
+      {
+        "type": "line",
+        "char": "hero",
+        "text": "原來站名的由來一直都在我們頭上，只是很少有人抬頭看。"
+      },
+      {
+        "type": "line",
+        "char": "guide",
+        "text": "這座車站的一磚一瓦，其實都跟腳下的土地脫不了關係。"
+      },
+      {
+        "type": "question",
+        "qIndex": 2,
+        "char": "guide",
+        "text": "你知道當時這座車站，主要轉運哪一種礦產嗎？",
+        "correctReaction": "沒錯，正是煤礦撐起了整條鐵路線的忙碌。",
+        "wrongHints": [
+          "想想看，那個年代窯場燒陶，最需要什麼來生火？"
+        ]
+      },
+      {
+        "type": "line",
+        "char": "guide",
+        "text": "最後，讓我考考你這座車站的身世。"
+      },
+      {
+        "type": "question",
+        "qIndex": 3,
+        "char": "guide",
+        "text": "你可知道，這座車站最早並不叫「鶯歌」，它原本的名字是？",
+        "correctReaction": "「鷹哥石驛」——這才是這座車站最初的名字啊。時代變了，連名字都跟著換上了新裝。",
+        "wrongHints": [
+          "再想想，那是一個更古老、更貼近地形的名字……"
+        ]
+      },
+      {
+        "type": "line",
+        "char": "guide",
+        "text": "很高興今天有你陪我走這一趟。旅人，願你把這段時光，也一併帶往下一站。"
+      },
+      {
+        "type": "line",
+        "char": "hero",
+        "text": "謝謝你，楊嚮導。我會把今天看到的，好好記下來的。"
+      },
+      {
+        "type": "end"
+      }
+    ],
+    "background": "角色照片素材庫/台鐵鶯歌火車站.jpg",
+    "characters": {
+      "guide": {
+        "name": "楊嚮導",
+        "portrait": "角色照片素材庫/楊嚮導.png",
+        "side": "left"
+      },
+      "hero": {
+        "name": "小承",
+        "portrait": "角色照片素材庫/小承.png",
+        "side": "right"
+      }
+    },
+    "location": {
+      "lat": 24.95698366700082,
+      "lng": 121.24059043154006,
+      "radius": 80
+    }
+  },
+  {
+    "id": 2,
+    "name": "站點二走進市拿陶藝",
+    "questions": [
+      {
+        "qtype": "選擇題",
+        "question": "市拿陶藝的創辦人是誰？",
+        "options": [
+          "陳景蘭",
+          "許自然",
+          "邱錦和",
+          "許朝宗"
+        ],
+        "answer": "許自然"
+      },
+      {
+        "qtype": "選擇題",
+        "question": "「市拿」這個名字有什麼特別的意涵？",
+        "options": [
+          "鶯歌的古地名",
+          "一種傳統陶土名稱",
+          "與英文China有關",
+          "取自早期陶瓷業的製陶術語"
+        ],
+        "answer": "與英文China有關"
+      },
+      {
+        "qtype": "選擇題",
+        "question": "你知道市拿陶藝早期主要製作哪一類陶瓷？",
+        "options": [
+          "日用碗盤",
+          "建築磁磚",
+          "仿古藝術陶瓷",
+          "陶製花盆"
+        ],
+        "answer": "仿古藝術陶瓷"
+      },
+      {
+        "qtype": "選擇題",
+        "question": "早期鶯歌窯場常以煤炭燒窯，黑煙曾是街區常見的景象。後來窯業逐漸改用較乾淨的能源。這項改變主要引進了哪種能源？",
+        "options": [
+          "石油",
+          "天然氣",
+          "電力",
+          "木炭"
+        ],
+        "answer": "天然氣"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "站點三鶯歌石",
+    "questions": [
+      {
+        "qtype": "選擇題",
+        "question": "傳說中，鶯歌石為什麼會少了一截？",
+        "options": [
+          "巨石曾被山崩掩埋",
+          "鄭成功下令開砲，轟斷了巨鳥的頭部",
+          "後人開採石材造成缺口",
+          "長年風吹雨淋自然斷裂"
+        ],
+        "answer": "鄭成功下令開砲，轟斷了巨鳥的頭部"
+      },
+      {
+        "qtype": "選擇題",
+        "question": "找到鶯歌石岩洞旁的石碑，仔細觀察碑文。碑文中提到，這塊石頭最初為什麼被稱為「鸚哥石」？",
+        "options": [
+          "附近曾有許多鸚哥",
+          "石頭形狀像鸚哥",
+          "傳說鸚哥住在洞裡",
+          "因為鄭成功曾在此養鸚哥"
+        ],
+        "answer": "石頭形狀像鸚哥"
+      },
+      {
+        "qtype": "選擇題",
+        "question": "觀察登山地圖,鶯歌除了「鶯歌石」這顆鳥形巨石外,哪座廟宇因供奉這顆「龜公石」,又被稱為「龜公廟」？",
+        "options": [
+          "妙善宮",
+          "宏德宮",
+          "碧龍宮",
+          "福德宮"
+        ],
+        "answer": "碧龍宮"
+      },
+      {
+        "qtype": "選擇題",
+        "question": "現在的孫龍步道是一條登山步道,但在百年前這裡曾經有另一種用途,你知道孫龍步道的前身是什麼嗎？",
+        "options": [
+          "運送陶土的道路",
+          "採礦台車行駛的輕便鐵道",
+          "軍事運輸道路",
+          "茶葉運輸道路"
+        ],
+        "answer": "採礦台車行駛的輕便鐵道"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "name": "站點四尋找老煙囪",
+    "questions": [
+      {
+        "qtype": "選擇題",
+        "question": "仔細觀察眼前的老煙囪，它最明顯的外觀特色是什麼？",
+        "options": [
+          "圓形",
+          "三角形",
+          "四角形",
+          "六角形"
+        ],
+        "answer": "四角形"
+      },
+      {
+        "qtype": "選擇題",
+        "question": "鶯歌四角窯主要使用什麼作為燃料？",
+        "options": [
+          "木材",
+          "天然氣",
+          "煤炭",
+          "柴薪"
+        ],
+        "answer": "煤炭"
+      },
+      {
+        "qtype": "選擇題",
+        "question": "鶯歌四角窯改良了傳統窯燒方式，採用哪一種窯型設計？",
+        "options": [
+          "直焰式",
+          "平焰式",
+          "倒焰式",
+          "旋焰式"
+        ],
+        "answer": "倒焰式"
+      },
+      {
+        "qtype": "選擇題",
+        "question": "煙囪為何逐漸消失？主要原因是什麼",
+        "options": [
+          "碗盤生產技術逐漸改良",
+          "陶瓷工廠開始集中於特定區域",
+          "陶窯陸續改用瓦斯窯",
+          "陶瓷產品種類逐漸增加"
+        ],
+        "answer": "陶窯陸續改用瓦斯窯"
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "name": "站點五烘爐窯",
+    "questions": [
+      {
+        "qtype": "選擇題",
+        "question": "仔細觀察附近古厝的牆面,會發現磚瓦的種類並不完全相同,為什麼一面牆上會出現不同種類的磚瓦？",
+        "options": [
+          "不同工匠使用不同材料",
+          "窯廠的瑕疵品被作為建材",
+          "為了讓牆面更加美觀",
+          "不同時期的居民刻意收集"
+        ],
+        "answer": "窯廠的瑕疵品被作為建材"
+      },
+      {
+        "qtype": "選擇題",
+        "question": "過去烘爐窯主要燒製哪一類陶瓷？",
+        "options": [
+          "藝術雕塑",
+          "建築磚瓦",
+          "碗盤等生活器皿",
+          "陶瓷玩具"
+        ],
+        "answer": "碗盤等生活器皿"
+      },
+      {
+        "qtype": "選擇題",
+        "question": "這座烘爐窯建於日治時期,見證了鶯歌陶業的發展。誰在1929年建造了這座烘爐窯？",
+        "options": [
+          "當地陶工",
+          "政治人物",
+          "賴婆",
+          "附近居民"
+        ],
+        "answer": "賴婆"
+      },
+      {
+        "qtype": "選擇題",
+        "question": "窯廠燒壞的器皿被打碎掩埋後，後來重新出現在故事巷。這些老瓷片被如何再利用？",
+        "options": [
+          "製作新陶器",
+          "製作牆面裝飾",
+          "鑲嵌於步道路面",
+          "製作陶瓷藝術品"
+        ],
+        "answer": "鑲嵌於步道路面"
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "name": "站點六益成記",
+    "questions": [
+      {
+        "qtype": "選擇題",
+        "question": "益成記窯場是由誰創辦？",
+        "options": [
+          "吳鞍",
+          "王龜生",
+          "陳斐然",
+          "許自強"
+        ],
+        "answer": "陳斐然"
+      },
+      {
+        "qtype": "選擇題",
+        "question": "益成記曾被稱為鶯歌的「陶瓷大學」,主要與什麼有關？",
+        "options": [
+          "成為鶯歌陶瓷技術的重要傳承地",
+          "培養許多製陶師傅與技術",
+          "生產種類繁多的陶瓷生活用品",
+          "成為當時鶯歌重要的陶瓷交易場所"
+        ],
+        "answer": "培養許多製陶師傅與技術"
+      },
+      {
+        "qtype": "選擇題",
+        "question": "益成記曾引進哪裡的陶藝師傅？",
+        "options": [
+          "景德鎮",
+          "泉州",
+          "福州",
+          "廣州"
+        ],
+        "answer": "福州"
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "name": "站點七大榕樹和窯工聚落遺址",
+    "questions": [
+      {
+        "qtype": "選擇題",
+        "question": "早期鶯歌文化路有「兩陳一余」三大地主，兩陳家土地廣大。當時兩大家族以什麼作為土地分界？",
+        "options": [
+          "以道路作為分界",
+          "以窯廠煙囪作為分界",
+          "以兩棵大榕樹連成一線作為界線",
+          "以溪流作為分界"
+        ],
+        "answer": "以兩棵大榕樹連成一線作為界線"
+      },
+      {
+        "qtype": "選擇題",
+        "question": "早期鶯歌窯場缺乏工人，為了吸引外地陶工前來工作，窯廠老闆採取了什麼方式？",
+        "options": [
+          "提供免費餐食",
+          "提供土地讓陶工自行蓋房子",
+          "提供交通工具接送",
+          "提供陶瓷製作工具"
+        ],
+        "answer": "提供土地讓陶工自行蓋房子"
+      },
+      {
+        "qtype": "選擇題",
+        "question": "經過幾代人的傳承後，這些老屋最容易面臨什麼問題？",
+        "options": [
+          "老屋缺乏修繕，逐漸老化",
+          "土地與房屋產權複雜，難以整合",
+          "聚落人口逐漸增加，居住空間不足",
+          "老屋保存與都市開發產生衝突"
+        ],
+        "answer": "土地與房屋產權複雜，難以整合"
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "name": "站點八陳映真故居",
+    "questions": [
+      {
+        "qtype": "選擇題",
+        "question": "陳映真童年在鶯歌生活，身邊有許多陶工、礦工與搬運工。這段經歷對他的創作有何影響？",
+        "options": [
+          "讓他專門研究陶瓷技術",
+          "讓他成為煤礦工程師",
+          "使他更能體會勞動階級的生活",
+          "讓他開始收藏古老陶器"
+        ],
+        "answer": "使他更能體會勞動階級的生活"
+      },
+      {
+        "qtype": "選擇題",
+        "question": "陳映真創辦《人間》雜誌,主要希望透過報導為哪一群人發聲？",
+        "options": [
+          "社會名人",
+          "企業家",
+          "社會底層與弱勢族群",
+          "藝術工作者"
+        ],
+        "answer": "社會底層與弱勢族群"
+      },
+      {
+        "qtype": "選擇題",
+        "question": "下列哪一項曾出現在《山路》所描寫的鶯歌景象中？",
+        "options": [
+          "鶯歌石與臺車道",
+          "鶯歌老街與陶瓷博物館",
+          "鶯歌車站與碧龍宮",
+          "成發居與益成記"
+        ],
+        "answer": "鶯歌石與臺車道"
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "name": "站點九鶯歌福興宮",
+    "questions": [
+      {
+        "qtype": "選擇題",
+        "question": "仔細觀察福興宮,你會發現有什麼特別之處?",
+        "options": [
+          "廟中廟",
+          "內殿",
+          "子母廟",
+          "祀神閣"
+        ],
+        "answer": "廟中廟"
+      },
+      {
+        "qtype": "選擇題",
+        "question": "傳說羅文擅長「手陶」，羅明擅長「車陶」。哪種現代工作方式最接近「車陶」？",
+        "options": [
+          "手工雕刻師",
+          "操作機器製作陶器的陶藝師",
+          "純手工編織師",
+          "手工木雕師"
+        ],
+        "answer": "操作機器製作陶器的陶藝師"
+      },
+      {
+        "qtype": "選擇題",
+        "question": "鶯歌窯場過去會在福興宮祭拜陶神羅明。羅明的誕辰是哪一天？",
+        "options": [
+          "農曆四月十一日",
+          "農曆六月六日",
+          "農曆九月九日",
+          "農曆十月十五日"
+        ],
+        "answer": "農曆九月九日"
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "name": "站點十鶯歌老街-古早窯(觀察)",
+    "questions": [
+      {
+        "qtype": "選擇題",
+        "question": "走進「古早窯」，他是屬於哪一種窯？",
+        "options": [
+          "蛇窯",
+          "登窯",
+          "四角窯",
+          "隧道窯"
+        ],
+        "answer": "隧道窯"
+      },
+      {
+        "qtype": "選擇題",
+        "question": "仔細觀察古早窯,主要生產哪些產品？",
+        "options": [
+          "碗盤、茶具",
+          "磁磚、馬賽克",
+          "花器、陶偶",
+          "水缸、陶甕"
+        ],
+        "answer": "磁磚、馬賽克"
+      },
+      {
+        "qtype": "選擇題",
+        "question": "隧道窯燒製完成後,工人如何將成品運出窯外？",
+        "options": [
+          "人力搬運",
+          "用鐵鈎勾出窯車，沿軌道拉出",
+          "用繩索吊出",
+          "從窯頂取出"
+        ],
+        "answer": "用鐵鈎勾出窯車，沿軌道拉出"
+      },
+      {
+        "qtype": "選擇題",
+        "question": "隧道窯引進臺灣後，為提升燒製效率，燃料也有所改變。早期使用煤炭，後來改用什麼？",
+        "options": [
+          "木柴",
+          "柴油",
+          "重油",
+          "天然氣"
+        ],
+        "answer": "重油"
+      }
+    ]
+  }
+];
 
 // seed "報名資料" — 之後會換成真的 Google Sheets 資料
 const SEED_PLAYERS = {
@@ -1120,7 +1700,7 @@ let rpgState = null;
 
 function openStationRPG(st) {
   currentStationId = st.id;
-  rpgState = { st, idx: 0, typing: false, typeTimer: null, resultsByQ: {}, wrongCount: 0, advanceAfterReaction: false };
+  rpgState = { st, idx: 0, typing: false, typeTimer: null, resultsByQ: {}, wrongCount: 0, advanceAfterReaction: false, showingReaction: false };
   showScreen("screen-rpg");
   renderRpgBackground(st);
   const intro = document.getElementById("rpg-intro");
@@ -1204,6 +1784,7 @@ function renderRpgStep() {
   speakerEl.textContent = (charDef && charDef.name) || step.speaker || "";
   renderRpgCharacters(step);
   rpgState.advanceAfterReaction = false;
+  rpgState.showingReaction = false;
   typeText(textEl, step.text, () => {
     if (step.type === "line") {
       continueEl.style.display = "block";
@@ -1230,9 +1811,21 @@ function typeText(el, text, onDone) {
 }
 
 function skipTyping() {
-  const step = rpgState.st.dialogue[rpgState.idx];
   clearInterval(rpgState.typeTimer);
   rpgState.typing = false;
+  const step = rpgState.st.dialogue[rpgState.idx];
+
+  if (rpgState.showingReaction) {
+    // mid-typing on the post-answer reaction text, not the original question — just finish it,
+    // never fall back to re-rendering the question's options
+    const q = rpgState.st.questions[step.qIndex];
+    const reaction = step.correctReaction + (q.fact ? `\n\n💡 ${q.fact}` : "");
+    document.getElementById("rpg-text").textContent = reaction;
+    rpgState.advanceAfterReaction = true;
+    document.getElementById("rpg-continue").style.display = "block";
+    return;
+  }
+
   document.getElementById("rpg-text").textContent = step.text;
   if (step.type === "line") {
     document.getElementById("rpg-continue").style.display = "block";
@@ -1281,6 +1874,8 @@ function handleRpgAnswer(qIndex, correct, btnEl) {
   const step = rpgState.st.dialogue[rpgState.idx];
   const choicesEl = document.getElementById("rpg-choices");
   if (correct) {
+    // lock the options immediately so a second tap before the reaction starts can't re-trigger this
+    choicesEl.querySelectorAll("button").forEach(b => { b.disabled = true; });
     if (btnEl) btnEl.classList.add("correct");
     rpgState.resultsByQ[qIndex] = true;
     renderRpgProgress();
@@ -1288,6 +1883,7 @@ function handleRpgAnswer(qIndex, correct, btnEl) {
     const reaction = step.correctReaction + (q.fact ? `\n\n💡 ${q.fact}` : "");
     setTimeout(() => {
       choicesEl.innerHTML = "";
+      rpgState.showingReaction = true;
       const textEl = document.getElementById("rpg-text");
       typeText(textEl, reaction, () => {
         rpgState.advanceAfterReaction = true;
