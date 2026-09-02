@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>鶯歌壯遊實境解謎</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Noto+Serif+TC:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f6f1e9;
+    --card: #ffffff;
+    --ink: #2b2117;
+    --sub: #8a7a68;
+    --accent: #c05621;
+    --accent-dark: #9c3d16;
+    --done: #4a7c59;
+    --line: #e6dcc9;
+    --danger: #c0392b;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+  .screen { display: none; min-height: 100vh; flex-direction: column; }
+  .screen.active { display: flex; }
+  .topbar {
+    padding: 16px 20px;
+    background: var(--accent);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+  }
+  .topbar h1 { font-size: 17px; margin: 0; }
+  .topbar .back { cursor: pointer; font-size: 20px; padding: 4px 8px; }
+  .content { padding: 20px; flex: 1; max-width: 480px; margin: 0 auto; width: 100%; }
+
+  /* Login screen */
+  .login-wrap { display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; padding: 24px; }
+  .login-card { background: var(--card); border-radius: 16px; padding: 32px 24px; width: 100%; max-width: 360px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); text-align: center; }
+  .login-card h2 { margin: 0 0 4px; font-size: 20px; }
+  .login-card p.desc { color: var(--sub); font-size: 13px; margin: 0 0 24px; }
+  input[type=text] {
+    width: 100%; padding: 14px; font-size: 16px; border: 2px solid var(--line);
+    border-radius: 10px; text-align: center; letter-spacing: 2px; margin-bottom: 12px;
+  }
+  input[type=text]:focus { outline: none; border-color: var(--accent); }
+  button {
+    width: 100%; padding: 14px; font-size: 16px; font-weight: 600;
+    background: var(--accent); color: white; border: none; border-radius: 10px;
+    cursor: pointer; transition: background 0.15s;
+  }
+  button:hover { background: var(--accent-dark); }
+  button.secondary { background: transparent; color: var(--accent); border: 2px solid var(--accent); }
+  .error-msg { color: var(--danger); font-size: 13px; margin-top: 8px; min-height: 18px; }
+  .test-codes { margin-top: 20px; font-size: 12px; color: var(--sub); }
+
+  /* Progress bar */
+  .progress-wrap { background: var(--card); border-radius: 14px; padding: 16px; margin-bottom: 16px; }
+  .progress-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+  .progress-top .count { font-size: 22px; font-weight: 700; color: var(--accent); }
+  .progress-bar-bg { height: 10px; background: var(--line); border-radius: 6px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; background: var(--accent); transition: width 0.3s; }
+  .reward-hint { font-size: 12px; color: var(--sub); margin-top: 8px; }
+
+  /* Station grid */
+  .station-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .station-card {
+    background: var(--card); border-radius: 14px; padding: 16px; cursor: pointer;
+    border: 2px solid var(--line); transition: transform 0.1s;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .station-card:active { transform: scale(0.97); }
+  .station-card.done { border-color: var(--done); background: #f0f7f1; }
+  .station-num { font-size: 12px; color: var(--sub); }
+  .station-name { font-size: 14px; font-weight: 600; line-height: 1.4; }
+  .station-status { font-size: 12px; margin-top: auto; }
+  .station-status.done { color: var(--done); font-weight: 600; }
+  .station-status.todo { color: var(--sub); }
+
+  /* Ticket wallet */
+  .wallet-list { display: flex; flex-direction: column; gap: 18px; }
+  .ticket-card {
+    position: relative; border-radius: 18px; padding: 20px; color: white; cursor: pointer;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.14); transition: transform .12s;
+  }
+  .ticket-card:active { transform: scale(0.97); }
+  .ticket-card.type-a { background: linear-gradient(135deg, #e8a445, #c05621); }
+  .ticket-card.type-b { background: linear-gradient(135deg, #9b7ae0, #5b3aa0); }
+  .ticket-card.locked { background: #d8cfc0; color: #6b5f4f; box-shadow: none; }
+  .ticket-card .tc-top { display: flex; justify-content: space-between; align-items: center; }
+  .ticket-card .tc-emoji { font-size: 26px; }
+  .ticket-card .tc-status { font-size: 11px; padding: 4px 10px; border-radius: 20px; background: rgba(255,255,255,0.28); }
+  .ticket-card.locked .tc-status { background: rgba(0,0,0,0.08); }
+  .ticket-card .tc-title { font-size: 19px; font-weight: 700; margin-top: 12px; }
+  .ticket-card .tc-sub { font-size: 12px; opacity: 0.85; margin-top: 4px; }
+
+  .ticket-expand {
+    position: relative; width: 100%; max-width: 340px; border-radius: 22px; padding: 32px 26px;
+    color: white; text-align: center; box-shadow: 0 12px 32px rgba(0,0,0,0.3); overflow: hidden;
+  }
+  .ticket-expand.type-a { background: linear-gradient(160deg, #e8a445, #c05621); }
+  .ticket-expand.type-b { background: linear-gradient(160deg, #9b7ae0, #5b3aa0); }
+  .ticket-expand.locked { background: linear-gradient(160deg, #cfc4b4, #a89880); }
+  .ticket-expand.redeemed { background: linear-gradient(160deg, #7fa88c, #4a7c59); }
+  .te-close { position: absolute; top: 14px; right: 16px; font-size: 16px; opacity: 0.8; cursor: pointer; padding: 4px; }
+  .te-emoji { font-size: 40px; }
+  .te-label { font-size: 18px; font-weight: 700; margin-top: 4px; }
+  .te-divider { border-top: 2px dashed rgba(255,255,255,0.45); margin: 16px 0; }
+  .te-name { font-size: 22px; font-weight: 700; }
+  .te-code { font-size: 15px; letter-spacing: 2px; opacity: 0.9; margin-top: 4px; }
+  .te-hint { font-size: 13px; opacity: 0.95; line-height: 1.6; margin: 4px 0 16px; }
+  .te-actions { display: flex; gap: 10px; }
+  .te-btn {
+    flex: 1; padding: 13px; font-size: 15px; font-weight: 700; border: none; border-radius: 10px;
+    background: white; color: var(--accent-dark); cursor: pointer;
+  }
+  .te-btn.danger { background: var(--danger); color: white; }
+  .te-btn.ghost { background: rgba(255,255,255,0.25); color: white; }
+  .te-stamp {
+    position: absolute; top: 46%; left: 50%; transform: translate(-50%, -50%) rotate(-16deg);
+    border: 3px solid rgba(255,255,255,0.85); color: rgba(255,255,255,0.85);
+    font-size: 22px; font-weight: 800; padding: 5px 16px; border-radius: 10px; letter-spacing: 3px;
+    white-space: nowrap; pointer-events: none;
+  }
+
+  /* Station detail */
+  .station-image { width: 100%; border-radius: 14px; margin-bottom: 14px; display: block; }
+  .story-block { background: var(--card); border-radius: 14px; padding: 18px; margin-bottom: 14px; font-size: 14px; line-height: 1.8; color: var(--ink); border-left: 4px solid var(--accent); }
+  .fact-box { margin-top: 10px; background: #fff8e6; border: 1px solid #e8d38a; border-radius: 10px; padding: 10px 12px; font-size: 13px; color: #8a6d00; line-height: 1.6; }
+  .q-block { background: var(--card); border-radius: 14px; padding: 18px; margin-bottom: 14px; }
+  .q-title { font-size: 13px; color: var(--sub); margin-bottom: 6px; }
+  .q-text { font-size: 16px; font-weight: 600; line-height: 1.6; margin-bottom: 14px; }
+  .option-btn {
+    display: block; width: 100%; text-align: left; padding: 12px 14px; margin-bottom: 8px;
+    border: 2px solid var(--line); border-radius: 10px; background: white; font-size: 14px;
+    cursor: pointer; color: var(--ink);
+  }
+  .option-btn:hover { border-color: var(--accent); }
+  .option-btn.correct { border-color: var(--done); background: #eaf5ec; }
+  .option-btn.wrong { border-color: var(--danger); background: #fbeae8; }
+  .option-btn.disabled { pointer-events: none; opacity: 0.6; }
+  .q-feedback { font-size: 13px; margin-top: 6px; min-height: 18px; }
+  .q-feedback.correct { color: var(--done); font-weight: 600; }
+  .q-feedback.wrong { color: var(--danger); }
+  .q-done-tag { display: inline-block; font-size: 12px; color: var(--done); background: #eaf5ec; padding: 3px 10px; border-radius: 20px; margin-bottom: 10px; }
+
+  .fill-row { display: flex; gap: 8px; }
+  .fill-row input { flex: 1; margin-bottom: 0; }
+  .fill-row button { width: auto; padding: 12px 18px; }
+
+  /* Toast / modal for reward unlock */
+  .overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none;
+    align-items: center; justify-content: center; z-index: 50; padding: 24px;
+  }
+  .overlay.active { display: flex; }
+  .modal { background: white; border-radius: 16px; padding: 28px 24px; text-align: center; max-width: 340px; }
+  .modal .emoji { font-size: 44px; margin-bottom: 10px; }
+  .modal h3 { margin: 0 0 8px; font-size: 19px; }
+  .modal p { color: var(--sub); font-size: 14px; margin: 0 0 18px; }
+  .modal .code-box { background: var(--bg); border-radius: 10px; padding: 12px; font-size: 20px; font-weight: 700; letter-spacing: 2px; margin-bottom: 18px; color: var(--accent); }
+
+  .footer-link { text-align: center; margin-top: 20px; }
+  .footer-link a { color: var(--sub); font-size: 12px; cursor: pointer; text-decoration: underline; }
+
+  /* Arrival gate (GPS check before a station unlocks) */
+  .arrive-card { background: var(--card); border-radius: 18px; padding: 32px 24px; text-align: center; margin-top: 16px; }
+  .arrive-icon { font-size: 40px; margin-bottom: 6px; }
+  .arrive-name { font-size: 19px; margin: 0 0 10px; }
+  .arrive-hint { color: var(--sub); font-size: 13px; line-height: 1.6; margin: 0 0 22px; }
+  .nav-btn {
+    width: 100%; padding: 15px; font-size: 15px; font-weight: 700; border: none; border-radius: 12px;
+    background: #4285f4; color: white; cursor: pointer; margin-bottom: 16px;
+  }
+  .nav-btn:active { background: #3367d6; }
+  .arrive-status {
+    font-size: 13px; color: var(--sub); margin-bottom: 16px; padding: 10px; border-radius: 10px;
+    background: var(--bg); min-height: 18px;
+  }
+  .arrive-status.near { color: var(--done); font-weight: 700; background: #eaf5ec; }
+  .arrive-status.far { color: var(--sub); }
+  .arrive-status.error { color: var(--danger); }
+  .start-btn {
+    width: 100%; padding: 15px; font-size: 16px; font-weight: 700; border: none; border-radius: 12px;
+    background: var(--done); color: white; cursor: pointer; transition: opacity .2s;
+  }
+  .start-btn:disabled { background: #cfc4b4; color: #8a7d6a; cursor: not-allowed; }
+  .arrive-fallback { margin-top: 16px; }
+  .arrive-fallback a { color: var(--sub); font-size: 12px; text-decoration: underline; cursor: pointer; }
+
+  .arrive-debug {
+    margin-top: 24px; padding: 14px; border: 2px dashed #d4a017; border-radius: 12px;
+    background: #fff8e6; text-align: left;
+  }
+  .arrive-debug-title { font-size: 11px; color: #8a6d00; font-weight: 700; margin-bottom: 10px; }
+  .arrive-debug-row { display: flex; gap: 8px; margin-bottom: 8px; }
+  .arrive-debug-row:last-child { margin-bottom: 0; }
+  .arrive-debug-row button {
+    flex: 1; padding: 9px 6px; font-size: 12px; border: none; border-radius: 8px;
+    background: #d4a017; color: white; cursor: pointer;
+  }
+  .arrive-debug-row input {
+    flex: 1; min-width: 0; padding: 9px 8px; font-size: 12px; border: 1px solid #d4a017; border-radius: 8px;
+  }
+
+  /* ================= RPG dialogue scene (time-travel station) ================= */
+  :root {
+    --rpg-void: #150d08;
+    --rpg-walnut: #3a2718;
+    --rpg-walnut-dark: #26190f;
+    --rpg-mid: #7a5636;
+    --rpg-brass: #cf9a4c;
+    --rpg-brass-bright: #e8bb72;
+    --rpg-parchment: #ecdcb4;
+    --rpg-cream: #f5e9cc;
+    --rpg-ember: #c76a3d;
+  }
+  #screen-rpg.screen.active { display: block; }
+  .rpg-scene {
+    position: relative; height: 100vh; width: 100%; overflow: hidden;
+    background: linear-gradient(180deg, #4a3220 0%, #2c1c11 55%, var(--rpg-void) 100%);
+    font-family: "Noto Serif TC", serif;
+    color: var(--rpg-cream);
+  }
+  /* Real background photo (optional, replaces the CSS illustration when a station provides one) */
+  .rpg-bg-photo {
+    position: absolute; inset: 0; background-size: cover; background-position: center 30%;
+    filter: sepia(0.5) saturate(1.15) brightness(0.55) contrast(1.05);
+  }
+  .rpg-scene.has-photo .rpg-roofline,
+  .rpg-scene.has-photo .rpg-lantern,
+  .rpg-scene.has-photo .rpg-tracks { display: none; }
+
+  /* Character sprites: full-body cutouts standing in the scene, VN-style */
+  .rpg-char-slot {
+    position: absolute; bottom: 0; height: 66%; width: 48%;
+    background-repeat: no-repeat; background-position: bottom center; background-size: contain;
+    filter: sepia(0.35) contrast(1.05) drop-shadow(0 14px 16px rgba(0,0,0,0.45));
+    transition: opacity 0.3s ease, filter 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+  }
+  .rpg-char-slot.left { left: -1%; }
+  .rpg-char-slot.right { right: -1%; }
+  .rpg-char-slot.hidden { opacity: 0; }
+  .rpg-char-slot.dim { opacity: 0.42; filter: sepia(0.55) brightness(0.55) contrast(1.05); }
+  .rpg-char-slot.active { filter: sepia(0.15) contrast(1.08) drop-shadow(0 14px 20px rgba(0,0,0,0.5)); transform: scale(1.02); }
+
+  .rpg-grain {
+    position: absolute; inset: 0; opacity: 0.10; mix-blend-mode: overlay; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .rpg-vignette {
+    position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse at center, rgba(0,0,0,0) 40%, rgba(0,0,0,0.65) 100%);
+  }
+  .rpg-roofline {
+    position: absolute; left: 0; right: 0; bottom: 38%; height: 90px;
+    background: var(--rpg-walnut-dark);
+    clip-path: polygon(0% 100%, 0% 40%, 10% 0%, 22% 40%, 34% 5%, 46% 40%, 58% 0%, 70% 40%, 82% 8%, 94% 40%, 100% 15%, 100% 100%);
+    opacity: 0.9;
+  }
+  .rpg-lantern {
+    position: absolute; top: 14%; left: 50%; transform: translateX(-50%);
+    width: 10px; height: 14px; border-radius: 3px; background: var(--rpg-brass-bright);
+    box-shadow: 0 0 24px 10px rgba(232,187,114,0.55);
+    animation: rpg-flicker 3.2s ease-in-out infinite;
+  }
+  @keyframes rpg-flicker {
+    0%, 100% { opacity: 1; } 45% { opacity: 0.85; } 50% { opacity: 0.55; } 55% { opacity: 0.9; }
+  }
+  .rpg-tracks {
+    position: absolute; left: 0; right: 0; bottom: 30%; height: 8%;
+    background: repeating-linear-gradient(90deg, var(--rpg-mid) 0 3px, transparent 3px 26px);
+    opacity: 0.5;
+  }
+  .rpg-topbar {
+    position: absolute; top: 0; left: 0; right: 0; z-index: 3;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 18px; background: linear-gradient(180deg, rgba(10,6,3,0.55), transparent);
+  }
+  .rpg-back {
+    font-family: "Noto Serif TC", serif; font-size: 13px; color: var(--rpg-cream); opacity: 0.85;
+    cursor: pointer; padding: 4px 6px;
+  }
+  .rpg-progress { display: flex; gap: 7px; }
+  .rpg-progress .hole {
+    width: 11px; height: 11px; border-radius: 50%; border: 1.5px solid var(--rpg-brass);
+    background: transparent; display: inline-block;
+  }
+  .rpg-progress .hole.punched { background: var(--rpg-brass-bright); box-shadow: 0 0 6px rgba(232,187,114,0.8); }
+
+  .rpg-dialogue-box {
+    position: absolute; left: 16px; right: 16px; bottom: 22px; z-index: 4;
+    max-width: 480px; margin: 0 auto;
+    background: linear-gradient(180deg, var(--rpg-walnut) 0%, var(--rpg-walnut-dark) 100%);
+    border: 1px solid rgba(207,154,76,0.4);
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.4), 0 14px 32px rgba(0,0,0,0.5), inset 0 0 40px rgba(0,0,0,0.35);
+    border-radius: 14px; padding: 20px 20px 18px; cursor: pointer;
+  }
+  .rpg-nameplate {
+    position: absolute; top: -16px; left: 16px;
+    background: linear-gradient(180deg, var(--rpg-brass-bright), var(--rpg-brass));
+    color: #2b1a0c; font-family: "Cinzel", serif; font-weight: 700; font-size: 13px;
+    letter-spacing: 1px; padding: 5px 14px; border-radius: 20px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.4);
+  }
+  .rpg-text {
+    font-size: 16px; line-height: 1.85; color: var(--rpg-cream); min-height: 3.7em;
+    margin-top: 6px; white-space: pre-wrap;
+  }
+  .rpg-continue {
+    display: none; text-align: right; color: var(--rpg-brass-bright); font-size: 13px;
+    animation: rpg-bounce 1.3s ease-in-out infinite;
+  }
+  @keyframes rpg-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(4px); } }
+
+  .rpg-choices { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+  .ticket-choice {
+    position: relative; text-align: left; font-family: "Noto Serif TC", serif;
+    background: var(--rpg-parchment); color: #3a2718; border: none; border-radius: 8px;
+    padding: 12px 16px 12px 20px; font-size: 14.5px; cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  }
+  .ticket-choice::before {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+    background: repeating-linear-gradient(180deg, var(--rpg-ember) 0 6px, transparent 6px 11px);
+    border-radius: 8px 0 0 8px;
+  }
+  .ticket-choice:active { transform: scale(0.98); }
+  .ticket-choice.correct { background: #d9e8d2; }
+  .ticket-choice.wrong { background: #ecc7bb; }
+
+  .ticket-fill { display: flex; gap: 8px; margin-top: 12px; }
+  .ticket-fill input {
+    flex: 1; padding: 12px 14px; font-size: 15px; border-radius: 8px; border: none;
+    background: var(--rpg-parchment); color: #3a2718; font-family: "Noto Serif TC", serif;
+  }
+  .ticket-fill input:focus { outline: 2px solid var(--rpg-brass-bright); }
+  .ticket-fill button {
+    flex: none; width: auto; padding: 12px 16px; border: none; border-radius: 8px; background: var(--rpg-brass);
+    color: #2b1a0c; font-weight: 700; cursor: pointer; font-family: "Noto Serif TC", serif;
+  }
+
+  .rpg-intro-overlay {
+    position: fixed; inset: 0; z-index: 20; background: var(--rpg-void);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.6s ease;
+  }
+  .rpg-intro-overlay.active { opacity: 1; pointer-events: auto; }
+  .rpg-watch { font-size: 46px; animation: rpg-tick 1.6s steps(2) infinite; }
+  @keyframes rpg-tick { 0%, 100% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } }
+  .rpg-intro-text {
+    margin-top: 16px; font-family: "Cinzel", serif; letter-spacing: 3px; font-size: 14px;
+    color: var(--rpg-brass-bright);
+  }
+
+  /* ================= Map screen: RPG world-map style level select ================= */
+  #screen-map.screen.active { display: block; }
+  .map-world {
+    height: 100vh; display: flex; flex-direction: column;
+    background: linear-gradient(180deg, #4a3220 0%, #2c1c11 45%, var(--rpg-void) 100%);
+    font-family: "Noto Serif TC", serif; color: var(--rpg-cream);
+  }
+  .map-grain {
+    position: absolute; inset: 0; opacity: 0.08; mix-blend-mode: overlay; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .map-topbar {
+    position: relative; z-index: 2; display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 14px 10px; border-bottom: 1px solid rgba(207,154,76,0.3);
+    background: linear-gradient(180deg, rgba(0,0,0,0.25), transparent);
+  }
+  .map-title { font-family: "Cinzel", serif; font-size: 14px; letter-spacing: 0.5px; color: var(--rpg-brass-bright); }
+  .map-subtitle { font-size: 10.5px; color: var(--rpg-cream); opacity: 0.8; margin-top: 2px; }
+  .map-topbar-right { display: flex; align-items: center; gap: 10px; }
+  .map-count { font-family: "Cinzel", serif; font-size: 16px; font-weight: 700; color: var(--rpg-brass-bright); }
+  .map-count-total { font-size: 10.5px; opacity: 0.7; margin-left: 2px; }
+  .map-logout { font-size: 15px; opacity: 0.75; cursor: pointer; padding: 4px; }
+
+  .map-scroll { position: relative; z-index: 2; flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+
+  /* Two-column collectible card grid: locked cards are a plain card-back, completed
+     stations flip to reveal the station's photo (a little sticker-album feel). */
+  .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; padding: 12px; }
+  .collect-card {
+    position: relative; aspect-ratio: 1 / 1; border-radius: 12px; overflow: hidden; cursor: pointer;
+    border: 2px solid rgba(207,154,76,0.35); box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    background:
+      repeating-linear-gradient(135deg, rgba(207,154,76,0.10) 0 8px, transparent 8px 16px),
+      linear-gradient(160deg, var(--rpg-walnut) 0%, var(--rpg-walnut-dark) 100%);
+    transition: transform 0.15s ease;
+  }
+  .collect-card:active { transform: scale(0.97); }
+  .collect-card .card-img {
+    position: absolute; inset: 0; background-size: cover; background-position: center 30%;
+    filter: sepia(0.5) saturate(1.1) brightness(0.65) contrast(1.05);
+  }
+  .collect-card .card-lock {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -55%);
+    font-size: 18px; opacity: 0.55;
+  }
+  .collect-card .card-overlay {
+    position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 6px 7px 6px; background: linear-gradient(180deg, transparent 40%, rgba(15,9,5,0.85) 100%);
+  }
+  .collect-card .card-num { font-family: "Cinzel", serif; font-size: 9px; color: var(--rpg-brass-bright); letter-spacing: 0.5px; }
+  .collect-card .card-name { font-size: 10px; line-height: 1.3; color: var(--rpg-cream); margin-top: 1px; }
+  .collect-card .card-status { font-size: 8.5px; margin-top: 2px; opacity: 0.75; color: var(--rpg-cream); }
+  .collect-card .card-status.pin { color: var(--rpg-ember); opacity: 0.95; }
+  .collect-card.done { border-color: var(--rpg-brass-bright); box-shadow: 0 0 0 2px rgba(232,187,114,0.3), 0 4px 12px rgba(0,0,0,0.5); }
+  .collect-card.done .card-num { color: var(--rpg-brass-bright); }
+  .collect-card .card-stamp {
+    position: absolute; top: 5px; right: 5px; width: 18px; height: 18px; border-radius: 50%;
+    background: var(--rpg-brass-bright); color: #2b1a0c; font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+  }
+
+  .map-bottom { padding: 10px 20px 34px; text-align: center; }
+  .map-wallet-btn {
+    background: none; border: 1px solid rgba(232,187,114,0.5); color: var(--rpg-brass-bright);
+    font-family: "Noto Serif TC", serif; font-size: 13px; padding: 10px 22px; border-radius: 24px; cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="screen-login" class="screen active">
+  <div class="login-wrap">
+    <div class="login-card">
+      <h2>鶯歌壯遊實境解謎</h2>
+      <p class="desc">請輸入您報名時收到的遊戲序號</p>
+      <input type="text" id="code-input" placeholder="例如 A3K9-XY72" maxlength="12" autocomplete="off">
+      <button onclick="handleLogin()">開始遊戲</button>
+      <div class="error-msg" id="login-error"></div>
+      <div class="test-codes">測試用序號：TEST-0001 / TEST-0002</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAP SCREEN -->
+<div id="screen-map" class="screen">
+  <div class="map-world">
+    <div class="map-grain"></div>
+    <div class="map-topbar">
+      <div>
+        <div class="map-title">鶯歌時光地圖</div>
+        <div class="map-subtitle" id="reward-hint"></div>
+      </div>
+      <div class="map-topbar-right">
+        <div class="map-count"><span id="done-count">0</span><span class="map-count-total">/10</span></div>
+        <span class="map-logout" onclick="logout()" title="登出">⎋</span>
+      </div>
+    </div>
+
+    <div class="map-scroll">
+      <div class="card-grid" id="station-grid"></div>
+
+      <div class="map-bottom">
+        <button class="map-wallet-btn" onclick="openTicketList()">🎫 查看我的票券夾</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ARRIVAL GATE SCREEN -->
+<div id="screen-arrive" class="screen">
+  <div class="topbar">
+    <span class="back" onclick="goToMap()">‹</span>
+    <h1 id="arrive-title">前往站點</h1>
+    <span style="width:20px"></span>
+  </div>
+  <div class="content">
+    <div class="arrive-card">
+      <div class="arrive-icon">📍</div>
+      <h2 id="arrive-name" class="arrive-name"></h2>
+      <p class="arrive-hint">請先實際前往這個地點，抵達後才能開始這一站的關卡</p>
+
+      <button class="nav-btn" id="arrive-nav-btn" onclick="openGoogleNav()">🧭 開始導航前往</button>
+
+      <div class="arrive-status" id="arrive-status">尚未取得目前位置</div>
+
+      <button class="start-btn" id="arrive-start-btn" onclick="confirmArrivalAndStart()" disabled>抵達後即可開始關卡</button>
+
+      <div class="arrive-fallback">
+        <a onclick="manualConfirmArrival()">定位不準確？我已經在現場，直接開始</a>
+      </div>
+
+      <div class="arrive-debug" id="arrive-debug">
+        <div class="arrive-debug-title">🧪 測試用模擬定位（正式上線前記得移除這個區塊）</div>
+        <div class="arrive-debug-row">
+          <button type="button" onclick="simulateAtStation()">📍 模擬：我在現場</button>
+          <button type="button" onclick="simulateFarAway()">🚗 模擬：還很遠</button>
+        </div>
+        <div class="arrive-debug-row">
+          <input type="text" id="debug-latlng" placeholder="24.964834, 121.255782">
+          <button type="button" onclick="simulateCustom()">套用</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STATION DETAIL SCREEN -->
+<div id="screen-station" class="screen">
+  <div class="topbar">
+    <span class="back" onclick="goToMap()">‹</span>
+    <h1 id="station-title">站點</h1>
+    <span style="width:20px"></span>
+  </div>
+  <div class="content" id="station-content"></div>
+</div>
+
+<!-- RPG DIALOGUE SCENE -->
+<div id="screen-rpg" class="screen">
+  <div class="rpg-scene" id="rpg-scene">
+    <div class="rpg-roofline"></div>
+    <div class="rpg-lantern"></div>
+    <div class="rpg-tracks"></div>
+    <div class="rpg-char-slot left hidden" id="rpg-char-left"></div>
+    <div class="rpg-char-slot right hidden" id="rpg-char-right"></div>
+    <div class="rpg-grain"></div>
+    <div class="rpg-vignette"></div>
+    <div class="rpg-topbar">
+      <span class="rpg-back" onclick="exitRpgToMap()">‹ 返回地圖</span>
+      <div class="rpg-progress" id="rpg-progress"></div>
+    </div>
+    <div class="rpg-dialogue-box" onclick="advanceRpg()">
+      <div class="rpg-nameplate" id="rpg-speaker"></div>
+      <div class="rpg-text" id="rpg-text"></div>
+      <div class="rpg-choices" id="rpg-choices"></div>
+      <div class="rpg-continue" id="rpg-continue">▼ 點擊繼續</div>
+    </div>
+  </div>
+  <div class="rpg-intro-overlay" id="rpg-intro">
+    <div class="rpg-watch">🕰️</div>
+    <div class="rpg-intro-text">時光倒流至 1903 年……</div>
+  </div>
+</div>
+
+<!-- WALLET SCREEN -->
+<div id="screen-wallet" class="screen">
+  <div class="topbar">
+    <span class="back" onclick="goToMap()">‹</span>
+    <h1>我的票券夾</h1>
+    <span style="width:20px"></span>
+  </div>
+  <div class="content">
+    <p style="color:var(--sub);font-size:13px;margin:0 0 16px;">點擊票券卡片放大，由店家核對後點選兌換</p>
+    <div class="wallet-list" id="wallet-list"></div>
+  </div>
+</div>
+
+<!-- TICKET EXPAND OVERLAY -->
+<div class="overlay" id="ticket-overlay" onclick="if(event.target===this) closeTicketOverlay()">
+  <div id="ticket-expand-card"></div>
+</div>
+
+<!-- REWARD MODAL (celebratory popup right when a coupon unlocks) -->
+<div class="overlay" id="reward-overlay">
+  <div class="modal">
+    <div class="emoji" id="reward-emoji">🎉</div>
+    <h3 id="reward-title">恭喜解鎖優惠券</h3>
+    <p id="reward-desc">請至服務台出示序號兌換</p>
+    <div class="code-box" id="reward-code"></div>
+    <button onclick="closeRewardModal()">前往票券夾查看</button>
+  </div>
+</div>
+
+<script>
+const STATIONS = [{"id": 1, "name": "站點一鶯歌車站的時光線索", "story": "一九〇三年，鶯歌車站在這裡設立，運煤的蒸汽火車日夜穿梭，帶動了整個小鎮的窯業興盛。你站在月台上，彷彿還能聽見當年礦車碰撞鐵軌的聲音……", "questions": [{"qtype": "簡答題", "question": "仔細觀察鶯歌火車站的鐵道，你能數出幾條軌道？", "options": [], "answer": ["七條", "七", "7"], "fact": "鶯歌車站曾是運煤鐵道的重要轉運站，最多曾有多條軌道同時作業，見證了當年礦業運輸的繁忙景象。"}, {"qtype": "選擇題", "question": "抬頭看看車站最上方，兩個相望的動物造型是什麼？", "options": ["魚", "貓", "狗", "鳥"], "answer": "鳥", "fact": "「鶯」與「歌」兩字合起來，正是「鶯歌」地名的由來，屋頂上的鳥形裝飾也呼應了這個典故。"}, {"qtype": "選擇題", "question": "你知道當時鶯歌車站主要轉運哪一種礦產嗎？", "options": ["金礦", "鐵礦", "煤礦", "石灰石"], "answer": "煤礦", "fact": "日治時期，鶯歌因鄰近煤層與陶土產地，車站曾是運煤與運送陶器的重要轉運站。"}, {"qtype": "選擇題", "question": "請問鶯歌車站最早的站名是什麼？", "options": ["尖山埔驛", "鷹哥石驛", "鶯歌庄驛", "大嵙崁驛"], "answer": "鷹哥石驛", "fact": "「鷹哥石驛」得名自附近「鶯歌石」的傳說，後來才逐漸改名為現在的「鶯歌」站名。"}], "dialogue": [{"type": "line", "char": "guide", "text": "（一陣風吹過，月台上的煤油燈忽明忽暗……）"}, {"type": "line", "char": "guide", "text": "喔？又一位旅人循著時光的軌跡找上門來了。歡迎回到一九〇三年的鶯歌驛。"}, {"type": "line", "char": "hero", "text": "這裡……怎麼感覺像走進了一張老照片裡？空氣中還有煤煙的味道。"}, {"type": "line", "char": "guide", "text": "我在這裡看守月台超過一世紀了，可惜大多數人都只是匆匆一瞥，沒有真正「看見」這座車站。"}, {"type": "line", "char": "guide", "text": "既然你來了，不如陪我走一趟——用你的眼睛，替我重新認識這個地方吧。"}, {"type": "question", "qIndex": 0, "char": "guide", "text": "先低頭看看腳下，仔細數數看：這月台邊，究竟鋪了幾條鐵軌？", "correctReaction": "答對了！沒錯，正是這七條軌道，當年日夜川流不息地運送著鶯歌燒出的陶器與挖出的煤炭。", "wrongHints": ["再靠近一點看，別漏數了最外側那一條……", "試著用手指一條一條數過去，仔細一點。"]}, {"type": "line", "char": "guide", "text": "呵，果然是個仔細的旅人。走，我們再往上瞧瞧。"}, {"type": "question", "qIndex": 1, "char": "guide", "text": "抬頭看看車站最頂端，那對相望的動物是什麼呢？", "correctReaction": "正是「鶯」與「歌」——這座車站的名字，就藏在屋頂上呢。", "wrongHints": ["再看清楚一點，牠們有翅膀、會唱歌……"]}, {"type": "line", "char": "hero", "text": "原來站名的由來一直都在我們頭上，只是很少有人抬頭看。"}, {"type": "line", "char": "guide", "text": "這座車站的一磚一瓦，其實都跟腳下的土地脫不了關係。"}, {"type": "question", "qIndex": 2, "char": "guide", "text": "你知道當時這座車站，主要轉運哪一種礦產嗎？", "correctReaction": "沒錯，正是煤礦撐起了整條鐵路線的忙碌。", "wrongHints": ["想想看，那個年代窯場燒陶，最需要什麼來生火？"]}, {"type": "line", "char": "guide", "text": "最後，讓我考考你這座車站的身世。"}, {"type": "question", "qIndex": 3, "char": "guide", "text": "你可知道，這座車站最早並不叫「鶯歌」，它原本的名字是？", "correctReaction": "「鷹哥石驛」——這才是這座車站最初的名字啊。時代變了，連名字都跟著換上了新裝。", "wrongHints": ["再想想，那是一個更古老、更貼近地形的名字……"]}, {"type": "line", "char": "guide", "text": "很高興今天有你陪我走這一趟。旅人，願你把這段時光，也一併帶往下一站。"}, {"type": "line", "char": "hero", "text": "謝謝你，楊嚮導。我會把今天看到的，好好記下來的。"}, {"type": "end"}], "background": "角色照片素材庫/台鐵鶯歌火車站.jpg", "characters": {"guide": {"name": "楊嚮導", "portrait": "角色照片素材庫/楊嚮導.png", "side": "left"}, "hero": {"name": "小承", "portrait": "角色照片素材庫/小承.png", "side": "right"}}, "location": {"lat": 24.95698366700082, "lng": 121.24059043154006, "radius": 80}}, {"id": 2, "name": "站點二走進市拿陶藝", "questions": [{"qtype": "選擇題", "question": "市拿陶藝的創辦人是誰？", "options": ["陳景蘭", "許自然", "邱錦和", "許朝宗"], "answer": "許自然"}, {"qtype": "選擇題", "question": "「市拿」這個名字有什麼特別的意涵？", "options": ["鶯歌的古地名", "一種傳統陶土名稱", "與英文China有關", "取自早期陶瓷業的製陶術語"], "answer": "與英文China有關"}, {"qtype": "選擇題", "question": "你知道市拿陶藝早期主要製作哪一類陶瓷？", "options": ["日用碗盤", "建築磁磚", "仿古藝術陶瓷", "陶製花盆"], "answer": "仿古藝術陶瓷"}, {"qtype": "選擇題", "question": "早期鶯歌窯場常以煤炭燒窯，黑煙曾是街區常見的景象。後來窯業逐漸改用較乾淨的能源。這項改變主要引進了哪種能源？", "options": ["石油", "天然氣", "電力", "木炭"], "answer": "天然氣"}]}, {"id": 3, "name": "站點三鶯歌石", "questions": [{"qtype": "選擇題", "question": "傳說中，鶯歌石為什麼會少了一截？", "options": ["巨石曾被山崩掩埋", "鄭成功下令開砲，轟斷了巨鳥的頭部", "後人開採石材造成缺口", "長年風吹雨淋自然斷裂"], "answer": "鄭成功下令開砲，轟斷了巨鳥的頭部"}, {"qtype": "選擇題", "question": "找到鶯歌石岩洞旁的石碑，仔細觀察碑文。碑文中提到，這塊石頭最初為什麼被稱為「鸚哥石」？", "options": ["附近曾有許多鸚哥", "石頭形狀像鸚哥", "傳說鸚哥住在洞裡", "因為鄭成功曾在此養鸚哥"], "answer": "石頭形狀像鸚哥"}, {"qtype": "選擇題", "question": "觀察登山地圖,鶯歌除了「鶯歌石」這顆鳥形巨石外,哪座廟宇因供奉這顆「龜公石」,又被稱為「龜公廟」？", "options": ["妙善宮", "宏德宮", "碧龍宮", "福德宮"], "answer": "碧龍宮"}, {"qtype": "選擇題", "question": "現在的孫龍步道是一條登山步道,但在百年前這裡曾經有另一種用途,你知道孫龍步道的前身是什麼嗎？", "options": ["運送陶土的道路", "採礦台車行駛的輕便鐵道", "軍事運輸道路", "茶葉運輸道路"], "answer": "採礦台車行駛的輕便鐵道"}]}, {"id": 4, "name": "站點四尋找老煙囪", "questions": [{"qtype": "選擇題", "question": "仔細觀察眼前的老煙囪，它最明顯的外觀特色是什麼？", "options": ["圓形", "三角形", "四角形", "六角形"], "answer": "四角形"}, {"qtype": "選擇題", "question": "鶯歌四角窯主要使用什麼作為燃料？", "options": ["木材", "天然氣", "煤炭", "柴薪"], "answer": "煤炭"}, {"qtype": "選擇題", "question": "鶯歌四角窯改良了傳統窯燒方式，採用哪一種窯型設計？", "options": ["直焰式", "平焰式", "倒焰式", "旋焰式"], "answer": "倒焰式"}, {"qtype": "選擇題", "question": "煙囪為何逐漸消失？主要原因是什麼", "options": ["碗盤生產技術逐漸改良", "陶瓷工廠開始集中於特定區域", "陶窯陸續改用瓦斯窯", "陶瓷產品種類逐漸增加"], "answer": "陶窯陸續改用瓦斯窯"}]}, {"id": 5, "name": "站點五烘爐窯", "questions": [{"qtype": "選擇題", "question": "仔細觀察附近古厝的牆面,會發現磚瓦的種類並不完全相同,為什麼一面牆上會出現不同種類的磚瓦？", "options": ["不同工匠使用不同材料", "窯廠的瑕疵品被作為建材", "為了讓牆面更加美觀", "不同時期的居民刻意收集"], "answer": "窯廠的瑕疵品被作為建材"}, {"qtype": "選擇題", "question": "過去烘爐窯主要燒製哪一類陶瓷？", "options": ["藝術雕塑", "建築磚瓦", "碗盤等生活器皿", "陶瓷玩具"], "answer": "碗盤等生活器皿"}, {"qtype": "選擇題", "question": "這座烘爐窯建於日治時期,見證了鶯歌陶業的發展。誰在1929年建造了這座烘爐窯？", "options": ["當地陶工", "政治人物", "賴婆", "附近居民"], "answer": "賴婆"}, {"qtype": "選擇題", "question": "窯廠燒壞的器皿被打碎掩埋後，後來重新出現在故事巷。這些老瓷片被如何再利用？", "options": ["製作新陶器", "製作牆面裝飾", "鑲嵌於步道路面", "製作陶瓷藝術品"], "answer": "鑲嵌於步道路面"}]}, {"id": 6, "name": "站點六益成記", "questions": [{"qtype": "選擇題", "question": "益成記窯場是由誰創辦？", "options": ["吳鞍", "王龜生", "陳斐然", "許自強"], "answer": "陳斐然"}, {"qtype": "選擇題", "question": "益成記曾被稱為鶯歌的「陶瓷大學」,主要與什麼有關？", "options": ["成為鶯歌陶瓷技術的重要傳承地", "培養許多製陶師傅與技術", "生產種類繁多的陶瓷生活用品", "成為當時鶯歌重要的陶瓷交易場所"], "answer": "培養許多製陶師傅與技術"}, {"qtype": "選擇題", "question": "益成記曾引進哪裡的陶藝師傅？", "options": ["景德鎮", "泉州", "福州", "廣州"], "answer": "福州"}]}, {"id": 7, "name": "站點七大榕樹和窯工聚落遺址", "questions": [{"qtype": "選擇題", "question": "早期鶯歌文化路有「兩陳一余」三大地主，兩陳家土地廣大。當時兩大家族以什麼作為土地分界？", "options": ["以道路作為分界", "以窯廠煙囪作為分界", "以兩棵大榕樹連成一線作為界線", "以溪流作為分界"], "answer": "以兩棵大榕樹連成一線作為界線"}, {"qtype": "選擇題", "question": "早期鶯歌窯場缺乏工人，為了吸引外地陶工前來工作，窯廠老闆採取了什麼方式？", "options": ["提供免費餐食", "提供土地讓陶工自行蓋房子", "提供交通工具接送", "提供陶瓷製作工具"], "answer": "提供土地讓陶工自行蓋房子"}, {"qtype": "選擇題", "question": "經過幾代人的傳承後，這些老屋最容易面臨什麼問題？", "options": ["老屋缺乏修繕，逐漸老化", "土地與房屋產權複雜，難以整合", "聚落人口逐漸增加，居住空間不足", "老屋保存與都市開發產生衝突"], "answer": "土地與房屋產權複雜，難以整合"}]}, {"id": 8, "name": "站點八陳映真故居", "questions": [{"qtype": "選擇題", "question": "陳映真童年在鶯歌生活，身邊有許多陶工、礦工與搬運工。這段經歷對他的創作有何影響？", "options": ["讓他專門研究陶瓷技術", "讓他成為煤礦工程師", "使他更能體會勞動階級的生活", "讓他開始收藏古老陶器"], "answer": "使他更能體會勞動階級的生活"}, {"qtype": "選擇題", "question": "陳映真創辦《人間》雜誌,主要希望透過報導為哪一群人發聲？", "options": ["社會名人", "企業家", "社會底層與弱勢族群", "藝術工作者"], "answer": "社會底層與弱勢族群"}, {"qtype": "選擇題", "question": "下列哪一項曾出現在《山路》所描寫的鶯歌景象中？", "options": ["鶯歌石與臺車道", "鶯歌老街與陶瓷博物館", "鶯歌車站與碧龍宮", "成發居與益成記"], "answer": "鶯歌石與臺車道"}]}, {"id": 9, "name": "站點九鶯歌福興宮", "questions": [{"qtype": "選擇題", "question": "仔細觀察福興宮,你會發現有什麼特別之處?", "options": ["廟中廟", "內殿", "子母廟", "祀神閣"], "answer": "廟中廟"}, {"qtype": "選擇題", "question": "傳說羅文擅長「手陶」，羅明擅長「車陶」。哪種現代工作方式最接近「車陶」？", "options": ["手工雕刻師", "操作機器製作陶器的陶藝師", "純手工編織師", "手工木雕師"], "answer": "操作機器製作陶器的陶藝師"}, {"qtype": "選擇題", "question": "鶯歌窯場過去會在福興宮祭拜陶神羅明。羅明的誕辰是哪一天？", "options": ["農曆四月十一日", "農曆六月六日", "農曆九月九日", "農曆十月十五日"], "answer": "農曆九月九日"}]}, {"id": 10, "name": "站點十鶯歌老街-古早窯(觀察)", "questions": [{"qtype": "選擇題", "question": "走進「古早窯」，他是屬於哪一種窯？", "options": ["蛇窯", "登窯", "四角窯", "隧道窯"], "answer": "隧道窯"}, {"qtype": "選擇題", "question": "仔細觀察古早窯,主要生產哪些產品？", "options": ["碗盤、茶具", "磁磚、馬賽克", "花器、陶偶", "水缸、陶甕"], "answer": "磁磚、馬賽克"}, {"qtype": "選擇題", "question": "隧道窯燒製完成後,工人如何將成品運出窯外？", "options": ["人力搬運", "用鐵鈎勾出窯車，沿軌道拉出", "用繩索吊出", "從窯頂取出"], "answer": "用鐵鈎勾出窯車，沿軌道拉出"}, {"qtype": "選擇題", "question": "隧道窯引進臺灣後，為提升燒製效率，燃料也有所改變。早期使用煤炭，後來改用什麼？", "options": ["木柴", "柴油", "重油", "天然氣"], "answer": "重油"}]}];
+
+// seed "報名資料" — 之後會換成真的 Google Sheets 資料
+const SEED_PLAYERS = {
+  "TEST-0001": { name: "王小明" },
+  "TEST-0002": { name: "陳美玲" },
+};
+
+const DB_KEY = "yingge_players_db";
+
+function loadDB() {
+  try {
+    const raw = localStorage.getItem(DB_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) { return {}; }
+}
+
+function saveDB(db) {
+  localStorage.setItem(DB_KEY, JSON.stringify(db));
+}
+
+function getOrCreatePlayer(code) {
+  const db = loadDB();
+  if (!db[code]) {
+    if (!SEED_PLAYERS[code]) return null;
+    db[code] = {
+      name: SEED_PLAYERS[code].name,
+      progress: {},
+      couponA: "locked", // locked -> unlocked -> redeemed
+      couponB: "locked",
+    };
+    saveDB(db);
+  }
+  return db[code];
+}
+
+function savePlayer(code, player) {
+  const db = loadDB();
+  db[code] = player;
+  saveDB(db);
+}
+
+let state = { code: null, progress: {}, name: "", couponA: "locked", couponB: "locked" };
+
+function normalize(str) {
+  return (str || "").trim().replace(/\s+/g, "").toUpperCase();
+}
+
+function handleLogin() {
+  const raw = document.getElementById("code-input").value;
+  const code = normalize(raw);
+  const errEl = document.getElementById("login-error");
+  if (!code) { errEl.textContent = "請輸入序號"; return; }
+  const player = getOrCreatePlayer(code);
+  if (!player) {
+    errEl.textContent = "序號錯誤，請確認報名信件內容";
+    return;
+  }
+  errEl.textContent = "";
+  state.code = code;
+  loadPlayerIntoState(player);
+  localStorage.setItem("yingge_last_code", code);
+  showMap();
+}
+
+function loadPlayerIntoState(player) {
+  state.name = player.name;
+  state.progress = player.progress || {};
+  state.couponA = player.couponA || "locked";
+  state.couponB = player.couponB || "locked";
+}
+
+function saveProgress() {
+  savePlayer(state.code, {
+    name: state.name,
+    progress: state.progress,
+    couponA: state.couponA,
+    couponB: state.couponB,
+  });
+}
+
+function logout() {
+  state = { code: null, progress: {}, name: "", couponA: "locked", couponB: "locked" };
+  document.getElementById("code-input").value = "";
+  document.getElementById("login-error").textContent = "";
+  showScreen("screen-login");
+}
+
+function showScreen(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  window.scrollTo(0, 0);
+}
+
+function completedCount() {
+  return Object.values(state.progress).filter(Boolean).length;
+}
+
+function showMap() {
+  showScreen("screen-map");
+  renderMap();
+}
+
+function renderMap() {
+  const grid = document.getElementById("station-grid");
+  grid.innerHTML = "";
+  const scrollEl = document.querySelector(".map-scroll");
+  if (scrollEl) scrollEl.scrollTop = 0;
+  STATIONS.forEach(st => {
+    const done = !!state.progress[st.id];
+    const needsTravel = !!st.location && !done;
+    const name = st.name.replace(/^站點[一二三四五六七八九十]+/, "");
+
+    const card = document.createElement("div");
+    card.className = "collect-card" + (done ? " done" : "");
+    card.onclick = () => openStation(st.id);
+
+    const statusLine = done
+      ? `<div class="card-status">✓ 已收藏</div>`
+      : needsTravel
+        ? `<div class="card-status pin">📍 需前往現場</div>`
+        : `<div class="card-status">尚未解鎖</div>`;
+
+    // the photo only appears once the station is completed; locked cards stay a plain card-back
+    const imageLayer = done && st.background
+      ? `<div class="card-img" style="background-image:url('${encodeURI(st.background)}')"></div>`
+      : `<div class="card-lock">${done ? "🖼️" : "🔒"}</div>`;
+
+    card.innerHTML = `
+      ${imageLayer}
+      ${done ? `<div class="card-stamp">✓</div>` : ""}
+      <div class="card-overlay">
+        <div class="card-num">站點 ${st.id}</div>
+        <div class="card-name">${name}</div>
+        ${statusLine}
+      </div>
+    `;
+
+    grid.appendChild(card);
+  });
+
+  const done = completedCount();
+  document.getElementById("done-count").textContent = done;
+
+  let hint = "";
+  if (done < 5) hint = `再完成 ${5 - done} 關即可解鎖優惠券A`;
+  else if (done < 10) hint = `再完成 ${10 - done} 關即可解鎖優惠券B（全破關）`;
+  else hint = "恭喜全部完成！";
+  document.getElementById("reward-hint").textContent = hint;
+}
+
+// ---------- Ticket wallet ----------
+
+const TICKET_META = {
+  A: { emoji: "🎟", label: "優惠券A", need: "完成5個站點", threshold: 5 },
+  B: { emoji: "🏆", label: "優惠券B", need: "完成全部10個站點", threshold: 10 },
+};
+
+function ticketStatus(type) {
+  return type === "A" ? state.couponA : state.couponB;
+}
+
+function openTicketList() {
+  showScreen("screen-wallet");
+  renderWallet();
+}
+
+function renderWallet() {
+  const list = document.getElementById("wallet-list");
+  list.innerHTML = ["A", "B"].map(type => ticketCardHTML(type)).join("");
+}
+
+function ticketCardHTML(type) {
+  const meta = TICKET_META[type];
+  const status = ticketStatus(type);
+  const cls = status === "redeemed" ? "redeemed" : status === "unlocked" ? "type-" + type.toLowerCase() : "locked";
+  let statusText = meta.need + "解鎖";
+  if (status === "unlocked") statusText = "已解鎖，待兌換";
+  if (status === "redeemed") statusText = "✓ 已使用";
+  return `
+    <div class="ticket-card ${cls}" onclick="expandTicket('${type}')">
+      <div class="tc-top">
+        <span class="tc-emoji">${meta.emoji}</span>
+        <span class="tc-status">${statusText}</span>
+      </div>
+      <div class="tc-title">${meta.label}</div>
+      <div class="tc-sub">${state.name} · ${state.code}</div>
+    </div>
+  `;
+}
+
+function expandTicket(type) {
+  document.getElementById("ticket-expand-card").innerHTML = ticketExpandHTML(type);
+  document.getElementById("ticket-overlay").classList.add("active");
+}
+
+function closeTicketOverlay() {
+  document.getElementById("ticket-overlay").classList.remove("active");
+  pendingRedeem = null;
+}
+
+let pendingRedeem = null; // "A" | "B" | null
+
+function ticketExpandHTML(type) {
+  const meta = TICKET_META[type];
+  const status = ticketStatus(type);
+  const cls = status === "redeemed" ? "redeemed" : status === "unlocked" ? "type-" + type.toLowerCase() : "locked";
+
+  let body = "";
+  if (status === "locked") {
+    const done = completedCount();
+    const remain = Math.max(0, meta.threshold - done);
+    body = `<p class="te-hint">${meta.need}即可解鎖，還差 <b>${remain}</b> 關</p>`;
+  } else if (status === "unlocked") {
+    if (pendingRedeem === type) {
+      body = `
+        <p class="te-hint">請由店家確認後點選兌換，此動作無法復原</p>
+        <div class="te-actions">
+          <button class="te-btn danger" onclick="confirmRedeemPlayer('${type}')">確認兌換</button>
+          <button class="te-btn ghost" onclick="cancelRedeemPlayer('${type}')">取消</button>
+        </div>
+      `;
+    } else {
+      body = `
+        <p class="te-hint">請將此畫面交給店家核對兌換</p>
+        <button class="te-btn" onclick="askRedeemPlayer('${type}')">店家兌換</button>
+      `;
+    }
+  } else {
+    body = `<p class="te-hint">✓ 此票券已於稍早兌換完成</p>`;
+  }
+
+  return `
+    <div class="ticket-expand ${cls}">
+      <span class="te-close" onclick="closeTicketOverlay()">✕</span>
+      ${status === "redeemed" ? `<div class="te-stamp">已使用</div>` : ""}
+      <div class="te-emoji">${meta.emoji}</div>
+      <div class="te-label">${meta.label}</div>
+      <div class="te-divider"></div>
+      <div class="te-name">${state.name}</div>
+      <div class="te-code">${state.code}</div>
+      <div class="te-divider"></div>
+      ${body}
+    </div>
+  `;
+}
+
+function askRedeemPlayer(type) {
+  pendingRedeem = type;
+  expandTicket(type);
+}
+
+function cancelRedeemPlayer(type) {
+  pendingRedeem = null;
+  expandTicket(type);
+}
+
+function confirmRedeemPlayer(type) {
+  const field = type === "A" ? "couponA" : "couponB";
+  if (state[field] !== "unlocked") return;
+  state[field] = "redeemed";
+  saveProgress();
+  pendingRedeem = null;
+  expandTicket(type);
+  renderWallet();
+}
+
+let currentStationId = null;
+
+function openStation(id) {
+  currentStationId = id;
+  const st = STATIONS.find(s => s.id === id);
+  const done = !!state.progress[id];
+  if (st.location && !done) {
+    openArrivalGate(st);
+    return;
+  }
+  enterStationContent(st);
+}
+
+function enterStationContent(st) {
+  const done = !!state.progress[st.id];
+  if (st.dialogue && !done) {
+    openStationRPG(st);
+    return;
+  }
+  document.getElementById("station-title").textContent = "站點 " + st.id;
+  showScreen("screen-station");
+  renderStation(st);
+}
+
+// ---------- Arrival gate: navigate there via Google Maps, unlock once GPS confirms you're close ----------
+
+let arriveState = null;
+
+function openArrivalGate(st) {
+  currentStationId = st.id;
+  arriveState = { st, watchId: null };
+  document.getElementById("arrive-title").textContent = "站點 " + st.id;
+  document.getElementById("arrive-name").textContent = st.name.replace(/^站點[一二三四五六七八九十]+/, "");
+  const startBtn = document.getElementById("arrive-start-btn");
+  startBtn.disabled = true;
+  startBtn.textContent = "抵達後即可開始關卡";
+  setArriveStatus("定位中...", "");
+  showScreen("screen-arrive");
+  startWatchingLocation(st);
+}
+
+function startWatchingLocation(st) {
+  if (!navigator.geolocation) {
+    setArriveStatus("此裝置或瀏覽器不支援定位，請確認已實際抵達後，改用下方連結手動開始", "error");
+    return;
+  }
+  arriveState.watchId = navigator.geolocation.watchPosition(
+    pos => handleLocationUpdate(st, pos),
+    err => setArriveStatus("無法取得定位（" + (err.message || "權限被拒") + "），請確認已抵達後，改用下方連結手動開始", "error"),
+    { enableHighAccuracy: true, maximumAge: 5000, timeout: 15000 }
+  );
+}
+
+function handleLocationUpdate(st, pos) {
+  const dist = haversineMeters(pos.coords.latitude, pos.coords.longitude, st.location.lat, st.location.lng);
+  const radius = st.location.radius || 60;
+  const startBtn = document.getElementById("arrive-start-btn");
+  if (dist <= radius) {
+    setArriveStatus("✅ 你已經抵達現場！可以開始關卡了", "near");
+    startBtn.disabled = false;
+    startBtn.textContent = "開始關卡";
+  } else {
+    setArriveStatus(`距離目標約 ${Math.round(dist)} 公尺，再靠近一點`, "far");
+    startBtn.disabled = true;
+    startBtn.textContent = "抵達後即可開始關卡";
+  }
+}
+
+function setArriveStatus(text, cls) {
+  const el = document.getElementById("arrive-status");
+  el.textContent = text;
+  el.className = "arrive-status" + (cls ? " " + cls : "");
+}
+
+function haversineMeters(lat1, lon1, lat2, lon2) {
+  const R = 6371000;
+  const toRad = d => (d * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function openGoogleNav() {
+  const st = arriveState.st;
+  const url = `https://www.google.com/maps/dir/?api=1&destination=${st.location.lat},${st.location.lng}&travelmode=walking`;
+  window.open(url, "_blank");
+}
+
+function confirmArrivalAndStart() {
+  const st = arriveState.st;
+  stopWatchingLocation();
+  enterStationContent(st);
+}
+
+function manualConfirmArrival() {
+  const st = arriveState.st;
+  stopWatchingLocation();
+  enterStationContent(st);
+}
+
+// ---------- Test-only: simulate a GPS reading without physically travelling there ----------
+
+function simulateAtStation() {
+  if (!arriveState) return;
+  stopWatchingLocation(); // stop the real GPS watcher so it can't overwrite the simulated reading
+  const st = arriveState.st;
+  handleLocationUpdate(st, { coords: { latitude: st.location.lat, longitude: st.location.lng } });
+}
+
+function simulateFarAway() {
+  if (!arriveState) return;
+  stopWatchingLocation();
+  const st = arriveState.st;
+  handleLocationUpdate(st, { coords: { latitude: st.location.lat + 0.01, longitude: st.location.lng } });
+}
+
+function simulateCustom() {
+  if (!arriveState) return;
+  const raw = document.getElementById("debug-latlng").value;
+  const parts = raw.split(",").map(s => parseFloat(s.trim()));
+  if (parts.length !== 2 || parts.some(isNaN)) {
+    alert("請輸入「緯度, 經度」格式，例如 24.964834, 121.255782");
+    return;
+  }
+  const [lat, lng] = parts;
+  stopWatchingLocation();
+  const st = arriveState.st;
+  handleLocationUpdate(st, { coords: { latitude: lat, longitude: lng } });
+}
+
+function stopWatchingLocation() {
+  if (arriveState && arriveState.watchId !== null && navigator.geolocation) {
+    navigator.geolocation.clearWatch(arriveState.watchId);
+  }
+  if (arriveState) arriveState.watchId = null;
+}
+
+function goToMap() { stopWatchingLocation(); showMap(); }
+
+function renderStation(st) {
+  const container = document.getElementById("station-content");
+  const done = !!state.progress[st.id];
+  container.innerHTML = "";
+
+  const header = document.createElement("div");
+  header.innerHTML = `<h2 style="margin:0 0 4px;font-size:18px;">${st.name.replace(/^站點[一二三四五六七八九十]+/, "")}</h2>` +
+    (done ? `<div class="q-done-tag">✓ 本站已完成</div>` : `<p style="color:var(--sub);font-size:13px;margin:0 0 14px;">請依序回答以下 ${st.questions.length} 題，全部答對即完成本站</p>`);
+  container.appendChild(header);
+
+  if (st.image) {
+    const img = document.createElement("img");
+    img.src = st.image;
+    img.alt = st.name;
+    img.className = "station-image";
+    container.appendChild(img);
+  }
+
+  if (st.story) {
+    const storyEl = document.createElement("div");
+    storyEl.className = "story-block";
+    storyEl.innerHTML = st.story;
+    container.appendChild(storyEl);
+  }
+
+  st.questions.forEach((q, idx) => {
+    const block = document.createElement("div");
+    block.className = "q-block";
+    block.id = `q-${st.id}-${idx}`;
+    block.innerHTML = renderQuestionInner(st, idx, q, done);
+    container.appendChild(block);
+  });
+}
+
+function renderQuestionInner(st, idx, q, forceLocked) {
+  let inner = `<div class="q-title">第 ${idx + 1} 題　${q.qtype}</div><div class="q-text">${q.question}</div>`;
+  if (q.options && q.options.length) {
+    inner += q.options.map(opt => {
+      const cls = forceLocked ? "option-btn disabled" + (isAnswerCorrect(q, opt) ? " correct" : "") : "option-btn";
+      return `<button type="button" class="${cls}" onclick="submitOption(${st.id}, ${idx}, this, '${escapeAttr(opt)}')">${opt}</button>`;
+    }).join("");
+  } else {
+    inner += `<div class="fill-row">
+      <input type="text" id="fill-${st.id}-${idx}" placeholder="輸入答案" ${forceLocked ? "disabled" : ""}>
+      <button type="button" onclick="submitFill(${st.id}, ${idx})" ${forceLocked ? "disabled" : ""}>送出</button>
+    </div>`;
+  }
+  inner += `<div class="q-feedback" id="fb-${st.id}-${idx}"></div>`;
+  if (q.fact) {
+    inner += `<div class="fact-box" id="fact-${st.id}-${idx}" style="display:${forceLocked ? "block" : "none"}">💡 ${q.fact}</div>`;
+  }
+  return inner;
+}
+
+function revealFact(stationId, idx) {
+  const el = document.getElementById(`fact-${stationId}-${idx}`);
+  if (el) el.style.display = "block";
+}
+
+function escapeAttr(s) { return s.replace(/'/g, "\\'"); }
+
+function acceptedAnswers(q) {
+  return Array.isArray(q.answer) ? q.answer : [q.answer];
+}
+
+function isAnswerCorrect(q, val) {
+  const normVal = normalize(val);
+  return acceptedAnswers(q).some(a => normalize(a) === normVal);
+}
+
+function submitOption(stationId, idx, btnEl, chosen) {
+  const st = STATIONS.find(s => s.id === stationId);
+  const q = st.questions[idx];
+  const correct = isAnswerCorrect(q, chosen);
+  const allBtns = btnEl.parentElement.querySelectorAll(".option-btn");
+  allBtns.forEach(b => b.classList.add("disabled"));
+  if (correct) {
+    btnEl.classList.add("correct");
+    setFeedback(stationId, idx, true, "答對了！");
+    revealFact(stationId, idx);
+    checkStationComplete(st);
+  } else {
+    btnEl.classList.add("wrong");
+    setFeedback(stationId, idx, false, "答錯了，再試一次");
+    setTimeout(() => { allBtns.forEach(b => b.classList.remove("disabled", "wrong")); setFeedback(stationId, idx, null, ""); }, 900);
+  }
+}
+
+function submitFill(stationId, idx) {
+  const st = STATIONS.find(s => s.id === stationId);
+  const q = st.questions[idx];
+  const input = document.getElementById(`fill-${stationId}-${idx}`);
+  const correct = isAnswerCorrect(q, input.value);
+  if (correct) {
+    input.disabled = true;
+    document.querySelector(`#q-${stationId}-${idx} button`).disabled = true;
+    setFeedback(stationId, idx, true, "答對了！");
+    revealFact(stationId, idx);
+    checkStationComplete(st);
+  } else {
+    setFeedback(stationId, idx, false, "答錯了，再試一次");
+  }
+}
+
+function setFeedback(stationId, idx, ok, text) {
+  const el = document.getElementById(`fb-${stationId}-${idx}`);
+  el.textContent = text;
+  el.className = "q-feedback" + (ok === true ? " correct" : ok === false ? " wrong" : "");
+}
+
+function checkStationComplete(st) {
+  // check if every question block on screen shows a correct feedback
+  let allCorrect = true;
+  st.questions.forEach((q, idx) => {
+    const fb = document.getElementById(`fb-${st.id}-${idx}`);
+    if (!fb || !fb.classList.contains("correct")) allCorrect = false;
+  });
+  if (allCorrect) markStationComplete(st);
+}
+
+function markStationComplete(st) {
+  const wasAlreadyDone = !!state.progress[st.id];
+  state.progress[st.id] = true;
+  saveProgress();
+  if (!wasAlreadyDone) {
+    setTimeout(() => afterStationComplete(), 500);
+  }
+  return wasAlreadyDone;
+}
+
+// ---------- RPG dialogue scene (time-travel station experience) ----------
+
+let rpgState = null;
+
+function openStationRPG(st) {
+  currentStationId = st.id;
+  rpgState = { st, idx: 0, typing: false, typeTimer: null, resultsByQ: {}, wrongCount: 0, advanceAfterReaction: false };
+  showScreen("screen-rpg");
+  renderRpgBackground(st);
+  const intro = document.getElementById("rpg-intro");
+  intro.classList.add("active");
+  setTimeout(() => {
+    intro.classList.remove("active");
+    renderRpgProgress();
+    renderRpgStep();
+  }, 1600);
+}
+
+// Optional real background photo: set st.background = "images/xxx.jpg" to use it.
+// Falls back to the CSS silhouette scene when not provided.
+function renderRpgBackground(st) {
+  const scene = document.getElementById("rpg-scene");
+  let photoEl = document.getElementById("rpg-bg-photo");
+  if (st.background) {
+    if (!photoEl) {
+      photoEl = document.createElement("div");
+      photoEl.id = "rpg-bg-photo";
+      photoEl.className = "rpg-bg-photo";
+      scene.insertBefore(photoEl, scene.firstChild);
+    }
+    photoEl.style.backgroundImage = `url("${encodeURI(st.background)}")`;
+    scene.classList.add("has-photo");
+  } else {
+    if (photoEl) photoEl.remove();
+    scene.classList.remove("has-photo");
+  }
+}
+
+// Optional character portraits: define st.characters = { guide: {name, portrait, side}, hero: {...} }
+// and reference them per dialogue step via step.char = "guide" (falls back to plain step.speaker text if unset).
+function renderRpgCharacters(step) {
+  const chars = (rpgState.st.characters) || {};
+  ["left", "right"].forEach(side => {
+    const slot = document.getElementById("rpg-char-" + side);
+    const entry = Object.entries(chars).find(([, c]) => c.side === side);
+    if (!entry || !entry[1].portrait) {
+      slot.classList.add("hidden");
+      slot.classList.remove("dim", "active");
+      slot.style.backgroundImage = "";
+      return;
+    }
+    const [id, c] = entry;
+    slot.classList.remove("hidden");
+    slot.style.backgroundImage = `url("${encodeURI(c.portrait)}")`;
+    const isActive = step.char === id;
+    slot.classList.toggle("active", isActive);
+    slot.classList.toggle("dim", !isActive);
+  });
+}
+
+function renderRpgProgress() {
+  if (!rpgState) return;
+  const total = rpgState.st.questions.length;
+  const done = Object.keys(rpgState.resultsByQ).length;
+  const el = document.getElementById("rpg-progress");
+  el.innerHTML = Array.from({ length: total }).map((_, i) =>
+    `<span class="hole${i < done ? " punched" : ""}"></span>`
+  ).join("");
+}
+
+function renderRpgStep() {
+  const step = rpgState.st.dialogue[rpgState.idx];
+  const speakerEl = document.getElementById("rpg-speaker");
+  const textEl = document.getElementById("rpg-text");
+  const choicesEl = document.getElementById("rpg-choices");
+  const continueEl = document.getElementById("rpg-continue");
+  choicesEl.innerHTML = "";
+  continueEl.style.display = "none";
+
+  if (step.type === "end") {
+    speakerEl.textContent = "";
+    textEl.textContent = "";
+    finishRpgStation();
+    return;
+  }
+
+  const charDef = step.char && rpgState.st.characters && rpgState.st.characters[step.char];
+  speakerEl.textContent = (charDef && charDef.name) || step.speaker || "";
+  renderRpgCharacters(step);
+  rpgState.advanceAfterReaction = false;
+  typeText(textEl, step.text, () => {
+    if (step.type === "line") {
+      continueEl.style.display = "block";
+    } else if (step.type === "question") {
+      renderRpgQuestion(step);
+    }
+  });
+}
+
+function typeText(el, text, onDone) {
+  el.textContent = "";
+  rpgState.typing = true;
+  let i = 0;
+  clearInterval(rpgState.typeTimer);
+  rpgState.typeTimer = setInterval(() => {
+    i++;
+    el.textContent = text.slice(0, i);
+    if (i >= text.length) {
+      clearInterval(rpgState.typeTimer);
+      rpgState.typing = false;
+      if (onDone) onDone();
+    }
+  }, 26);
+}
+
+function skipTyping() {
+  const step = rpgState.st.dialogue[rpgState.idx];
+  clearInterval(rpgState.typeTimer);
+  rpgState.typing = false;
+  document.getElementById("rpg-text").textContent = step.text;
+  if (step.type === "line") {
+    document.getElementById("rpg-continue").style.display = "block";
+  } else if (step.type === "question") {
+    renderRpgQuestion(step);
+  }
+}
+
+function advanceRpg() {
+  if (!rpgState) return;
+  const step = rpgState.st.dialogue[rpgState.idx];
+  if (rpgState.typing) { skipTyping(); return; }
+  if (step.type === "question" && !rpgState.advanceAfterReaction) return;
+  rpgState.idx++;
+  renderRpgStep();
+}
+
+function renderRpgQuestion(step) {
+  const q = rpgState.st.questions[step.qIndex];
+  const choicesEl = document.getElementById("rpg-choices");
+  if (q.options && q.options.length) {
+    choicesEl.innerHTML = q.options.map(opt =>
+      `<button type="button" class="ticket-choice" onclick="answerRpgQuestion(${step.qIndex}, this, '${escapeAttr(opt)}')">${opt}</button>`
+    ).join("");
+  } else {
+    choicesEl.innerHTML = `
+      <div class="ticket-fill">
+        <input type="text" id="rpg-fill-input" placeholder="輸入答案">
+        <button type="button" onclick="answerRpgFill(${step.qIndex})">送出</button>
+      </div>`;
+  }
+}
+
+function answerRpgQuestion(qIndex, btnEl, chosen) {
+  const q = rpgState.st.questions[qIndex];
+  handleRpgAnswer(qIndex, isAnswerCorrect(q, chosen), btnEl);
+}
+
+function answerRpgFill(qIndex) {
+  const q = rpgState.st.questions[qIndex];
+  const input = document.getElementById("rpg-fill-input");
+  handleRpgAnswer(qIndex, isAnswerCorrect(q, input.value), null);
+}
+
+function handleRpgAnswer(qIndex, correct, btnEl) {
+  const step = rpgState.st.dialogue[rpgState.idx];
+  const choicesEl = document.getElementById("rpg-choices");
+  if (correct) {
+    if (btnEl) btnEl.classList.add("correct");
+    rpgState.resultsByQ[qIndex] = true;
+    renderRpgProgress();
+    const q = rpgState.st.questions[qIndex];
+    const reaction = step.correctReaction + (q.fact ? `\n\n💡 ${q.fact}` : "");
+    setTimeout(() => {
+      choicesEl.innerHTML = "";
+      const textEl = document.getElementById("rpg-text");
+      typeText(textEl, reaction, () => {
+        rpgState.advanceAfterReaction = true;
+        document.getElementById("rpg-continue").style.display = "block";
+      });
+    }, 350);
+  } else {
+    if (btnEl) { btnEl.classList.add("wrong"); setTimeout(() => btnEl.classList.remove("wrong"), 500); }
+    const hints = step.wrongHints || ["再想想看……"];
+    const hint = hints[Math.min(rpgState.wrongCount, hints.length - 1)];
+    rpgState.wrongCount++;
+    document.getElementById("rpg-text").textContent = hint;
+  }
+}
+
+function finishRpgStation() {
+  const st = rpgState.st;
+  rpgState = null;
+  markStationComplete(st); // schedules afterStationComplete(), which shows the reward modal or goes to the map
+}
+
+function exitRpgToMap() {
+  if (rpgState) clearInterval(rpgState.typeTimer);
+  rpgState = null;
+  goToMap();
+}
+
+function afterStationComplete() {
+  const done = completedCount();
+  let unlocked = null;
+  if (done >= 5 && state.couponA === "locked") { state.couponA = "unlocked"; unlocked = "A"; }
+  if (done >= 10 && state.couponB === "locked") { state.couponB = "unlocked"; unlocked = "B"; }
+  if (unlocked) saveProgress();
+
+  if (unlocked === "A") {
+    showRewardModal("🎟", "恭喜解鎖優惠券A！", "完成5個站點，票券已放進你的票券夾");
+  } else if (unlocked === "B") {
+    showRewardModal("🏆", "恭喜全破關！解鎖優惠券B", "完成全部10個站點，票券已放進你的票券夾");
+  } else {
+    goToMap();
+  }
+  lastUnlockedType = unlocked;
+}
+
+let lastUnlockedType = null;
+
+function showRewardModal(emoji, title, desc) {
+  document.getElementById("reward-emoji").textContent = emoji;
+  document.getElementById("reward-title").textContent = title;
+  document.getElementById("reward-desc").textContent = desc;
+  document.getElementById("reward-code").innerHTML = `${state.name}<br><span style="font-size:15px;">${state.code}</span>`;
+  document.getElementById("reward-overlay").classList.add("active");
+}
+
+function closeRewardModal() {
+  document.getElementById("reward-overlay").classList.remove("active");
+  if (lastUnlockedType) {
+    const type = lastUnlockedType;
+    lastUnlockedType = null;
+    openTicketList();
+    expandTicket(type);
+  } else {
+    goToMap();
+  }
+}
+
+// auto-fill last used code for convenience during testing
+window.addEventListener("load", () => {
+  const last = localStorage.getItem("yingge_last_code");
+  if (last) document.getElementById("code-input").value = last;
+});
+</script>
+</body>
+</html>

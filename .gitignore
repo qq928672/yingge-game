@@ -1,0 +1,12 @@
+# scratch/working files not needed for the live site
+.claude/
+Stations表.csv
+Stations表.tsv
+stations_data.json
+parse_quiz.py
+inject_dialogue.py
+inject_characters.py
+題目.html
+題目_extracted.txt
+題目_extracted_utf8.txt
+鶯歌實境遊戲題目.doc
