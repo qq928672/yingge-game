@@ -1197,8 +1197,16 @@ function speakNow(text) {
   window.speechSynthesis.speak(utter);
 }
 
+let lastSpeakAt = 0;
+
 function speak(text) {
   if (!("speechSynthesis" in window) || !text) return;
+  // ignore rapid repeated taps on the speak button — besides being pointless (it just
+  // restarts the same line), spamming speak() in quick succession is what seems to trigger
+  // Android's "Google - tap to see search results" overlay on some devices
+  const now = Date.now();
+  if (now - lastSpeakAt < 600) return;
+  lastSpeakAt = now;
   if (!ttsVoices.length) {
     // voice list not ready yet (common on first use in Android Chrome) — wait once, then speak
     let spoken = false;
@@ -1258,6 +1266,7 @@ function logout() {
 }
 
 function showScreen(id) {
+  if ("speechSynthesis" in window) window.speechSynthesis.cancel(); // don't let TTS keep talking after the player navigates away
   document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
   document.getElementById(id).classList.add("active");
   window.scrollTo(0, 0);
@@ -1849,6 +1858,7 @@ function renderRpgProgress() {
 }
 
 function renderRpgStep() {
+  if ("speechSynthesis" in window) window.speechSynthesis.cancel(); // stop last step's TTS before showing the next one
   const step = rpgState.st.dialogue[rpgState.idx];
   const speakerEl = document.getElementById("rpg-speaker");
   const textEl = document.getElementById("rpg-text");
@@ -1995,6 +2005,7 @@ function handleRpgAnswer(qIndex, correct, btnEl) {
     const q = rpgState.st.questions[qIndex];
     const reaction = step.correctReaction + (q.fact ? `\n\n💡 ${q.fact}` : "");
     setTimeout(() => {
+      if ("speechSynthesis" in window) window.speechSynthesis.cancel(); // stop any TTS still reading the question before the reaction text appears
       choicesEl.innerHTML = "";
       rpgState.showingReaction = true;
       const textEl = document.getElementById("rpg-text");
