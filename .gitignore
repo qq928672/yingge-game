@@ -1,5 +1,8 @@
 # scratch/working files not needed for the live site
 .claude/
+
+# backend script contains ANSWER_KEY and STAFF_PASSCODE — must never be public
+backend_apps_script.gs
 Stations表.csv
 Stations表.tsv
 stations_data.json

@@ -31,12 +31,16 @@
 
   .coupon-row { background: var(--card); border-radius: 14px; padding: 16px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
   .coupon-label { font-size: 15px; font-weight: 600; }
+  .coupon-sub { font-size: 11px; font-weight: 400; color: var(--sub); margin-top: 2px; }
   .coupon-status { font-size: 12px; margin-top: 4px; }
   .status-locked { color: var(--sub); }
   .status-unlocked { color: var(--gold); font-weight: 600; }
   .status-redeemed { color: var(--done); font-weight: 600; }
   .redeem-btn { white-space: nowrap; }
   .redeem-btn.done { background: var(--done); }
+  .passcode-row { display: flex; gap: 8px; margin: 10px 0; }
+  .passcode-row input { flex: 1; padding: 10px; font-size: 14px; }
+  .confirm-error { color: var(--danger); font-size: 13px; margin: 4px 0 0; }
 </style>
 </head>
 <body>
@@ -44,43 +48,73 @@
 <div class="content">
   <div class="search-row">
     <input type="text" id="code-input" placeholder="輸入玩家序號查詢" autocomplete="off">
-    <button onclick="doSearch()">查詢</button>
+    <button id="search-btn" onclick="doSearch()">查詢</button>
   </div>
   <div id="result-area"></div>
 </div>
 
 <script>
-const DB_KEY = "yingge_players_db";
+const API_URL = "https://script.google.com/macros/s/AKfycbytcB8w4wDFOK32d8g4FrcEiK3TQNDj0Ob8aFPINFo5t7c_jqMDfzBgnVcyailEjpPMeg/exec";
 
-function loadDB() {
-  try { const raw = localStorage.getItem(DB_KEY); return raw ? JSON.parse(raw) : {}; }
-  catch (e) { return {}; }
+async function apiGet(params) {
+  const url = API_URL + "?" + new URLSearchParams(params).toString();
+  const res = await fetch(url);
+  return res.json();
 }
-function saveDB(db) { localStorage.setItem(DB_KEY, JSON.stringify(db)); }
+
+async function apiPost(body) {
+  const res = await fetch(API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify(body),
+  });
+  return res.json();
+}
+
 function normalize(str) { return (str || "").trim().replace(/\s+/g, "").toUpperCase(); }
 
 let currentCode = null;
+let currentPlayer = null;
 
-function doSearch() {
+async function doSearch() {
   const code = normalize(document.getElementById("code-input").value);
   const area = document.getElementById("result-area");
+  const btn = document.getElementById("search-btn");
   if (!code) { area.innerHTML = `<div class="msg error">請輸入序號</div>`; return; }
-  const db = loadDB();
-  const player = db[code];
-  if (!player) {
-    area.innerHTML = `<div class="msg error">查無此序號，請確認輸入是否正確</div>`;
-    currentCode = null;
-    return;
+  area.innerHTML = `<div class="msg">查詢中...</div>`;
+  if (btn) btn.disabled = true;
+  try {
+    const res = await apiGet({ action: "state", code });
+    if (!res.ok) {
+      area.innerHTML = `<div class="msg error">${res.error || "查無此序號，請確認輸入是否正確"}</div>`;
+      currentCode = null;
+      currentPlayer = null;
+      return;
+    }
+    currentCode = res.code;
+    currentPlayer = res;
+    pendingConfirm = null;
+    render(currentPlayer);
+  } catch (e) {
+    area.innerHTML = `<div class="msg error">連線失敗，請檢查網路後再試一次</div>`;
+  } finally {
+    if (btn) btn.disabled = false;
   }
-  currentCode = code;
-  pendingConfirm = null;
-  render(player);
 }
 
 function statusLabel(status) {
   if (status === "redeemed") return { cls: "status-redeemed", text: "✓ 已兌換" };
   if (status === "unlocked") return { cls: "status-unlocked", text: "● 已解鎖，尚未兌換" };
   return { cls: "status-locked", text: "尚未達成條件" };
+}
+
+function couponLabel(type, player) {
+  const info = (player.couponInfo && player.couponInfo[type]) || {};
+  const fallback = type === "A" ? "優惠券A" : "優惠券B";
+  const emoji = type === "A" ? "🎟" : "🏆";
+  const name = info.name || fallback;
+  const sub = [info.store, info.note].filter(Boolean).join("・");
+  return `${emoji} ${name}` + (sub ? `<div class="coupon-sub">${sub}</div>` : "");
 }
 
 function render(player) {
@@ -96,14 +130,14 @@ function render(player) {
     </div>
     <div class="coupon-row">
       <div>
-        <div class="coupon-label">🎟 優惠券A</div>
+        <div class="coupon-label">${couponLabel("A", player)}</div>
         <div class="coupon-status ${a.cls}">${a.text}</div>
       </div>
       ${renderActionCell("A", player.couponA)}
     </div>
     <div class="coupon-row">
       <div>
-        <div class="coupon-label">🏆 優惠券B</div>
+        <div class="coupon-label">${couponLabel("B", player)}</div>
         <div class="coupon-status ${b.cls}">${b.text}</div>
       </div>
       ${renderActionCell("B", player.couponB)}
@@ -121,9 +155,15 @@ function renderActionCell(type, status) {
     return `<button class="redeem-btn" disabled>標記已兌換</button>`;
   }
   if (pendingConfirm === type) {
-    return `<div style="display:flex;gap:6px;">
-      <button class="redeem-btn" style="background:var(--danger);" onclick="confirmRedeem('${type}')">確認兌換</button>
-      <button class="redeem-btn" style="background:#aaa;" onclick="cancelRedeem()">取消</button>
+    return `<div>
+      <div class="passcode-row">
+        <input type="text" id="staff-passcode" placeholder="工作人員通關密語" autocomplete="off">
+      </div>
+      <div style="display:flex;gap:6px;">
+        <button class="redeem-btn" id="confirm-redeem-btn" style="background:var(--danger);" onclick="confirmRedeem('${type}')">確認兌換</button>
+        <button class="redeem-btn" style="background:#aaa;" onclick="cancelRedeem()">取消</button>
+      </div>
+      <div class="confirm-error" id="confirm-error"></div>
     </div>`;
   }
   return `<button class="redeem-btn" onclick="askRedeem('${type}')">標記已兌換</button>`;
@@ -131,28 +171,38 @@ function renderActionCell(type, status) {
 
 function askRedeem(type) {
   pendingConfirm = type;
-  const db = loadDB();
-  render(db[currentCode]);
+  render(currentPlayer);
 }
 
 function cancelRedeem() {
   pendingConfirm = null;
-  const db = loadDB();
-  render(db[currentCode]);
+  render(currentPlayer);
 }
 
-function confirmRedeem(type) {
-  if (!currentCode) return;
-  const db = loadDB();
-  const player = db[currentCode];
-  if (!player) return;
+async function confirmRedeem(type) {
+  if (!currentCode || !currentPlayer) return;
   const field = type === "A" ? "couponA" : "couponB";
-  if (player[field] !== "unlocked") return;
-  player[field] = "redeemed";
-  db[currentCode] = player;
-  saveDB(db);
-  pendingConfirm = null;
-  render(player);
+  if (currentPlayer[field] !== "unlocked") return;
+  const passInput = document.getElementById("staff-passcode");
+  const errEl = document.getElementById("confirm-error");
+  const btn = document.getElementById("confirm-redeem-btn");
+  const staffPasscode = passInput ? passInput.value.trim() : "";
+  if (errEl) errEl.textContent = "";
+  if (btn) btn.disabled = true;
+  try {
+    const res = await apiPost({ action: "redeem", code: currentCode, type, staffPasscode });
+    if (!res.ok) {
+      if (errEl) errEl.textContent = res.error || "兌換失敗，請再試一次";
+      return;
+    }
+    currentPlayer = res;
+    pendingConfirm = null;
+    render(currentPlayer);
+  } catch (e) {
+    if (errEl) errEl.textContent = "連線失敗，請檢查網路後再試一次";
+  } finally {
+    if (btn) btn.disabled = false;
+  }
 }
 
 document.getElementById("code-input").addEventListener("keydown", e => {

@@ -114,10 +114,18 @@
   .te-close { position: absolute; top: 14px; right: 16px; font-size: 16px; opacity: 0.8; cursor: pointer; padding: 4px; }
   .te-emoji { font-size: 40px; }
   .te-label { font-size: 18px; font-weight: 700; margin-top: 4px; }
+  .te-desc { font-size: 13px; opacity: 0.9; margin-top: 4px; }
+  .te-detail { font-size: 12px; opacity: 0.9; line-height: 1.6; text-align: left; }
+  .te-detail b { display: inline-block; min-width: 64px; opacity: 0.85; }
   .te-divider { border-top: 2px dashed rgba(255,255,255,0.45); margin: 16px 0; }
   .te-name { font-size: 22px; font-weight: 700; }
   .te-code { font-size: 15px; letter-spacing: 2px; opacity: 0.9; margin-top: 4px; }
   .te-hint { font-size: 13px; opacity: 0.95; line-height: 1.6; margin: 4px 0 16px; }
+  .te-hint.error { color: #ffd1cc; margin: 8px 0 0; min-height: 16px; }
+  .te-passcode {
+    width: 100%; padding: 12px; font-size: 15px; border: none; border-radius: 10px;
+    margin-bottom: 12px; box-sizing: border-box; text-align: center; letter-spacing: 1px;
+  }
   .te-actions { display: flex; gap: 10px; }
   .te-btn {
     flex: 1; padding: 13px; font-size: 15px; font-weight: 700; border: none; border-radius: 10px;
@@ -138,6 +146,8 @@
   .fact-box { margin-top: 10px; background: #fff8e6; border: 1px solid #e8d38a; border-radius: 10px; padding: 10px 12px; font-size: 13px; color: #8a6d00; line-height: 1.6; }
   .q-block { background: var(--card); border-radius: 14px; padding: 18px; margin-bottom: 14px; }
   .q-title { font-size: 13px; color: var(--sub); margin-bottom: 6px; }
+  .speak-btn { cursor: pointer; margin-left: 8px; font-size: 14px; opacity: 0.8; }
+  .speak-btn:active { opacity: 1; }
   .q-text { font-size: 16px; font-weight: 600; line-height: 1.6; margin-bottom: 14px; }
   .option-btn {
     display: block; width: 100%; text-align: left; padding: 12px 14px; margin-bottom: 8px;
@@ -291,6 +301,12 @@
     font-family: "Noto Serif TC", serif; font-size: 13px; color: var(--rpg-cream); opacity: 0.85;
     cursor: pointer; padding: 4px 6px;
   }
+  .rpg-topbar-right { display: flex; align-items: center; gap: 12px; }
+  .rpg-speak-btn {
+    font-size: 17px; cursor: pointer; padding: 4px 8px; border-radius: 50%;
+    background: rgba(0,0,0,0.3); border: 1px solid rgba(207,154,76,0.4); line-height: 1;
+  }
+  .rpg-speak-btn:active { background: rgba(0,0,0,0.5); }
   .rpg-progress { display: flex; gap: 7px; }
   .rpg-progress .hole {
     width: 11px; height: 11px; border-radius: 50%; border: 1.5px solid var(--rpg-brass);
@@ -440,9 +456,8 @@
       <h2>鶯歌壯遊實境解謎</h2>
       <p class="desc">請輸入您報名時收到的遊戲序號</p>
       <input type="text" id="code-input" placeholder="例如 A3K9-XY72" maxlength="12" autocomplete="off">
-      <button onclick="handleLogin()">開始遊戲</button>
+      <button id="login-btn" onclick="handleLogin()">開始遊戲</button>
       <div class="error-msg" id="login-error"></div>
-      <div class="test-codes">測試用序號：TEST-0001 / TEST-0002</div>
     </div>
   </div>
 </div>
@@ -532,7 +547,10 @@
     <div class="rpg-vignette"></div>
     <div class="rpg-topbar">
       <span class="rpg-back" onclick="exitRpgToMap()">‹ 返回地圖</span>
-      <div class="rpg-progress" id="rpg-progress"></div>
+      <div class="rpg-topbar-right">
+        <span class="rpg-speak-btn" onclick="event.stopPropagation(); speakRpgCurrent()">🔊</span>
+        <div class="rpg-progress" id="rpg-progress"></div>
+      </div>
     </div>
     <div class="rpg-dialogue-box" onclick="advanceRpg()">
       <div class="rpg-nameplate" id="rpg-speaker"></div>
@@ -587,11 +605,6 @@ const STATIONS = [
         "qtype": "簡答題",
         "question": "仔細觀察鶯歌火車站的鐵道，你能數出幾條軌道？",
         "options": [],
-        "answer": [
-          "七條",
-          "七",
-          "7"
-        ],
         "fact": "鶯歌車站曾是運煤鐵道的重要轉運站，最多曾有多條軌道同時作業，見證了當年礦業運輸的繁忙景象。"
       },
       {
@@ -603,7 +616,6 @@ const STATIONS = [
           "狗",
           "鳥"
         ],
-        "answer": "鳥",
         "fact": "「鶯」與「歌」兩字合起來，正是「鶯歌」地名的由來，屋頂上的鳥形裝飾也呼應了這個典故。"
       },
       {
@@ -615,7 +627,6 @@ const STATIONS = [
           "煤礦",
           "石灰石"
         ],
-        "answer": "煤礦",
         "fact": "日治時期，鶯歌因鄰近煤層與陶土產地，車站曾是運煤與運送陶器的重要轉運站。"
       },
       {
@@ -627,7 +638,6 @@ const STATIONS = [
           "鶯歌庄驛",
           "大嵙崁驛"
         ],
-        "answer": "鷹哥石驛",
         "fact": "「鷹哥石驛」得名自附近「鶯歌石」的傳說，後來才逐漸改名為現在的「鶯歌」站名。"
       }
     ],
@@ -763,8 +773,7 @@ const STATIONS = [
           "許自然",
           "邱錦和",
           "許朝宗"
-        ],
-        "answer": "許自然"
+        ]
       },
       {
         "qtype": "選擇題",
@@ -774,8 +783,7 @@ const STATIONS = [
           "一種傳統陶土名稱",
           "與英文China有關",
           "取自早期陶瓷業的製陶術語"
-        ],
-        "answer": "與英文China有關"
+        ]
       },
       {
         "qtype": "選擇題",
@@ -785,8 +793,7 @@ const STATIONS = [
           "建築磁磚",
           "仿古藝術陶瓷",
           "陶製花盆"
-        ],
-        "answer": "仿古藝術陶瓷"
+        ]
       },
       {
         "qtype": "選擇題",
@@ -796,8 +803,7 @@ const STATIONS = [
           "天然氣",
           "電力",
           "木炭"
-        ],
-        "answer": "天然氣"
+        ]
       }
     ]
   },
@@ -813,8 +819,7 @@ const STATIONS = [
           "鄭成功下令開砲，轟斷了巨鳥的頭部",
           "後人開採石材造成缺口",
           "長年風吹雨淋自然斷裂"
-        ],
-        "answer": "鄭成功下令開砲，轟斷了巨鳥的頭部"
+        ]
       },
       {
         "qtype": "選擇題",
@@ -824,8 +829,7 @@ const STATIONS = [
           "石頭形狀像鸚哥",
           "傳說鸚哥住在洞裡",
           "因為鄭成功曾在此養鸚哥"
-        ],
-        "answer": "石頭形狀像鸚哥"
+        ]
       },
       {
         "qtype": "選擇題",
@@ -835,8 +839,7 @@ const STATIONS = [
           "宏德宮",
           "碧龍宮",
           "福德宮"
-        ],
-        "answer": "碧龍宮"
+        ]
       },
       {
         "qtype": "選擇題",
@@ -846,8 +849,7 @@ const STATIONS = [
           "採礦台車行駛的輕便鐵道",
           "軍事運輸道路",
           "茶葉運輸道路"
-        ],
-        "answer": "採礦台車行駛的輕便鐵道"
+        ]
       }
     ]
   },
@@ -863,8 +865,7 @@ const STATIONS = [
           "三角形",
           "四角形",
           "六角形"
-        ],
-        "answer": "四角形"
+        ]
       },
       {
         "qtype": "選擇題",
@@ -874,8 +875,7 @@ const STATIONS = [
           "天然氣",
           "煤炭",
           "柴薪"
-        ],
-        "answer": "煤炭"
+        ]
       },
       {
         "qtype": "選擇題",
@@ -885,8 +885,7 @@ const STATIONS = [
           "平焰式",
           "倒焰式",
           "旋焰式"
-        ],
-        "answer": "倒焰式"
+        ]
       },
       {
         "qtype": "選擇題",
@@ -896,8 +895,7 @@ const STATIONS = [
           "陶瓷工廠開始集中於特定區域",
           "陶窯陸續改用瓦斯窯",
           "陶瓷產品種類逐漸增加"
-        ],
-        "answer": "陶窯陸續改用瓦斯窯"
+        ]
       }
     ]
   },
@@ -913,8 +911,7 @@ const STATIONS = [
           "窯廠的瑕疵品被作為建材",
           "為了讓牆面更加美觀",
           "不同時期的居民刻意收集"
-        ],
-        "answer": "窯廠的瑕疵品被作為建材"
+        ]
       },
       {
         "qtype": "選擇題",
@@ -924,8 +921,7 @@ const STATIONS = [
           "建築磚瓦",
           "碗盤等生活器皿",
           "陶瓷玩具"
-        ],
-        "answer": "碗盤等生活器皿"
+        ]
       },
       {
         "qtype": "選擇題",
@@ -935,8 +931,7 @@ const STATIONS = [
           "政治人物",
           "賴婆",
           "附近居民"
-        ],
-        "answer": "賴婆"
+        ]
       },
       {
         "qtype": "選擇題",
@@ -946,8 +941,7 @@ const STATIONS = [
           "製作牆面裝飾",
           "鑲嵌於步道路面",
           "製作陶瓷藝術品"
-        ],
-        "answer": "鑲嵌於步道路面"
+        ]
       }
     ]
   },
@@ -963,8 +957,7 @@ const STATIONS = [
           "王龜生",
           "陳斐然",
           "許自強"
-        ],
-        "answer": "陳斐然"
+        ]
       },
       {
         "qtype": "選擇題",
@@ -974,8 +967,7 @@ const STATIONS = [
           "培養許多製陶師傅與技術",
           "生產種類繁多的陶瓷生活用品",
           "成為當時鶯歌重要的陶瓷交易場所"
-        ],
-        "answer": "培養許多製陶師傅與技術"
+        ]
       },
       {
         "qtype": "選擇題",
@@ -985,8 +977,7 @@ const STATIONS = [
           "泉州",
           "福州",
           "廣州"
-        ],
-        "answer": "福州"
+        ]
       }
     ]
   },
@@ -1002,8 +993,7 @@ const STATIONS = [
           "以窯廠煙囪作為分界",
           "以兩棵大榕樹連成一線作為界線",
           "以溪流作為分界"
-        ],
-        "answer": "以兩棵大榕樹連成一線作為界線"
+        ]
       },
       {
         "qtype": "選擇題",
@@ -1013,8 +1003,7 @@ const STATIONS = [
           "提供土地讓陶工自行蓋房子",
           "提供交通工具接送",
           "提供陶瓷製作工具"
-        ],
-        "answer": "提供土地讓陶工自行蓋房子"
+        ]
       },
       {
         "qtype": "選擇題",
@@ -1024,8 +1013,7 @@ const STATIONS = [
           "土地與房屋產權複雜，難以整合",
           "聚落人口逐漸增加，居住空間不足",
           "老屋保存與都市開發產生衝突"
-        ],
-        "answer": "土地與房屋產權複雜，難以整合"
+        ]
       }
     ]
   },
@@ -1041,8 +1029,7 @@ const STATIONS = [
           "讓他成為煤礦工程師",
           "使他更能體會勞動階級的生活",
           "讓他開始收藏古老陶器"
-        ],
-        "answer": "使他更能體會勞動階級的生活"
+        ]
       },
       {
         "qtype": "選擇題",
@@ -1052,8 +1039,7 @@ const STATIONS = [
           "企業家",
           "社會底層與弱勢族群",
           "藝術工作者"
-        ],
-        "answer": "社會底層與弱勢族群"
+        ]
       },
       {
         "qtype": "選擇題",
@@ -1063,8 +1049,7 @@ const STATIONS = [
           "鶯歌老街與陶瓷博物館",
           "鶯歌車站與碧龍宮",
           "成發居與益成記"
-        ],
-        "answer": "鶯歌石與臺車道"
+        ]
       }
     ]
   },
@@ -1080,8 +1065,7 @@ const STATIONS = [
           "內殿",
           "子母廟",
           "祀神閣"
-        ],
-        "answer": "廟中廟"
+        ]
       },
       {
         "qtype": "選擇題",
@@ -1091,8 +1075,7 @@ const STATIONS = [
           "操作機器製作陶器的陶藝師",
           "純手工編織師",
           "手工木雕師"
-        ],
-        "answer": "操作機器製作陶器的陶藝師"
+        ]
       },
       {
         "qtype": "選擇題",
@@ -1102,8 +1085,7 @@ const STATIONS = [
           "農曆六月六日",
           "農曆九月九日",
           "農曆十月十五日"
-        ],
-        "answer": "農曆九月九日"
+        ]
       }
     ]
   },
@@ -1119,8 +1101,7 @@ const STATIONS = [
           "登窯",
           "四角窯",
           "隧道窯"
-        ],
-        "answer": "隧道窯"
+        ]
       },
       {
         "qtype": "選擇題",
@@ -1130,8 +1111,7 @@ const STATIONS = [
           "磁磚、馬賽克",
           "花器、陶偶",
           "水缸、陶甕"
-        ],
-        "answer": "磁磚、馬賽克"
+        ]
       },
       {
         "qtype": "選擇題",
@@ -1141,8 +1121,7 @@ const STATIONS = [
           "用鐵鈎勾出窯車，沿軌道拉出",
           "用繩索吊出",
           "從窯頂取出"
-        ],
-        "answer": "用鐵鈎勾出窯車，沿軌道拉出"
+        ]
       },
       {
         "qtype": "選擇題",
@@ -1152,94 +1131,85 @@ const STATIONS = [
           "柴油",
           "重油",
           "天然氣"
-        ],
-        "answer": "重油"
+        ]
       }
     ]
   }
 ];
 
-// seed "報名資料" — 之後會換成真的 Google Sheets 資料
-const SEED_PLAYERS = {
-  "TEST-0001": { name: "王小明" },
-  "TEST-0002": { name: "陳美玲" },
-};
+// ---------- Backend API (Google Apps Script Web App) ----------
+// 正確答案、過關判定、票券核銷全部都在伺服器端處理，前端只負責顯示與呼叫 API
+const API_URL = "https://script.google.com/macros/s/AKfycbytcB8w4wDFOK32d8g4FrcEiK3TQNDj0Ob8aFPINFo5t7c_jqMDfzBgnVcyailEjpPMeg/exec";
 
-const DB_KEY = "yingge_players_db";
-
-function loadDB() {
-  try {
-    const raw = localStorage.getItem(DB_KEY);
-    return raw ? JSON.parse(raw) : {};
-  } catch (e) { return {}; }
+async function apiGet(params) {
+  const url = API_URL + "?" + new URLSearchParams(params).toString();
+  const res = await fetch(url);
+  return res.json();
 }
 
-function saveDB(db) {
-  localStorage.setItem(DB_KEY, JSON.stringify(db));
+async function apiPost(body) {
+  // 用 text/plain 避免瀏覽器對 Apps Script 發出 CORS 預檢請求（Apps Script 不處理 OPTIONS）
+  const res = await fetch(API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify(body),
+  });
+  return res.json();
 }
 
-function getOrCreatePlayer(code) {
-  const db = loadDB();
-  if (!db[code]) {
-    if (!SEED_PLAYERS[code]) return null;
-    db[code] = {
-      name: SEED_PLAYERS[code].name,
-      progress: {},
-      couponA: "locked", // locked -> unlocked -> redeemed
-      couponB: "locked",
-    };
-    saveDB(db);
-  }
-  return db[code];
-}
-
-function savePlayer(code, player) {
-  const db = loadDB();
-  db[code] = player;
-  saveDB(db);
-}
-
-let state = { code: null, progress: {}, name: "", couponA: "locked", couponB: "locked" };
+let state = { code: null, progress: {}, name: "", couponA: "locked", couponB: "locked", couponInfo: {} };
 
 function normalize(str) {
   return (str || "").trim().replace(/\s+/g, "").toUpperCase();
 }
 
-function handleLogin() {
+// ---------- Text-to-speech (accessibility for players who have trouble reading) ----------
+
+function speak(text) {
+  if (!("speechSynthesis" in window) || !text) return;
+  window.speechSynthesis.cancel(); // stop any speech already in progress before starting new
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = "zh-TW";
+  utter.rate = 0.95;
+  window.speechSynthesis.speak(utter);
+}
+
+async function handleLogin() {
   const raw = document.getElementById("code-input").value;
   const code = normalize(raw);
   const errEl = document.getElementById("login-error");
+  const btn = document.getElementById("login-btn");
   if (!code) { errEl.textContent = "請輸入序號"; return; }
-  const player = getOrCreatePlayer(code);
-  if (!player) {
-    errEl.textContent = "序號錯誤，請確認報名信件內容";
-    return;
+  errEl.textContent = "登入中...";
+  if (btn) btn.disabled = true;
+  try {
+    const res = await apiGet({ action: "login", code });
+    if (!res.ok) {
+      errEl.textContent = res.error || "序號錯誤，請確認報名信件內容";
+      return;
+    }
+    errEl.textContent = "";
+    state.code = res.code;
+    loadPlayerIntoState(res);
+    localStorage.setItem("yingge_last_code", res.code);
+    showMap();
+  } catch (e) {
+    errEl.textContent = "連線失敗，請檢查網路後再試一次";
+  } finally {
+    if (btn) btn.disabled = false;
   }
-  errEl.textContent = "";
-  state.code = code;
-  loadPlayerIntoState(player);
-  localStorage.setItem("yingge_last_code", code);
-  showMap();
 }
 
-function loadPlayerIntoState(player) {
-  state.name = player.name;
-  state.progress = player.progress || {};
-  state.couponA = player.couponA || "locked";
-  state.couponB = player.couponB || "locked";
-}
-
-function saveProgress() {
-  savePlayer(state.code, {
-    name: state.name,
-    progress: state.progress,
-    couponA: state.couponA,
-    couponB: state.couponB,
-  });
+function loadPlayerIntoState(data) {
+  state.name = data.name;
+  state.progress = data.progress || {};
+  state.couponA = data.couponA || "locked";
+  state.couponB = data.couponB || "locked";
+  if (data.couponInfo) state.couponInfo = data.couponInfo;
 }
 
 function logout() {
-  state = { code: null, progress: {}, name: "", couponA: "locked", couponB: "locked" };
+  state = { code: null, progress: {}, name: "", couponA: "locked", couponB: "locked", couponInfo: {} };
   document.getElementById("code-input").value = "";
   document.getElementById("login-error").textContent = "";
   showScreen("screen-login");
@@ -1319,6 +1289,10 @@ function ticketStatus(type) {
   return type === "A" ? state.couponA : state.couponB;
 }
 
+function couponInfo(type) {
+  return (state.couponInfo && state.couponInfo[type]) || {};
+}
+
 function openTicketList() {
   showScreen("screen-wallet");
   renderWallet();
@@ -1331,6 +1305,7 @@ function renderWallet() {
 
 function ticketCardHTML(type) {
   const meta = TICKET_META[type];
+  const info = couponInfo(type);
   const status = ticketStatus(type);
   const cls = status === "redeemed" ? "redeemed" : status === "unlocked" ? "type-" + type.toLowerCase() : "locked";
   let statusText = meta.need + "解鎖";
@@ -1342,7 +1317,7 @@ function ticketCardHTML(type) {
         <span class="tc-emoji">${meta.emoji}</span>
         <span class="tc-status">${statusText}</span>
       </div>
-      <div class="tc-title">${meta.label}</div>
+      <div class="tc-title">${info.name || meta.label}</div>
       <div class="tc-sub">${state.name} · ${state.code}</div>
     </div>
   `;
@@ -1362,8 +1337,18 @@ let pendingRedeem = null; // "A" | "B" | null
 
 function ticketExpandHTML(type) {
   const meta = TICKET_META[type];
+  const info = couponInfo(type);
   const status = ticketStatus(type);
   const cls = status === "redeemed" ? "redeemed" : status === "unlocked" ? "type-" + type.toLowerCase() : "locked";
+
+  const detailRows = [
+    info.store ? `<div class="te-detail"><b>合作店家</b>${info.store}</div>` : "",
+    info.expiry ? `<div class="te-detail"><b>使用期限</b>${info.expiry}</div>` : "",
+    info.note ? `<div class="te-detail"><b>注意事項</b>${info.note}</div>` : "",
+  ].join("");
+  const detailBlock = (status === "unlocked" || status === "redeemed") && detailRows
+    ? `<div class="te-divider"></div>${detailRows}`
+    : "";
 
   let body = "";
   if (status === "locked") {
@@ -1373,11 +1358,13 @@ function ticketExpandHTML(type) {
   } else if (status === "unlocked") {
     if (pendingRedeem === type) {
       body = `
-        <p class="te-hint">請由店家確認後點選兌換，此動作無法復原</p>
+        <p class="te-hint">請由店家輸入通關密語後點選兌換，此動作無法復原</p>
+        <input type="text" id="redeem-passcode" class="te-passcode" placeholder="店家通關密語" autocomplete="off">
         <div class="te-actions">
-          <button class="te-btn danger" onclick="confirmRedeemPlayer('${type}')">確認兌換</button>
+          <button class="te-btn danger" id="redeem-confirm-btn" onclick="confirmRedeemPlayer('${type}')">確認兌換</button>
           <button class="te-btn ghost" onclick="cancelRedeemPlayer('${type}')">取消</button>
         </div>
+        <p class="te-hint error" id="redeem-error"></p>
       `;
     } else {
       body = `
@@ -1394,12 +1381,14 @@ function ticketExpandHTML(type) {
       <span class="te-close" onclick="closeTicketOverlay()">✕</span>
       ${status === "redeemed" ? `<div class="te-stamp">已使用</div>` : ""}
       <div class="te-emoji">${meta.emoji}</div>
-      <div class="te-label">${meta.label}</div>
+      <div class="te-label">${info.name || meta.label}</div>
+      ${info.desc ? `<div class="te-desc">${info.desc}</div>` : ""}
       <div class="te-divider"></div>
       <div class="te-name">${state.name}</div>
       <div class="te-code">${state.code}</div>
       <div class="te-divider"></div>
       ${body}
+      ${detailBlock}
     </div>
   `;
 }
@@ -1414,14 +1403,30 @@ function cancelRedeemPlayer(type) {
   expandTicket(type);
 }
 
-function confirmRedeemPlayer(type) {
+async function confirmRedeemPlayer(type) {
   const field = type === "A" ? "couponA" : "couponB";
   if (state[field] !== "unlocked") return;
-  state[field] = "redeemed";
-  saveProgress();
-  pendingRedeem = null;
-  expandTicket(type);
-  renderWallet();
+  const passInput = document.getElementById("redeem-passcode");
+  const errEl = document.getElementById("redeem-error");
+  const btn = document.getElementById("redeem-confirm-btn");
+  const passcode = passInput ? passInput.value.trim() : "";
+  if (errEl) errEl.textContent = "";
+  if (btn) btn.disabled = true;
+  try {
+    const res = await apiPost({ action: "redeem", code: state.code, type, staffPasscode: passcode });
+    if (!res.ok) {
+      if (errEl) errEl.textContent = res.error || "兌換失敗，請再試一次";
+      return;
+    }
+    loadPlayerIntoState(res);
+    pendingRedeem = null;
+    expandTicket(type);
+    renderWallet();
+  } catch (e) {
+    if (errEl) errEl.textContent = "連線失敗，請檢查網路後再試一次";
+  } finally {
+    if (btn) btn.disabled = false;
+  }
 }
 
 let currentStationId = null;
@@ -1585,7 +1590,7 @@ function renderStation(st) {
   if (st.story) {
     const storyEl = document.createElement("div");
     storyEl.className = "story-block";
-    storyEl.innerHTML = st.story;
+    storyEl.innerHTML = st.story + `<span class="speak-btn" onclick="speak(${JSON.stringify(st.story)})">🔊</span>`;
     container.appendChild(storyEl);
   }
 
@@ -1598,11 +1603,21 @@ function renderStation(st) {
   });
 }
 
+function speakQuestion(stationId, idx) {
+  const st = STATIONS.find(s => s.id === stationId);
+  const q = st.questions[idx];
+  let text = q.question;
+  if (q.options && q.options.length) {
+    text += "。" + q.options.map((opt, i) => `選項${i + 1}：${opt}`).join("。");
+  }
+  speak(text);
+}
+
 function renderQuestionInner(st, idx, q, forceLocked) {
-  let inner = `<div class="q-title">第 ${idx + 1} 題　${q.qtype}</div><div class="q-text">${q.question}</div>`;
+  let inner = `<div class="q-title">第 ${idx + 1} 題　${q.qtype}<span class="speak-btn" onclick="speakQuestion(${st.id}, ${idx})">🔊</span></div><div class="q-text">${q.question}</div>`;
   if (q.options && q.options.length) {
     inner += q.options.map(opt => {
-      const cls = forceLocked ? "option-btn disabled" + (isAnswerCorrect(q, opt) ? " correct" : "") : "option-btn";
+      const cls = forceLocked ? "option-btn disabled" : "option-btn";
       return `<button type="button" class="${cls}" onclick="submitOption(${st.id}, ${idx}, this, '${escapeAttr(opt)}')">${opt}</button>`;
     }).join("");
   } else {
@@ -1625,22 +1640,24 @@ function revealFact(stationId, idx) {
 
 function escapeAttr(s) { return s.replace(/'/g, "\\'"); }
 
-function acceptedAnswers(q) {
-  return Array.isArray(q.answer) ? q.answer : [q.answer];
-}
-
-function isAnswerCorrect(q, val) {
-  const normVal = normalize(val);
-  return acceptedAnswers(q).some(a => normalize(a) === normVal);
-}
-
-function submitOption(stationId, idx, btnEl, chosen) {
+async function submitOption(stationId, idx, btnEl, chosen) {
   const st = STATIONS.find(s => s.id === stationId);
-  const q = st.questions[idx];
-  const correct = isAnswerCorrect(q, chosen);
   const allBtns = btnEl.parentElement.querySelectorAll(".option-btn");
   allBtns.forEach(b => b.classList.add("disabled"));
-  if (correct) {
+  let res;
+  try {
+    res = await apiPost({ action: "submitAnswer", code: state.code, stationId, qIndex: idx, answer: chosen });
+  } catch (e) {
+    allBtns.forEach(b => b.classList.remove("disabled"));
+    setFeedback(stationId, idx, false, "連線失敗，請再試一次");
+    return;
+  }
+  if (!res.ok) {
+    allBtns.forEach(b => b.classList.remove("disabled"));
+    setFeedback(stationId, idx, false, res.error || "發生錯誤，請再試一次");
+    return;
+  }
+  if (res.correct) {
     btnEl.classList.add("correct");
     setFeedback(stationId, idx, true, "答對了！");
     revealFact(stationId, idx);
@@ -1652,18 +1669,35 @@ function submitOption(stationId, idx, btnEl, chosen) {
   }
 }
 
-function submitFill(stationId, idx) {
+async function submitFill(stationId, idx) {
   const st = STATIONS.find(s => s.id === stationId);
-  const q = st.questions[idx];
   const input = document.getElementById(`fill-${stationId}-${idx}`);
-  const correct = isAnswerCorrect(q, input.value);
-  if (correct) {
-    input.disabled = true;
-    document.querySelector(`#q-${stationId}-${idx} button`).disabled = true;
+  const submitBtn = document.querySelector(`#q-${stationId}-${idx} button`);
+  const answer = input.value;
+  input.disabled = true;
+  if (submitBtn) submitBtn.disabled = true;
+  let res;
+  try {
+    res = await apiPost({ action: "submitAnswer", code: state.code, stationId, qIndex: idx, answer });
+  } catch (e) {
+    input.disabled = false;
+    if (submitBtn) submitBtn.disabled = false;
+    setFeedback(stationId, idx, false, "連線失敗，請再試一次");
+    return;
+  }
+  if (!res.ok) {
+    input.disabled = false;
+    if (submitBtn) submitBtn.disabled = false;
+    setFeedback(stationId, idx, false, res.error || "發生錯誤，請再試一次");
+    return;
+  }
+  if (res.correct) {
     setFeedback(stationId, idx, true, "答對了！");
     revealFact(stationId, idx);
     checkStationComplete(st);
   } else {
+    input.disabled = false;
+    if (submitBtn) submitBtn.disabled = false;
     setFeedback(stationId, idx, false, "答錯了，再試一次");
   }
 }
@@ -1684,14 +1718,22 @@ function checkStationComplete(st) {
   if (allCorrect) markStationComplete(st);
 }
 
-function markStationComplete(st) {
+async function markStationComplete(st) {
   const wasAlreadyDone = !!state.progress[st.id];
-  state.progress[st.id] = true;
-  saveProgress();
-  if (!wasAlreadyDone) {
-    setTimeout(() => afterStationComplete(), 500);
+  if (wasAlreadyDone) return true;
+  try {
+    const res = await apiPost({ action: "complete", code: state.code, stationId: st.id });
+    if (!res.ok) {
+      alert(res.error || "尚未完成所有題目，請確認後再試一次");
+      return false;
+    }
+    loadPlayerIntoState(res);
+    setTimeout(() => afterStationComplete(res.unlocked), 500);
+    return true;
+  } catch (e) {
+    alert("連線失敗，請檢查網路後再試一次");
+    return false;
   }
-  return wasAlreadyDone;
 }
 
 // ---------- RPG dialogue scene (time-travel station experience) ----------
@@ -1794,8 +1836,20 @@ function renderRpgStep() {
   });
 }
 
+function speakRpgCurrent() {
+  if (!rpgState) return;
+  let text = rpgState.currentFullText || document.getElementById("rpg-text").textContent;
+  const optionBtns = document.querySelectorAll("#rpg-choices .ticket-choice");
+  if (optionBtns.length) {
+    const opts = Array.from(optionBtns).map((b, i) => `選項${i + 1}：${b.textContent}`).join("。");
+    text = text + "。" + opts;
+  }
+  speak(text);
+}
+
 function typeText(el, text, onDone) {
   el.textContent = "";
+  rpgState.currentFullText = text;
   rpgState.typing = true;
   let i = 0;
   clearInterval(rpgState.typeTimer);
@@ -1860,14 +1914,31 @@ function renderRpgQuestion(step) {
 }
 
 function answerRpgQuestion(qIndex, btnEl, chosen) {
-  const q = rpgState.st.questions[qIndex];
-  handleRpgAnswer(qIndex, isAnswerCorrect(q, chosen), btnEl);
+  submitRpgAnswer(qIndex, chosen, btnEl);
 }
 
 function answerRpgFill(qIndex) {
-  const q = rpgState.st.questions[qIndex];
   const input = document.getElementById("rpg-fill-input");
-  handleRpgAnswer(qIndex, isAnswerCorrect(q, input.value), null);
+  submitRpgAnswer(qIndex, input.value, null);
+}
+
+async function submitRpgAnswer(qIndex, chosen, btnEl) {
+  const choicesEl = document.getElementById("rpg-choices");
+  choicesEl.querySelectorAll("button").forEach(b => { b.disabled = true; });
+  let res;
+  try {
+    res = await apiPost({ action: "submitAnswer", code: state.code, stationId: rpgState.st.id, qIndex, answer: chosen });
+  } catch (e) {
+    choicesEl.querySelectorAll("button").forEach(b => { b.disabled = false; });
+    document.getElementById("rpg-text").textContent = "連線失敗，請再試一次";
+    return;
+  }
+  if (!res.ok) {
+    choicesEl.querySelectorAll("button").forEach(b => { b.disabled = false; });
+    document.getElementById("rpg-text").textContent = res.error || "發生錯誤，請再試一次";
+    return;
+  }
+  handleRpgAnswer(qIndex, res.correct, btnEl);
 }
 
 function handleRpgAnswer(qIndex, correct, btnEl) {
@@ -1891,6 +1962,7 @@ function handleRpgAnswer(qIndex, correct, btnEl) {
       });
     }, 350);
   } else {
+    choicesEl.querySelectorAll("button").forEach(b => { b.disabled = false; });
     if (btnEl) { btnEl.classList.add("wrong"); setTimeout(() => btnEl.classList.remove("wrong"), 500); }
     const hints = step.wrongHints || ["再想想看……"];
     const hint = hints[Math.min(rpgState.wrongCount, hints.length - 1)];
@@ -1911,13 +1983,7 @@ function exitRpgToMap() {
   goToMap();
 }
 
-function afterStationComplete() {
-  const done = completedCount();
-  let unlocked = null;
-  if (done >= 5 && state.couponA === "locked") { state.couponA = "unlocked"; unlocked = "A"; }
-  if (done >= 10 && state.couponB === "locked") { state.couponB = "unlocked"; unlocked = "B"; }
-  if (unlocked) saveProgress();
-
+function afterStationComplete(unlocked) {
   if (unlocked === "A") {
     showRewardModal("🎟", "恭喜解鎖優惠券A！", "完成5個站點，票券已放進你的票券夾");
   } else if (unlocked === "B") {
@@ -1925,7 +1991,7 @@ function afterStationComplete() {
   } else {
     goToMap();
   }
-  lastUnlockedType = unlocked;
+  lastUnlockedType = unlocked || null;
 }
 
 let lastUnlockedType = null;
