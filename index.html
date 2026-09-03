@@ -1164,14 +1164,56 @@ function normalize(str) {
 }
 
 // ---------- Text-to-speech (accessibility for players who have trouble reading) ----------
+// Android Chrome loads its voice list asynchronously — calling speak() before that finishes
+// silently produces no sound at all (no error). We warm the list up on load and, if it's
+// still empty when speak() is first called, wait once for "voiceschanged" before speaking.
 
-function speak(text) {
-  if (!("speechSynthesis" in window) || !text) return;
+let ttsVoices = [];
+if ("speechSynthesis" in window) {
+  const loadVoices = () => { ttsVoices = window.speechSynthesis.getVoices(); };
+  loadVoices();
+  window.speechSynthesis.addEventListener("voiceschanged", loadVoices);
+}
+
+function pickChineseVoice() {
+  if (!ttsVoices.length) return null;
+  return (
+    ttsVoices.find(v => v.lang === "zh-TW") ||
+    ttsVoices.find(v => /zh[-_](TW|Hant)/i.test(v.lang)) ||
+    ttsVoices.find(v => v.lang === "zh-CN") ||
+    ttsVoices.find(v => /^zh/i.test(v.lang)) ||
+    null
+  );
+}
+
+function speakNow(text) {
   window.speechSynthesis.cancel(); // stop any speech already in progress before starting new
   const utter = new SpeechSynthesisUtterance(text);
   utter.lang = "zh-TW";
   utter.rate = 0.95;
+  const voice = pickChineseVoice();
+  if (voice) utter.voice = voice;
+  utter.onerror = (e) => console.warn("TTS failed:", e.error);
   window.speechSynthesis.speak(utter);
+}
+
+function speak(text) {
+  if (!("speechSynthesis" in window) || !text) return;
+  if (!ttsVoices.length) {
+    // voice list not ready yet (common on first use in Android Chrome) — wait once, then speak
+    let spoken = false;
+    const trySpeak = () => {
+      if (spoken) return;
+      spoken = true;
+      ttsVoices = window.speechSynthesis.getVoices();
+      speakNow(text);
+    };
+    window.speechSynthesis.addEventListener("voiceschanged", trySpeak, { once: true });
+    // some browsers never fire voiceschanged if there's truly nothing new to load — try anyway after a short delay
+    setTimeout(trySpeak, 300);
+    return;
+  }
+  speakNow(text);
 }
 
 async function handleLogin() {
