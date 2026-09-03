@@ -49,6 +49,7 @@
   .login-card { background: var(--card); border-radius: 16px; padding: 32px 24px; width: 100%; max-width: 360px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); text-align: center; }
   .login-card h2 { margin: 0 0 4px; font-size: 20px; }
   .login-card p.desc { color: var(--sub); font-size: 13px; margin: 0 0 24px; }
+  .stores-entry-link { margin-top: 18px; color: var(--sub); font-size: 13px; text-decoration: underline; cursor: pointer; }
   input[type=text] {
     width: 100%; padding: 14px; font-size: 16px; border: 2px solid var(--line);
     border-radius: 10px; text-align: center; letter-spacing: 2px; margin-bottom: 12px;
@@ -144,6 +145,16 @@
   /* Station detail */
   .station-image { width: 100%; border-radius: 14px; margin-bottom: 14px; display: block; }
   .story-block { background: var(--card); border-radius: 14px; padding: 18px; margin-bottom: 14px; font-size: 14px; line-height: 1.8; color: var(--ink); border-left: 4px solid var(--accent); }
+
+  /* Partner store directory */
+  .store-card { background: var(--card); border-radius: 14px; overflow: hidden; margin-bottom: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+  .store-photo { width: 100%; height: 160px; background-size: cover; background-position: center; background-color: var(--line); }
+  .store-body { padding: 16px; }
+  .store-name { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+  .store-offer { color: var(--accent-dark); font-size: 13px; font-weight: 600; background: #fdf1e6; border-radius: 8px; padding: 8px 10px; margin-bottom: 10px; }
+  .store-row { font-size: 13px; color: var(--sub); line-height: 1.7; }
+  .store-map-btn { display: inline-block; margin-top: 10px; padding: 9px 16px; background: var(--accent); color: white; border-radius: 8px; font-size: 13px; text-decoration: none; }
+  .stores-empty { color: var(--sub); font-size: 13px; text-align: center; padding: 30px 0; }
   .fact-box { margin-top: 10px; background: #fff8e6; border: 1px solid #e8d38a; border-radius: 10px; padding: 10px 12px; font-size: 13px; color: #8a6d00; line-height: 1.6; }
   .q-block { background: var(--card); border-radius: 14px; padding: 18px; margin-bottom: 14px; }
   .q-title { font-size: 13px; color: var(--sub); margin-bottom: 6px; }
@@ -460,6 +471,7 @@
       <button id="login-btn" onclick="handleLogin()">開始遊戲</button>
       <div class="error-msg" id="login-error"></div>
     </div>
+    <div class="stores-entry-link" onclick="openStores()">🏪 查看合作店家與兌換資訊</div>
   </div>
 </div>
 
@@ -571,11 +583,24 @@
   <div class="topbar">
     <span class="back" onclick="goToMap()">‹</span>
     <h1>我的票券夾</h1>
-    <span style="width:20px"></span>
+    <span class="back" onclick="openStores()" title="合作店家">🏪</span>
   </div>
   <div class="content">
     <p style="color:var(--sub);font-size:13px;margin:0 0 16px;">點擊票券卡片放大，由店家核對後點選兌換</p>
     <div class="wallet-list" id="wallet-list"></div>
+  </div>
+</div>
+
+<!-- PARTNER STORES SCREEN -->
+<div id="screen-stores" class="screen">
+  <div class="topbar">
+    <span class="back" onclick="closeStores()">‹</span>
+    <h1>合作店家</h1>
+    <span style="width:20px"></span>
+  </div>
+  <div class="content">
+    <p style="color:var(--sub);font-size:13px;margin:0 0 16px;">憑解鎖的優惠券至以下店家兌換</p>
+    <div id="stores-list"></div>
   </div>
 </div>
 
@@ -1353,6 +1378,64 @@ function openTicketList() {
 function renderWallet() {
   const list = document.getElementById("wallet-list");
   list.innerHTML = ["A", "B"].map(type => ticketCardHTML(type)).join("");
+}
+
+// ---------- Partner store directory (public — no login required) ----------
+
+let storesReturnScreen = "screen-login";
+let storesCache = null;
+
+function openStores() {
+  const current = document.querySelector(".screen.active");
+  if (current) storesReturnScreen = current.id;
+  showScreen("screen-stores");
+  renderStores();
+}
+
+function closeStores() {
+  showScreen(storesReturnScreen);
+}
+
+async function renderStores() {
+  const list = document.getElementById("stores-list");
+  if (storesCache) {
+    list.innerHTML = storesCache.map(storeCardHTML).join("") || `<div class="stores-empty">目前尚未公布合作店家</div>`;
+    return;
+  }
+  list.innerHTML = `<div class="stores-empty">載入中...</div>`;
+  try {
+    const res = await apiGet({ action: "stores" });
+    if (!res.ok) {
+      list.innerHTML = `<div class="stores-empty">${res.error || "載入失敗，請稍後再試"}</div>`;
+      return;
+    }
+    storesCache = res.stores || [];
+    list.innerHTML = storesCache.map(storeCardHTML).join("") || `<div class="stores-empty">目前尚未公布合作店家</div>`;
+  } catch (e) {
+    list.innerHTML = `<div class="stores-empty">連線失敗，請檢查網路後再試一次</div>`;
+  }
+}
+
+function storeCardHTML(s) {
+  const photo = s.photo
+    ? `<div class="store-photo" style="background-image:url('${encodeURI(s.photo)}')"></div>`
+    : "";
+  const mapBtn = s.mapUrl
+    ? `<a class="store-map-btn" href="${encodeURI(s.mapUrl)}" target="_blank" rel="noopener">📍 開啟地圖導航</a>`
+    : "";
+  return `
+    <div class="store-card">
+      ${photo}
+      <div class="store-body">
+        <div class="store-name">${s.name}</div>
+        ${s.offer ? `<div class="store-offer">🎁 ${s.offer}</div>` : ""}
+        ${s.address ? `<div class="store-row">📍 ${s.address}</div>` : ""}
+        ${s.phone ? `<div class="store-row">📞 ${s.phone}</div>` : ""}
+        ${s.hours ? `<div class="store-row">🕒 ${s.hours}</div>` : ""}
+        ${mapBtn}
+      </div>
+    </div>
+  `;
 }
 
 function ticketCardHTML(type) {
