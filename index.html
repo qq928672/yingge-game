@@ -360,6 +360,7 @@
   @keyframes rpg-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(4px); } }
 
   .rpg-choices { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+  .rpg-pending { font-family: "Noto Serif TC", serif; font-size: 13px; color: var(--rpg-parchment); opacity: 0.75; text-align: center; }
   .ticket-choice {
     position: relative; text-align: left; font-family: "Noto Serif TC", serif;
     background: var(--rpg-parchment); color: #3a2718; border: none; border-radius: 8px;
@@ -1807,6 +1808,7 @@ async function submitOption(stationId, idx, btnEl, chosen) {
   const st = STATIONS.find(s => s.id === stationId);
   const allBtns = btnEl.parentElement.querySelectorAll(".option-btn");
   allBtns.forEach(b => b.classList.add("disabled"));
+  setFeedback(stationId, idx, null, "判斷中…");
   let res;
   try {
     res = await apiPost({ action: "submitAnswer", code: state.code, stationId, qIndex: idx, answer: chosen });
@@ -1844,6 +1846,7 @@ async function submitMulti(stationId, idx) {
   const submitBtn = document.querySelector(`#q-${stationId}-${idx} .multi-submit-btn`);
   checkboxes.forEach(c => { c.disabled = true; });
   if (submitBtn) submitBtn.disabled = true;
+  setFeedback(stationId, idx, null, "判斷中…");
   let res;
   try {
     res = await apiPost({ action: "submitAnswer", code: state.code, stationId, qIndex: idx, answer: checked });
@@ -1877,6 +1880,7 @@ async function submitFill(stationId, idx) {
   const answer = input.value;
   input.disabled = true;
   if (submitBtn) submitBtn.disabled = true;
+  setFeedback(stationId, idx, null, "判斷中…");
   let res;
   try {
     res = await apiPost({ action: "submitAnswer", code: state.code, stationId, qIndex: idx, answer });
@@ -2127,14 +2131,20 @@ function answerRpgFill(qIndex) {
 async function submitRpgAnswer(qIndex, chosen, btnEl) {
   const choicesEl = document.getElementById("rpg-choices");
   choicesEl.querySelectorAll("button").forEach(b => { b.disabled = true; });
+  const pending = document.createElement("div");
+  pending.className = "rpg-pending";
+  pending.textContent = "判斷中…";
+  choicesEl.appendChild(pending);
   let res;
   try {
     res = await apiPost({ action: "submitAnswer", code: state.code, stationId: rpgState.st.id, qIndex, answer: chosen });
   } catch (e) {
+    pending.remove();
     choicesEl.querySelectorAll("button").forEach(b => { b.disabled = false; });
     document.getElementById("rpg-text").textContent = "連線失敗，請再試一次";
     return;
   }
+  pending.remove();
   if (!res.ok) {
     choicesEl.querySelectorAll("button").forEach(b => { b.disabled = false; });
     document.getElementById("rpg-text").textContent = res.error || "發生錯誤，請再試一次";
