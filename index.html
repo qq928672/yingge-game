@@ -25,8 +25,9 @@
     background: var(--bg);
     color: var(--ink);
     min-height: 100vh;
+    min-height: 100dvh;
   }
-  .screen { display: none; min-height: 100vh; flex-direction: column; }
+  .screen { display: none; min-height: 100vh; min-height: 100dvh; flex-direction: column; }
   .screen.active { display: flex; }
   .topbar {
     padding: 16px 20px;
@@ -44,7 +45,7 @@
   .content { padding: 20px; flex: 1; max-width: 480px; margin: 0 auto; width: 100%; }
 
   /* Login screen */
-  .login-wrap { display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; padding: 24px; }
+  .login-wrap { display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; min-height: 100dvh; padding: 24px; }
   .login-card { background: var(--card); border-radius: 16px; padding: 32px 24px; width: 100%; max-width: 360px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); text-align: center; }
   .login-card h2 { margin: 0 0 4px; font-size: 20px; }
   .login-card p.desc { color: var(--sub); font-size: 13px; margin: 0 0 24px; }
@@ -236,7 +237,7 @@
   }
   #screen-rpg.screen.active { display: block; }
   .rpg-scene {
-    position: relative; height: 100vh; width: 100%; overflow: hidden;
+    position: relative; height: 100vh; height: 100dvh; width: 100%; overflow: hidden;
     background: linear-gradient(180deg, #4a3220 0%, #2c1c11 55%, var(--rpg-void) 100%);
     font-family: "Noto Serif TC", serif;
     color: var(--rpg-cream);
@@ -382,7 +383,7 @@
   /* ================= Map screen: RPG world-map style level select ================= */
   #screen-map.screen.active { display: block; }
   .map-world {
-    height: 100vh; display: flex; flex-direction: column;
+    height: 100vh; height: 100dvh; display: flex; flex-direction: column;
     background: linear-gradient(180deg, #4a3220 0%, #2c1c11 45%, var(--rpg-void) 100%);
     font-family: "Noto Serif TC", serif; color: var(--rpg-cream);
   }
