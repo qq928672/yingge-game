@@ -170,6 +170,14 @@
   .option-btn.correct { border-color: var(--done); background: #eaf5ec; }
   .option-btn.wrong { border-color: var(--danger); background: #fbeae8; }
   .option-btn.disabled { pointer-events: none; opacity: 0.6; }
+  .multi-options { margin-bottom: 10px; }
+  .option-check {
+    display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; padding: 12px 14px; margin-bottom: 8px;
+    border: 2px solid var(--line); border-radius: 10px; background: white; font-size: 14px; color: var(--ink);
+  }
+  .option-check input[type=checkbox] { width: 18px; height: 18px; flex-shrink: 0; }
+  .multi-submit-btn { width: 100%; padding: 12px; font-size: 14px; font-weight: 700; border: none; border-radius: 10px; background: var(--accent); color: white; cursor: pointer; }
+  .multi-submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
   .q-feedback { font-size: 13px; margin-top: 6px; min-height: 18px; }
   .q-feedback.correct { color: var(--done); font-weight: 600; }
   .q-feedback.wrong { color: var(--danger); }
@@ -634,9 +642,14 @@ const STATIONS = [
     "story": "一九〇三年，鶯歌車站在這裡設立，運煤的蒸汽火車日夜穿梭，帶動了整個小鎮的窯業興盛。你站在月台上，彷彿還能聽見當年礦車碰撞鐵軌的聲音……",
     "questions": [
       {
-        "qtype": "簡答題",
+        "qtype": "選擇題",
         "question": "仔細觀察鶯歌火車站的鐵道，你能數出幾條軌道？",
-        "options": [],
+        "options": [
+          "6條",
+          "8條",
+          "10條",
+          "12條"
+        ],
         "fact": "鶯歌車站曾是運煤鐵道的重要轉運站，最多曾有多條軌道同時作業，見證了當年礦業運輸的繁忙景象。"
       },
       {
@@ -665,12 +678,12 @@ const STATIONS = [
         "qtype": "選擇題",
         "question": "請問鶯歌車站最早的站名是什麼？",
         "options": [
-          "尖山埔驛",
           "鷹哥石驛",
-          "鶯歌庄驛",
-          "大嵙崁驛"
+          "鶯歌石驛",
+          "鷹哥驛",
+          "鶯歌驛"
         ],
-        "fact": "「鷹哥石驛」得名自附近「鶯歌石」的傳說，後來才逐漸改名為現在的「鶯歌」站名。"
+        "fact": "鶯歌車站最初稱為「鶯歌石驛」，得名自鄰近的鶯歌石地標，後來才逐漸簡化成現在的「鶯歌」站名。"
       }
     ],
     "dialogue": [
@@ -704,7 +717,7 @@ const STATIONS = [
         "qIndex": 0,
         "char": "guide",
         "text": "先低頭看看腳下，仔細數數看：這月台邊，究竟鋪了幾條鐵軌？",
-        "correctReaction": "答對了！沒錯，正是這七條軌道，當年日夜川流不息地運送著鶯歌燒出的陶器與挖出的煤炭。",
+        "correctReaction": "答對了！沒錯，正是這十條軌道，當年日夜川流不息地運送著鶯歌燒出的陶器與挖出的煤炭。",
         "wrongHints": [
           "再靠近一點看，別漏數了最外側那一條……",
           "試著用手指一條一條數過去，仔細一點。"
@@ -755,7 +768,7 @@ const STATIONS = [
         "qIndex": 3,
         "char": "guide",
         "text": "你可知道，這座車站最早並不叫「鶯歌」，它原本的名字是？",
-        "correctReaction": "「鷹哥石驛」——這才是這座車站最初的名字啊。時代變了，連名字都跟著換上了新裝。",
+        "correctReaction": "「鶯歌石驛」——這才是這座車站最初的名字啊。時代變了，連名字都跟著換上了新裝。",
         "wrongHints": [
           "再想想，那是一個更古老、更貼近地形的名字……"
         ]
@@ -801,10 +814,10 @@ const STATIONS = [
         "qtype": "選擇題",
         "question": "市拿陶藝的創辦人是誰？",
         "options": [
-          "陳景蘭",
+          "許明徹",
           "許自然",
-          "邱錦和",
-          "許朝宗"
+          "許元和",
+          "許元國"
         ]
       },
       {
@@ -812,29 +825,29 @@ const STATIONS = [
         "question": "「市拿」這個名字有什麼特別的意涵？",
         "options": [
           "鶯歌的古地名",
-          "一種傳統陶土名稱",
+          "一種傳統製陶方法",
           "與英文China有關",
-          "取自早期陶瓷業的製陶術語"
+          "取自早期原住民語意"
         ]
       },
       {
         "qtype": "選擇題",
-        "question": "你知道市拿陶藝早期主要製作哪一類陶瓷？",
+        "question": "你知道市拿陶藝早期生產最有名的是哪一類陶瓷？",
         "options": [
-          "日用碗盤",
-          "建築磁磚",
+          "日用陶瓷",
+          "建築陶瓷",
           "仿古藝術陶瓷",
-          "陶製花盆"
+          "工業陶瓷"
         ]
       },
       {
         "qtype": "選擇題",
-        "question": "早期鶯歌窯場常以煤炭燒窯，黑煙曾是街區常見的景象。後來窯業逐漸改用較乾淨的能源。這項改變主要引進了哪種能源？",
+        "question": "早期鶯歌窯場常以煤炭燒窯，黑煙曾是街區常見的景象，後來窯業逐漸改用較乾淨的能源，這項改變主要是引進了哪種能源？",
         "options": [
-          "石油",
+          "汽油",
           "天然氣",
           "電力",
-          "木炭"
+          "柴油"
         ]
       }
     ]
@@ -847,10 +860,10 @@ const STATIONS = [
         "qtype": "選擇題",
         "question": "傳說中，鶯歌石為什麼會少了一截？",
         "options": [
-          "巨石曾被山崩掩埋",
+          "巨石曾被山崩掩埋而成",
           "鄭成功下令開砲，轟斷了巨鳥的頭部",
-          "後人開採石材造成缺口",
-          "長年風吹雨淋自然斷裂"
+          "後人開採造成缺口",
+          "長年風吹雨淋自然風化"
         ]
       },
       {
@@ -894,7 +907,7 @@ const STATIONS = [
         "question": "仔細觀察眼前的老煙囪，它最明顯的外觀特色是什麼？",
         "options": [
           "圓形",
-          "三角形",
+          "八角形",
           "四角形",
           "六角形"
         ]
@@ -906,12 +919,12 @@ const STATIONS = [
           "木材",
           "天然氣",
           "煤炭",
-          "柴薪"
+          "瓦斯"
         ]
       },
       {
         "qtype": "選擇題",
-        "question": "鶯歌四角窯改良了傳統窯燒方式，採用哪一種窯型設計？",
+        "question": "鶯歌四角窯改良了傳統窯燒的方式，採用哪一種窯型設計？",
         "options": [
           "直焰式",
           "平焰式",
@@ -920,14 +933,15 @@ const STATIONS = [
         ]
       },
       {
-        "qtype": "選擇題",
+        "qtype": "複選題",
         "question": "煙囪為何逐漸消失？主要原因是什麼",
         "options": [
-          "碗盤生產技術逐漸改良",
-          "陶瓷工廠開始集中於特定區域",
-          "陶窯陸續改用瓦斯窯",
-          "陶瓷產品種類逐漸增加"
-        ]
+          "煙囪製造成本太高",
+          "陶瓷工廠開始集中於特定區域內，所以被限制。",
+          "窯爐陸續被改用瓦斯窯取代",
+          "排煙造成空氣汙染被禁止使用"
+        ],
+        "multi": true
       }
     ]
   },
@@ -939,41 +953,42 @@ const STATIONS = [
         "qtype": "選擇題",
         "question": "仔細觀察附近古厝的牆面,會發現磚瓦的種類並不完全相同,為什麼一面牆上會出現不同種類的磚瓦？",
         "options": [
-          "不同工匠使用不同材料",
-          "窯廠的瑕疵品被作為建材",
+          "因應不同工匠使用材料的習慣",
+          "為了消化窯廠的瑕疵品及節省成本",
           "為了讓牆面更加美觀",
-          "不同時期的居民刻意收集"
+          "住戶刻意要求使用不同時期的磚瓦"
         ]
       },
       {
         "qtype": "選擇題",
         "question": "過去烘爐窯主要燒製哪一類陶瓷？",
         "options": [
-          "藝術雕塑",
-          "建築磚瓦",
+          "藝術陶瓷",
+          "建築用磚瓦",
           "碗盤等生活器皿",
-          "陶瓷玩具"
+          "陶瓷玩偶"
         ]
       },
       {
         "qtype": "選擇題",
         "question": "這座烘爐窯建於日治時期,見證了鶯歌陶業的發展。誰在1929年建造了這座烘爐窯？",
         "options": [
-          "當地陶工",
-          "政治人物",
+          "賴氏人家",
+          "鶯歌政治人物",
           "賴婆",
-          "附近居民"
+          "陳斐然家族族人"
         ]
       },
       {
-        "qtype": "選擇題",
+        "qtype": "複選題",
         "question": "窯廠燒壞的器皿被打碎掩埋後，後來重新出現在故事巷。這些老瓷片被如何再利用？",
         "options": [
           "製作新陶器",
           "製作牆面裝飾",
           "鑲嵌於步道路面",
           "製作陶瓷藝術品"
-        ]
+        ],
+        "multi": true
       }
     ]
   },
@@ -988,27 +1003,27 @@ const STATIONS = [
           "吳鞍",
           "王龜生",
           "陳斐然",
-          "許自強"
+          "陳發"
         ]
       },
       {
         "qtype": "選擇題",
-        "question": "益成記曾被稱為鶯歌的「陶瓷大學」,主要與什麼有關？",
+        "question": "益成記被稱為鶯歌的「陶瓷大學」與下列何者無關？",
         "options": [
-          "成為鶯歌陶瓷技術的重要傳承地",
-          "培養許多製陶師傅與技術",
-          "生產種類繁多的陶瓷生活用品",
-          "成為當時鶯歌重要的陶瓷交易場所"
+          "曾經是鶯歌製陶技術的重要傳承地",
+          "培養過許多很有名的製陶師傅",
+          "曾經研發許多生活用陶瓷品",
+          "此處在當時是鶯歌重要的陶瓷交易場所"
         ]
       },
       {
         "qtype": "選擇題",
         "question": "益成記曾引進哪裡的陶藝師傅？",
         "options": [
-          "景德鎮",
-          "泉州",
-          "福州",
-          "廣州"
+          "大陸景德鎮",
+          "日本",
+          "大陸福州",
+          "台灣中南部"
         ]
       }
     ]
@@ -1019,10 +1034,10 @@ const STATIONS = [
     "questions": [
       {
         "qtype": "選擇題",
-        "question": "早期鶯歌文化路有「兩陳一余」三大地主，兩陳家土地廣大。當時兩大家族以什麼作為土地分界？",
+        "question": "早期鶯歌文化路有「兩陳一余」三大地主，兩陳家土地廣闊。早期兩大家族是以什麼作為土地分界？",
         "options": [
           "以道路作為分界",
-          "以窯廠煙囪作為分界",
+          "以山脈作為分界",
           "以兩棵大榕樹連成一線作為界線",
           "以溪流作為分界"
         ]
@@ -1031,20 +1046,20 @@ const STATIONS = [
         "qtype": "選擇題",
         "question": "早期鶯歌窯場缺乏工人，為了吸引外地陶工前來工作，窯廠老闆採取了什麼方式？",
         "options": [
-          "提供免費餐食",
+          "提供免費餐食與住宿",
           "提供土地讓陶工自行蓋房子",
-          "提供交通工具接送",
-          "提供陶瓷製作工具"
+          "提供高薪酬",
+          "傳授陶瓷製作技藝當交換"
         ]
       },
       {
         "qtype": "選擇題",
-        "question": "經過幾代人的傳承後，這些老屋最容易面臨什麼問題？",
+        "question": "經過幾代人的傳承後，這些百年老屋為什麼還保留著？",
         "options": [
-          "老屋缺乏修繕，逐漸老化",
-          "土地與房屋產權複雜，難以整合",
-          "聚落人口逐漸增加，居住空間不足",
-          "老屋保存與都市開發產生衝突"
+          "老屋屋齡太舊，修繕成本太高。",
+          "土地與房屋產權複雜，難以整合。",
+          "聚落人口外移，無暇照顧。",
+          "老屋保存與都市開發產生衝突。"
         ]
       }
     ]
@@ -1057,30 +1072,30 @@ const STATIONS = [
         "qtype": "選擇題",
         "question": "陳映真童年在鶯歌生活，身邊有許多陶工、礦工與搬運工。這段經歷對他的創作有何影響？",
         "options": [
-          "讓他專門研究陶瓷技術",
-          "讓他成為煤礦工程師",
-          "使他更能體會勞動階級的生活",
-          "讓他開始收藏古老陶器"
+          "讓他對研究工人議題有興趣",
+          "讓他對成為工程議題有興趣",
+          "使他更能深刻體會勞動階級的生活",
+          "讓他對鶯歌文史相關創作有興趣"
         ]
       },
       {
         "qtype": "選擇題",
-        "question": "陳映真創辦《人間》雜誌,主要希望透過報導為哪一群人發聲？",
+        "question": "陳映真創辦《人間》雜誌,主要希望透過報導為什麼發聲？",
         "options": [
-          "社會名人",
-          "企業家",
+          "社會各界知名人士",
+          "人世間的悲歡離合",
           "社會底層與弱勢族群",
-          "藝術工作者"
+          "人間藝術工作者"
         ]
       },
       {
         "qtype": "選擇題",
-        "question": "下列哪一項曾出現在《山路》所描寫的鶯歌景象中？",
+        "question": "下列哪一項曾出現在《山路》小說中所描寫的鶯歌景象？",
         "options": [
           "鶯歌石與臺車道",
           "鶯歌老街與陶瓷博物館",
-          "鶯歌車站與碧龍宮",
-          "成發居與益成記"
+          "鶯歌車站與窯場",
+          "汪洋居與益成記"
         ]
       }
     ]
@@ -1093,30 +1108,30 @@ const STATIONS = [
         "qtype": "選擇題",
         "question": "仔細觀察福興宮,你會發現有什麼特別之處?",
         "options": [
-          "廟中廟",
-          "內殿",
-          "子母廟",
-          "祀神閣"
+          "廟中廟建築",
+          "日治時期仿巴洛克式建築",
+          "子母廟建築",
+          "石頭厝建築"
         ]
       },
       {
         "qtype": "選擇題",
-        "question": "傳說羅文擅長「手陶」，羅明擅長「車陶」。哪種現代工作方式最接近「車陶」？",
+        "question": "傳說陶神羅文擅長「手作」陶，弟弟羅明擅長「車製」陶。請問現代那種製陶手法比較接近「車製」方式呢？",
         "options": [
-          "手工雕刻師",
-          "操作機器製作陶器的陶藝師",
-          "純手工編織師",
-          "手工木雕師"
+          "陶瓷模型製作",
+          "福州手擠陶坯製作",
+          "純手捏塑陶土製作",
+          "手拉坏製作"
         ]
       },
       {
         "qtype": "選擇題",
         "question": "鶯歌窯場過去會在福興宮祭拜陶神羅明。羅明的誕辰是哪一天？",
         "options": [
-          "農曆四月十一日",
+          "農曆三月十五日",
           "農曆六月六日",
           "農曆九月九日",
-          "農曆十月十五日"
+          "農曆九月十五日"
         ]
       }
     ]
@@ -1127,7 +1142,7 @@ const STATIONS = [
     "questions": [
       {
         "qtype": "選擇題",
-        "question": "走進「古早窯」，他是屬於哪一種窯？",
+        "question": "走進「古早窯」，他是屬於哪一種窯種？",
         "options": [
           "蛇窯",
           "登窯",
@@ -1137,27 +1152,27 @@ const STATIONS = [
       },
       {
         "qtype": "選擇題",
-        "question": "仔細觀察古早窯,主要生產哪些產品？",
+        "question": "古早窯主要是生產哪些產品？",
         "options": [
-          "碗盤、茶具",
-          "磁磚、馬賽克",
-          "花器、陶偶",
-          "水缸、陶甕"
+          "碗盤與茶具",
+          "磁磚(馬賽克)",
+          "花器與陶甕",
+          "工業用磁器"
         ]
       },
       {
         "qtype": "選擇題",
-        "question": "隧道窯燒製完成後,工人如何將成品運出窯外？",
+        "question": "隧道窯燒製時,工人是如何將成品運送進出窯爐呢？",
         "options": [
           "人力搬運",
-          "用鐵鈎勾出窯車，沿軌道拉出",
-          "用繩索吊出",
-          "從窯頂取出"
+          "用鐵鈎勾窯車方式進出",
+          "用台車一節接一節依序運送",
+          "以輸送帶傳動運送"
         ]
       },
       {
         "qtype": "選擇題",
-        "question": "隧道窯引進臺灣後，為提升燒製效率，燃料也有所改變。早期使用煤炭，後來改用什麼？",
+        "question": "隧道窯引進臺灣後，為提升燒製效率，燃料後來改用什麼？",
         "options": [
           "木柴",
           "柴油",
@@ -1756,7 +1771,14 @@ function speakQuestion(stationId, idx) {
 
 function renderQuestionInner(st, idx, q, forceLocked) {
   let inner = `<div class="q-title">第 ${idx + 1} 題　${q.qtype}<span class="speak-btn" onclick="speakQuestion(${st.id}, ${idx})">🔊</span></div><div class="q-text">${q.question}</div>`;
-  if (q.options && q.options.length) {
+  if (q.multi) {
+    inner += `<div class="multi-options" id="opts-${st.id}-${idx}">` + q.options.map((opt, i) => `
+      <label class="option-check">
+        <input type="checkbox" id="chk-${st.id}-${idx}-${i}" value="${escapeAttr(opt)}" ${forceLocked ? "disabled" : ""}>
+        <span>${opt}</span>
+      </label>`).join("") + `</div>
+      <button type="button" class="multi-submit-btn" onclick="submitMulti(${st.id}, ${idx})" ${forceLocked ? "disabled" : ""}>送出</button>`;
+  } else if (q.options && q.options.length) {
     inner += q.options.map(opt => {
       const cls = forceLocked ? "option-btn disabled" : "option-btn";
       return `<button type="button" class="${cls}" onclick="submitOption(${st.id}, ${idx}, this, '${escapeAttr(opt)}')">${opt}</button>`;
@@ -1807,6 +1829,44 @@ async function submitOption(stationId, idx, btnEl, chosen) {
     btnEl.classList.add("wrong");
     setFeedback(stationId, idx, false, "答錯了，再試一次");
     setTimeout(() => { allBtns.forEach(b => b.classList.remove("disabled", "wrong")); setFeedback(stationId, idx, null, ""); }, 900);
+  }
+}
+
+async function submitMulti(stationId, idx) {
+  const st = STATIONS.find(s => s.id === stationId);
+  const optsEl = document.getElementById(`opts-${stationId}-${idx}`);
+  const checked = Array.from(optsEl.querySelectorAll("input[type=checkbox]:checked")).map(c => c.value);
+  if (!checked.length) {
+    setFeedback(stationId, idx, false, "請至少勾選一個選項");
+    return;
+  }
+  const checkboxes = optsEl.querySelectorAll("input[type=checkbox]");
+  const submitBtn = document.querySelector(`#q-${stationId}-${idx} .multi-submit-btn`);
+  checkboxes.forEach(c => { c.disabled = true; });
+  if (submitBtn) submitBtn.disabled = true;
+  let res;
+  try {
+    res = await apiPost({ action: "submitAnswer", code: state.code, stationId, qIndex: idx, answer: checked });
+  } catch (e) {
+    checkboxes.forEach(c => { c.disabled = false; });
+    if (submitBtn) submitBtn.disabled = false;
+    setFeedback(stationId, idx, false, "連線失敗，請再試一次");
+    return;
+  }
+  if (!res.ok) {
+    checkboxes.forEach(c => { c.disabled = false; });
+    if (submitBtn) submitBtn.disabled = false;
+    setFeedback(stationId, idx, false, res.error || "發生錯誤，請再試一次");
+    return;
+  }
+  if (res.correct) {
+    setFeedback(stationId, idx, true, "答對了！");
+    revealFact(stationId, idx);
+    checkStationComplete(st);
+  } else {
+    checkboxes.forEach(c => { c.disabled = false; });
+    if (submitBtn) submitBtn.disabled = false;
+    setFeedback(stationId, idx, false, "答錯了，再試一次");
   }
 }
 
