@@ -424,6 +424,14 @@
   }
   .rpg-multi-submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
+  .rpg-find-btn {
+    display: none; width: 100%; margin-top: 10px; padding: 13px; font-family: "Cinzel", serif;
+    font-weight: 700; font-size: 15px; letter-spacing: 1px; border: 1px solid rgba(207,154,76,0.5);
+    border-radius: 10px; cursor: pointer;
+    background: linear-gradient(180deg, var(--rpg-brass-bright), var(--rpg-brass)); color: #2b1a0c;
+  }
+  .rpg-find-btn:active { transform: scale(0.98); }
+
   .ticket-fill { display: flex; gap: 8px; margin-top: 12px; }
   .ticket-fill input {
     flex: 1; padding: 12px 14px; font-size: 15px; border-radius: 8px; border: none;
@@ -666,6 +674,7 @@
       <div class="rpg-text" id="rpg-text"></div>
       <div class="rpg-choices" id="rpg-choices"></div>
       <div class="rpg-continue" id="rpg-continue">▼ 點擊繼續</div>
+      <button type="button" class="rpg-find-btn" id="rpg-find-btn" onclick="event.stopPropagation(); confirmFound()">找到了</button>
     </div>
   </div>
   <div class="rpg-intro-overlay" id="rpg-intro">
@@ -1593,10 +1602,12 @@ function renderRpgStep() {
   const continueEl = document.getElementById("rpg-continue");
   const noticeEl = document.getElementById("rpg-notice-overlay");
   const photoEl = document.getElementById("rpg-photo-overlay");
+  const findBtn = document.getElementById("rpg-find-btn");
   choicesEl.innerHTML = "";
   continueEl.style.display = "none";
+  findBtn.style.display = "none";
   noticeEl.classList.remove("active");
-  if (step.type !== "photo") photoEl.classList.remove("active");
+  if (step.type !== "photo" && step.type !== "find") photoEl.classList.remove("active");
 
   if (step.type === "end") {
     speakerEl.textContent = "";
@@ -1616,7 +1627,7 @@ function renderRpgStep() {
   renderRpgCharacters(step);
   rpgState.advanceAfterReaction = false;
   rpgState.showingReaction = false;
-  if (step.type === "photo" && step.photo) {
+  if ((step.type === "photo" || step.type === "find") && step.photo) {
     document.getElementById("rpg-photo-img").src = step.photo;
     document.getElementById("rpg-photo-cap").textContent = step.caption || "";
     photoEl.classList.add("active");
@@ -1624,6 +1635,8 @@ function renderRpgStep() {
   typeText(textEl, step.text, () => {
     if (step.type === "line" || step.type === "photo") {
       continueEl.style.display = "block";
+    } else if (step.type === "find") {
+      findBtn.style.display = "block";
     } else if (step.type === "question") {
       renderRpgQuestion(step);
     }
@@ -1677,6 +1690,8 @@ function skipTyping() {
   document.getElementById("rpg-text").textContent = step.text;
   if (step.type === "line" || step.type === "photo") {
     document.getElementById("rpg-continue").style.display = "block";
+  } else if (step.type === "find") {
+    document.getElementById("rpg-find-btn").style.display = "block";
   } else if (step.type === "question") {
     renderRpgQuestion(step);
   }
@@ -1687,6 +1702,14 @@ function advanceRpg() {
   const step = rpgState.st.dialogue[rpgState.idx];
   if (rpgState.typing) { skipTyping(); return; }
   if (step.type === "question" && !rpgState.advanceAfterReaction) return;
+  if (step.type === "find") return; // only the "找到了" button may advance this step
+  rpgState.idx++;
+  renderRpgStep();
+}
+
+function confirmFound() {
+  if (!rpgState) return;
+  if (rpgState.typing) { skipTyping(); return; }
   rpgState.idx++;
   renderRpgStep();
 }

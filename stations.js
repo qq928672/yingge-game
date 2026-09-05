@@ -70,6 +70,12 @@ const STATIONS = [
         "text": "你先往下看看"
       },
       {
+        "type": "find",
+        "char": "guide",
+        "text": "請在四周找找看軌道在哪裡",
+        "photo": "角色照片素材庫/站點一/鐵軌.jpg"
+      },
+      {
         "type": "question",
         "qIndex": 0,
         "char": "guide",
@@ -430,7 +436,8 @@ const STATIONS = [
       "lat": 24.9584,
       "lng": 121.3547,
       "radius": 50
-    }
+    },
+    "background": "角色照片素材庫/站點二/市拿陶藝.jpg"
   },
   {
     "id": 3,
@@ -654,7 +661,7 @@ const STATIONS = [
         "type": "photo",
         "char": "guide",
         "text": "（楊嚮導拿出一張登山地圖）",
-        "photo": "角色照片素材庫/站點三/鶯歌登山地圖.jpg",
+        "photo": "角色照片素材庫/站點三/導覽地圖.jpg",
         "caption": "鶯歌登山步道地圖"
       },
       {
@@ -760,7 +767,8 @@ const STATIONS = [
       "lat": 24.95903,
       "lng": 121.35938,
       "radius": 50
-    }
+    },
+    "background": "角色照片素材庫/站點三/鶯歌石.jpg"
   },
   {
     "id": 4,
@@ -942,7 +950,8 @@ const STATIONS = [
       "lat": 24.95602,
       "lng": 121.35817,
       "radius": 40
-    }
+    },
+    "background": "角色照片素材庫/站點四/東享瓷器.jpg"
   },
   {
     "id": 5,
@@ -1124,7 +1133,8 @@ const STATIONS = [
       "lat": 24.953426,
       "lng": 121.355479,
       "radius": 40
-    }
+    },
+    "background": "角色照片素材庫/站點五/烘爐窯.jpg"
   },
   {
     "id": 6,
@@ -1418,7 +1428,8 @@ const STATIONS = [
         "portrait": "角色照片素材庫/角色/小明.png",
         "side": "right"
       }
-    }
+    },
+    "background": "角色照片素材庫/站點七/榕樹.jpg"
   },
   {
     "id": 8,
@@ -1460,7 +1471,8 @@ const STATIONS = [
       "lat": 24.9537,
       "lng": 121.3553,
       "radius": 65
-    }
+    },
+    "background": "角色照片素材庫/站點八/陳映真故居.jpg"
   },
   {
     "id": 9,
@@ -1502,7 +1514,8 @@ const STATIONS = [
       "lat": 24.9508,
       "lng": 121.3508,
       "radius": 40
-    }
+    },
+    "background": "角色照片素材庫/站點九/福興宮.jpg"
   },
   {
     "id": 10,
@@ -1554,6 +1567,7 @@ const STATIONS = [
       "lat": 24.9516,
       "lng": 121.3505,
       "radius": 35
-    }
+    },
+    "background": "角色照片素材庫/站點十/古早窯.jpg"
   }
 ];
