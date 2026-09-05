@@ -204,6 +204,11 @@
 
   /* Arrival gate (GPS check before a station unlocks) */
   .arrive-card { background: var(--card); border-radius: 18px; padding: 32px 24px; text-align: center; margin-top: 16px; }
+  .arrive-photo {
+    width: 100%; max-width: 320px; height: 170px; margin: 0 auto 14px;
+    border-radius: 14px; background-size: cover; background-position: center;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  }
   .arrive-icon { font-size: 40px; margin-bottom: 6px; }
   .arrive-name { font-size: 19px; margin: 0 0 10px; }
   .arrive-hint { color: var(--sub); font-size: 13px; line-height: 1.6; margin: 0 0 22px; }
@@ -256,7 +261,7 @@
   }
   #screen-rpg.screen.active { display: block; }
   .rpg-scene {
-    position: relative; height: 100vh; height: 100dvh; width: 100%; overflow: hidden;
+    position: relative; height: 100vh; height: 100dvh; width: 100%; max-width: 480px; margin: 0 auto; overflow: hidden;
     background: linear-gradient(180deg, #4a3220 0%, #2c1c11 55%, var(--rpg-void) 100%);
     font-family: "Noto Serif TC", serif;
     color: var(--rpg-cream);
@@ -359,6 +364,34 @@
   }
   @keyframes rpg-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(4px); } }
 
+  /* Centered on-screen guidance banner, e.g. "請前往一樓前站廣場" */
+  .rpg-notice-overlay {
+    position: absolute; inset: 0; z-index: 6; display: none;
+    align-items: center; justify-content: center; text-align: center;
+    background: rgba(10,6,3,0.55); cursor: pointer; padding: 0 32px;
+  }
+  .rpg-notice-overlay.active { display: flex; }
+  .rpg-notice-card {
+    background: linear-gradient(180deg, var(--rpg-brass-bright), var(--rpg-brass));
+    color: #2b1a0c; font-family: "Cinzel", serif; font-weight: 700;
+    font-size: 17px; line-height: 1.7; padding: 22px 26px; border-radius: 14px;
+    box-shadow: 0 14px 32px rgba(0,0,0,0.5); max-width: 320px;
+  }
+  .rpg-notice-hint { margin-top: 10px; font-size: 12px; opacity: 0.7; font-weight: 400; }
+
+  /* Polaroid-style old-photo popup shown mid-dialogue */
+  .rpg-photo-overlay {
+    position: absolute; left: 50%; bottom: 190px; transform: translateX(-50%) rotate(-2deg);
+    z-index: 5; display: none; width: min(78%, 320px);
+    background: #fdf8ee; padding: 10px 10px 16px; border-radius: 4px;
+    box-shadow: 0 14px 28px rgba(0,0,0,0.5);
+  }
+  .rpg-photo-overlay.active { display: block; }
+  .rpg-photo-overlay img { width: 100%; display: block; filter: sepia(0.4) contrast(1.05); border-radius: 2px; }
+  .rpg-photo-overlay .rpg-photo-cap {
+    margin-top: 8px; font-family: "Noto Serif TC", serif; font-size: 12px; color: #5a4a33; text-align: center;
+  }
+
   .rpg-choices { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
   .rpg-pending { font-family: "Noto Serif TC", serif; font-size: 13px; color: var(--rpg-parchment); opacity: 0.75; text-align: center; }
   .ticket-choice {
@@ -375,6 +408,21 @@
   .ticket-choice:active { transform: scale(0.98); }
   .ticket-choice.correct { background: #d9e8d2; }
   .ticket-choice.wrong { background: #ecc7bb; }
+
+  .rpg-multi-options { margin-bottom: 4px; }
+  .rpg-option-check {
+    display: flex; align-items: center; gap: 10px; width: 100%; text-align: left;
+    font-family: "Noto Serif TC", serif; background: var(--rpg-parchment); color: #3a2718;
+    border: none; border-radius: 8px; padding: 12px 16px; margin-bottom: 8px; font-size: 14.5px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3); cursor: pointer;
+  }
+  .rpg-option-check input[type=checkbox] { width: 18px; height: 18px; flex-shrink: 0; }
+  .rpg-multi-submit-btn {
+    width: 100%; padding: 12px; font-family: "Cinzel", serif; font-weight: 700; font-size: 14px;
+    border: 1px solid rgba(207,154,76,0.5); border-radius: 10px; cursor: pointer;
+    background: linear-gradient(180deg, var(--rpg-brass-bright), var(--rpg-brass)); color: #2b1a0c;
+  }
+  .rpg-multi-submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
   .ticket-fill { display: flex; gap: 8px; margin-top: 12px; }
   .ticket-fill input {
@@ -406,6 +454,7 @@
     height: 100vh; height: 100dvh; display: flex; flex-direction: column;
     background: linear-gradient(180deg, #4a3220 0%, #2c1c11 45%, var(--rpg-void) 100%);
     font-family: "Noto Serif TC", serif; color: var(--rpg-cream);
+    max-width: 480px; margin: 0 auto;
   }
   .map-grain {
     position: absolute; inset: 0; opacity: 0.08; mix-blend-mode: overlay; pointer-events: none;
@@ -446,6 +495,17 @@
   .collect-card .card-img {
     position: absolute; inset: 0; background-size: cover; background-position: center 30%;
     filter: sepia(0.5) saturate(1.1) brightness(0.65) contrast(1.05);
+    transition: filter 0.3s ease;
+  }
+  .collect-card .card-img.grayscale {
+    filter: grayscale(1) contrast(1.15) brightness(0.65);
+    background-position: center 90%;
+    background-size: 145%;
+  }
+  .collect-card .card-img.grayscale::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(160deg, rgba(232,187,114,0.75), rgba(43,26,12,0.9));
+    mix-blend-mode: color;
   }
   .collect-card .card-lock {
     position: absolute; top: 50%; left: 50%; transform: translate(-50%, -55%);
@@ -479,16 +539,26 @@
 <!-- LOGIN SCREEN -->
 <div id="screen-login" class="screen active">
   <div class="login-wrap">
-    <div class="login-card">
+    <div class="login-card" id="login-card">
       <h2>鶯歌壯遊實境解謎</h2>
       <p class="desc">請輸入您報名時收到的遊戲序號</p>
       <input type="text" id="code-input" placeholder="例如 A3K9-XY72" maxlength="12" autocomplete="off">
       <button id="login-btn" onclick="handleLogin()">開始遊戲</button>
       <div class="error-msg" id="login-error"></div>
     </div>
+    <div class="login-card" id="login-restoring" style="display:none;">
+      <p class="desc" style="margin:0;">登入中...</p>
+    </div>
     <div class="stores-entry-link" onclick="openStores()">🏪 查看合作店家與兌換資訊</div>
   </div>
 </div>
+<script>
+  // avoid a flash of the empty login form while we auto-restore a saved session below
+  if (localStorage.getItem("yingge_last_code")) {
+    document.getElementById("login-card").style.display = "none";
+    document.getElementById("login-restoring").style.display = "block";
+  }
+</script>
 
 <!-- MAP SCREEN -->
 <div id="screen-map" class="screen">
@@ -524,7 +594,8 @@
   </div>
   <div class="content">
     <div class="arrive-card">
-      <div class="arrive-icon">📍</div>
+      <div class="arrive-photo" id="arrive-photo" style="display:none;"></div>
+      <div class="arrive-icon" id="arrive-icon">📍</div>
       <h2 id="arrive-name" class="arrive-name"></h2>
       <p class="arrive-hint">請先實際前往這個地點，抵達後才能開始這一站的關卡</p>
 
@@ -580,6 +651,16 @@
         <div class="rpg-progress" id="rpg-progress"></div>
       </div>
     </div>
+    <div class="rpg-photo-overlay" id="rpg-photo-overlay">
+      <img id="rpg-photo-img" alt="">
+      <div class="rpg-photo-cap" id="rpg-photo-cap"></div>
+    </div>
+    <div class="rpg-notice-overlay" id="rpg-notice-overlay" onclick="advanceRpg()">
+      <div class="rpg-notice-card">
+        <div id="rpg-notice-text"></div>
+        <div class="rpg-notice-hint">▼ 點擊繼續</div>
+      </div>
+    </div>
     <div class="rpg-dialogue-box" onclick="advanceRpg()">
       <div class="rpg-nameplate" id="rpg-speaker"></div>
       <div class="rpg-text" id="rpg-text"></div>
@@ -588,8 +669,8 @@
     </div>
   </div>
   <div class="rpg-intro-overlay" id="rpg-intro">
-    <div class="rpg-watch">🕰️</div>
-    <div class="rpg-intro-text">時光倒流至 1903 年……</div>
+    <div class="rpg-watch">📍</div>
+    <div class="rpg-intro-text" id="rpg-intro-text"></div>
   </div>
 </div>
 
@@ -631,559 +712,12 @@
     <h3 id="reward-title">恭喜解鎖優惠券</h3>
     <p id="reward-desc">請至服務台出示序號兌換</p>
     <div class="code-box" id="reward-code"></div>
-    <button onclick="closeRewardModal()">前往票券夾查看</button>
+    <button onclick="closeRewardModal()">我知道了</button>
   </div>
 </div>
 
+<script src="stations.js"></script>
 <script>
-const STATIONS = [
-  {
-    "id": 1,
-    "name": "站點一鶯歌車站的時光線索",
-    "story": "一九〇三年，鶯歌車站在這裡設立，運煤的蒸汽火車日夜穿梭，帶動了整個小鎮的窯業興盛。你站在月台上，彷彿還能聽見當年礦車碰撞鐵軌的聲音……",
-    "questions": [
-      {
-        "qtype": "選擇題",
-        "question": "仔細觀察鶯歌火車站的鐵道，你能數出幾條軌道？",
-        "options": [
-          "6條",
-          "8條",
-          "10條",
-          "12條"
-        ],
-        "fact": "鶯歌車站曾是運煤鐵道的重要轉運站，最多曾有多條軌道同時作業，見證了當年礦業運輸的繁忙景象。"
-      },
-      {
-        "qtype": "選擇題",
-        "question": "抬頭看看車站最上方，兩個相望的動物造型是什麼？",
-        "options": [
-          "魚",
-          "貓",
-          "狗",
-          "鳥"
-        ],
-        "fact": "「鶯」與「歌」兩字合起來，正是「鶯歌」地名的由來，屋頂上的鳥形裝飾也呼應了這個典故。"
-      },
-      {
-        "qtype": "選擇題",
-        "question": "你知道當時鶯歌車站主要轉運哪一種礦產嗎？",
-        "options": [
-          "金礦",
-          "鐵礦",
-          "煤礦",
-          "石灰石"
-        ],
-        "fact": "日治時期，鶯歌因鄰近煤層與陶土產地，車站曾是運煤與運送陶器的重要轉運站。"
-      },
-      {
-        "qtype": "選擇題",
-        "question": "請問鶯歌車站最早的站名是什麼？",
-        "options": [
-          "鷹哥石驛",
-          "鶯歌石驛",
-          "鷹哥驛",
-          "鶯歌驛"
-        ],
-        "fact": "鶯歌車站最初稱為「鶯歌石驛」，得名自鄰近的鶯歌石地標，後來才逐漸簡化成現在的「鶯歌」站名。"
-      }
-    ],
-    "dialogue": [
-      {
-        "type": "line",
-        "char": "guide",
-        "text": "（一陣風吹過，月台上的煤油燈忽明忽暗……）"
-      },
-      {
-        "type": "line",
-        "char": "guide",
-        "text": "喔？又一位旅人循著時光的軌跡找上門來了。歡迎回到一九〇三年的鶯歌驛。"
-      },
-      {
-        "type": "line",
-        "char": "hero",
-        "text": "這裡……怎麼感覺像走進了一張老照片裡？空氣中還有煤煙的味道。"
-      },
-      {
-        "type": "line",
-        "char": "guide",
-        "text": "我在這裡看守月台超過一世紀了，可惜大多數人都只是匆匆一瞥，沒有真正「看見」這座車站。"
-      },
-      {
-        "type": "line",
-        "char": "guide",
-        "text": "既然你來了，不如陪我走一趟——用你的眼睛，替我重新認識這個地方吧。"
-      },
-      {
-        "type": "question",
-        "qIndex": 0,
-        "char": "guide",
-        "text": "先低頭看看腳下，仔細數數看：這月台邊，究竟鋪了幾條鐵軌？",
-        "correctReaction": "答對了！沒錯，正是這十條軌道，當年日夜川流不息地運送著鶯歌燒出的陶器與挖出的煤炭。",
-        "wrongHints": [
-          "再靠近一點看，別漏數了最外側那一條……",
-          "試著用手指一條一條數過去，仔細一點。"
-        ]
-      },
-      {
-        "type": "line",
-        "char": "guide",
-        "text": "呵，果然是個仔細的旅人。走，我們再往上瞧瞧。"
-      },
-      {
-        "type": "question",
-        "qIndex": 1,
-        "char": "guide",
-        "text": "抬頭看看車站最頂端，那對相望的動物是什麼呢？",
-        "correctReaction": "正是「鶯」與「歌」——這座車站的名字，就藏在屋頂上呢。",
-        "wrongHints": [
-          "再看清楚一點，牠們有翅膀、會唱歌……"
-        ]
-      },
-      {
-        "type": "line",
-        "char": "hero",
-        "text": "原來站名的由來一直都在我們頭上，只是很少有人抬頭看。"
-      },
-      {
-        "type": "line",
-        "char": "guide",
-        "text": "這座車站的一磚一瓦，其實都跟腳下的土地脫不了關係。"
-      },
-      {
-        "type": "question",
-        "qIndex": 2,
-        "char": "guide",
-        "text": "你知道當時這座車站，主要轉運哪一種礦產嗎？",
-        "correctReaction": "沒錯，正是煤礦撐起了整條鐵路線的忙碌。",
-        "wrongHints": [
-          "想想看，那個年代窯場燒陶，最需要什麼來生火？"
-        ]
-      },
-      {
-        "type": "line",
-        "char": "guide",
-        "text": "最後，讓我考考你這座車站的身世。"
-      },
-      {
-        "type": "question",
-        "qIndex": 3,
-        "char": "guide",
-        "text": "你可知道，這座車站最早並不叫「鶯歌」，它原本的名字是？",
-        "correctReaction": "「鶯歌石驛」——這才是這座車站最初的名字啊。時代變了，連名字都跟著換上了新裝。",
-        "wrongHints": [
-          "再想想，那是一個更古老、更貼近地形的名字……"
-        ]
-      },
-      {
-        "type": "line",
-        "char": "guide",
-        "text": "很高興今天有你陪我走這一趟。旅人，願你把這段時光，也一併帶往下一站。"
-      },
-      {
-        "type": "line",
-        "char": "hero",
-        "text": "謝謝你，楊嚮導。我會把今天看到的，好好記下來的。"
-      },
-      {
-        "type": "end"
-      }
-    ],
-    "background": "角色照片素材庫/台鐵鶯歌火車站.jpg",
-    "characters": {
-      "guide": {
-        "name": "楊嚮導",
-        "portrait": "角色照片素材庫/楊嚮導.png",
-        "side": "left"
-      },
-      "hero": {
-        "name": "小承",
-        "portrait": "角色照片素材庫/小承.png",
-        "side": "right"
-      }
-    },
-    "location": {
-      "lat": 24.95698366700082,
-      "lng": 121.24059043154006,
-      "radius": 80
-    }
-  },
-  {
-    "id": 2,
-    "name": "站點二走進市拿陶藝",
-    "questions": [
-      {
-        "qtype": "選擇題",
-        "question": "市拿陶藝的創辦人是誰？",
-        "options": [
-          "許明徹",
-          "許自然",
-          "許元和",
-          "許元國"
-        ]
-      },
-      {
-        "qtype": "選擇題",
-        "question": "「市拿」這個名字有什麼特別的意涵？",
-        "options": [
-          "鶯歌的古地名",
-          "一種傳統製陶方法",
-          "與英文China有關",
-          "取自早期原住民語意"
-        ]
-      },
-      {
-        "qtype": "選擇題",
-        "question": "你知道市拿陶藝早期生產最有名的是哪一類陶瓷？",
-        "options": [
-          "日用陶瓷",
-          "建築陶瓷",
-          "仿古藝術陶瓷",
-          "工業陶瓷"
-        ]
-      },
-      {
-        "qtype": "選擇題",
-        "question": "早期鶯歌窯場常以煤炭燒窯，黑煙曾是街區常見的景象，後來窯業逐漸改用較乾淨的能源，這項改變主要是引進了哪種能源？",
-        "options": [
-          "汽油",
-          "天然氣",
-          "電力",
-          "柴油"
-        ]
-      }
-    ]
-  },
-  {
-    "id": 3,
-    "name": "站點三鶯歌石",
-    "questions": [
-      {
-        "qtype": "選擇題",
-        "question": "傳說中，鶯歌石為什麼會少了一截？",
-        "options": [
-          "巨石曾被山崩掩埋而成",
-          "鄭成功下令開砲，轟斷了巨鳥的頭部",
-          "後人開採造成缺口",
-          "長年風吹雨淋自然風化"
-        ]
-      },
-      {
-        "qtype": "選擇題",
-        "question": "找到鶯歌石岩洞旁的石碑，仔細觀察碑文。碑文中提到，這塊石頭最初為什麼被稱為「鸚哥石」？",
-        "options": [
-          "附近曾有許多鸚哥",
-          "石頭形狀像鸚哥",
-          "傳說鸚哥住在洞裡",
-          "因為鄭成功曾在此養鸚哥"
-        ]
-      },
-      {
-        "qtype": "選擇題",
-        "question": "觀察登山地圖,鶯歌除了「鶯歌石」這顆鳥形巨石外,哪座廟宇因供奉這顆「龜公石」,又被稱為「龜公廟」？",
-        "options": [
-          "妙善宮",
-          "宏德宮",
-          "碧龍宮",
-          "福德宮"
-        ]
-      },
-      {
-        "qtype": "選擇題",
-        "question": "現在的孫龍步道是一條登山步道,但在百年前這裡曾經有另一種用途,你知道孫龍步道的前身是什麼嗎？",
-        "options": [
-          "運送陶土的道路",
-          "採礦台車行駛的輕便鐵道",
-          "軍事運輸道路",
-          "茶葉運輸道路"
-        ]
-      }
-    ]
-  },
-  {
-    "id": 4,
-    "name": "站點四尋找老煙囪",
-    "questions": [
-      {
-        "qtype": "選擇題",
-        "question": "仔細觀察眼前的老煙囪，它最明顯的外觀特色是什麼？",
-        "options": [
-          "圓形",
-          "八角形",
-          "四角形",
-          "六角形"
-        ]
-      },
-      {
-        "qtype": "選擇題",
-        "question": "鶯歌四角窯主要使用什麼作為燃料？",
-        "options": [
-          "木材",
-          "天然氣",
-          "煤炭",
-          "瓦斯"
-        ]
-      },
-      {
-        "qtype": "選擇題",
-        "question": "鶯歌四角窯改良了傳統窯燒的方式，採用哪一種窯型設計？",
-        "options": [
-          "直焰式",
-          "平焰式",
-          "倒焰式",
-          "旋焰式"
-        ]
-      },
-      {
-        "qtype": "複選題",
-        "question": "煙囪為何逐漸消失？主要原因是什麼",
-        "options": [
-          "煙囪製造成本太高",
-          "陶瓷工廠開始集中於特定區域內，所以被限制。",
-          "窯爐陸續被改用瓦斯窯取代",
-          "排煙造成空氣汙染被禁止使用"
-        ],
-        "multi": true
-      }
-    ]
-  },
-  {
-    "id": 5,
-    "name": "站點五烘爐窯",
-    "questions": [
-      {
-        "qtype": "選擇題",
-        "question": "仔細觀察附近古厝的牆面,會發現磚瓦的種類並不完全相同,為什麼一面牆上會出現不同種類的磚瓦？",
-        "options": [
-          "因應不同工匠使用材料的習慣",
-          "為了消化窯廠的瑕疵品及節省成本",
-          "為了讓牆面更加美觀",
-          "住戶刻意要求使用不同時期的磚瓦"
-        ]
-      },
-      {
-        "qtype": "選擇題",
-        "question": "過去烘爐窯主要燒製哪一類陶瓷？",
-        "options": [
-          "藝術陶瓷",
-          "建築用磚瓦",
-          "碗盤等生活器皿",
-          "陶瓷玩偶"
-        ]
-      },
-      {
-        "qtype": "選擇題",
-        "question": "這座烘爐窯建於日治時期,見證了鶯歌陶業的發展。誰在1929年建造了這座烘爐窯？",
-        "options": [
-          "賴氏人家",
-          "鶯歌政治人物",
-          "賴婆",
-          "陳斐然家族族人"
-        ]
-      },
-      {
-        "qtype": "複選題",
-        "question": "窯廠燒壞的器皿被打碎掩埋後，後來重新出現在故事巷。這些老瓷片被如何再利用？",
-        "options": [
-          "製作新陶器",
-          "製作牆面裝飾",
-          "鑲嵌於步道路面",
-          "製作陶瓷藝術品"
-        ],
-        "multi": true
-      }
-    ]
-  },
-  {
-    "id": 6,
-    "name": "站點六益成記",
-    "questions": [
-      {
-        "qtype": "選擇題",
-        "question": "益成記窯場是由誰創辦？",
-        "options": [
-          "吳鞍",
-          "王龜生",
-          "陳斐然",
-          "陳發"
-        ]
-      },
-      {
-        "qtype": "選擇題",
-        "question": "益成記被稱為鶯歌的「陶瓷大學」與下列何者無關？",
-        "options": [
-          "曾經是鶯歌製陶技術的重要傳承地",
-          "培養過許多很有名的製陶師傅",
-          "曾經研發許多生活用陶瓷品",
-          "此處在當時是鶯歌重要的陶瓷交易場所"
-        ]
-      },
-      {
-        "qtype": "選擇題",
-        "question": "益成記曾引進哪裡的陶藝師傅？",
-        "options": [
-          "大陸景德鎮",
-          "日本",
-          "大陸福州",
-          "台灣中南部"
-        ]
-      }
-    ]
-  },
-  {
-    "id": 7,
-    "name": "站點七大榕樹和窯工聚落遺址",
-    "questions": [
-      {
-        "qtype": "選擇題",
-        "question": "早期鶯歌文化路有「兩陳一余」三大地主，兩陳家土地廣闊。早期兩大家族是以什麼作為土地分界？",
-        "options": [
-          "以道路作為分界",
-          "以山脈作為分界",
-          "以兩棵大榕樹連成一線作為界線",
-          "以溪流作為分界"
-        ]
-      },
-      {
-        "qtype": "選擇題",
-        "question": "早期鶯歌窯場缺乏工人，為了吸引外地陶工前來工作，窯廠老闆採取了什麼方式？",
-        "options": [
-          "提供免費餐食與住宿",
-          "提供土地讓陶工自行蓋房子",
-          "提供高薪酬",
-          "傳授陶瓷製作技藝當交換"
-        ]
-      },
-      {
-        "qtype": "選擇題",
-        "question": "經過幾代人的傳承後，這些百年老屋為什麼還保留著？",
-        "options": [
-          "老屋屋齡太舊，修繕成本太高。",
-          "土地與房屋產權複雜，難以整合。",
-          "聚落人口外移，無暇照顧。",
-          "老屋保存與都市開發產生衝突。"
-        ]
-      }
-    ]
-  },
-  {
-    "id": 8,
-    "name": "站點八陳映真故居",
-    "questions": [
-      {
-        "qtype": "選擇題",
-        "question": "陳映真童年在鶯歌生活，身邊有許多陶工、礦工與搬運工。這段經歷對他的創作有何影響？",
-        "options": [
-          "讓他對研究工人議題有興趣",
-          "讓他對成為工程議題有興趣",
-          "使他更能深刻體會勞動階級的生活",
-          "讓他對鶯歌文史相關創作有興趣"
-        ]
-      },
-      {
-        "qtype": "選擇題",
-        "question": "陳映真創辦《人間》雜誌,主要希望透過報導為什麼發聲？",
-        "options": [
-          "社會各界知名人士",
-          "人世間的悲歡離合",
-          "社會底層與弱勢族群",
-          "人間藝術工作者"
-        ]
-      },
-      {
-        "qtype": "選擇題",
-        "question": "下列哪一項曾出現在《山路》小說中所描寫的鶯歌景象？",
-        "options": [
-          "鶯歌石與臺車道",
-          "鶯歌老街與陶瓷博物館",
-          "鶯歌車站與窯場",
-          "汪洋居與益成記"
-        ]
-      }
-    ]
-  },
-  {
-    "id": 9,
-    "name": "站點九鶯歌福興宮",
-    "questions": [
-      {
-        "qtype": "選擇題",
-        "question": "仔細觀察福興宮,你會發現有什麼特別之處?",
-        "options": [
-          "廟中廟建築",
-          "日治時期仿巴洛克式建築",
-          "子母廟建築",
-          "石頭厝建築"
-        ]
-      },
-      {
-        "qtype": "選擇題",
-        "question": "傳說陶神羅文擅長「手作」陶，弟弟羅明擅長「車製」陶。請問現代那種製陶手法比較接近「車製」方式呢？",
-        "options": [
-          "陶瓷模型製作",
-          "福州手擠陶坯製作",
-          "純手捏塑陶土製作",
-          "手拉坏製作"
-        ]
-      },
-      {
-        "qtype": "選擇題",
-        "question": "鶯歌窯場過去會在福興宮祭拜陶神羅明。羅明的誕辰是哪一天？",
-        "options": [
-          "農曆三月十五日",
-          "農曆六月六日",
-          "農曆九月九日",
-          "農曆九月十五日"
-        ]
-      }
-    ]
-  },
-  {
-    "id": 10,
-    "name": "站點十鶯歌老街-古早窯(觀察)",
-    "questions": [
-      {
-        "qtype": "選擇題",
-        "question": "走進「古早窯」，他是屬於哪一種窯種？",
-        "options": [
-          "蛇窯",
-          "登窯",
-          "四角窯",
-          "隧道窯"
-        ]
-      },
-      {
-        "qtype": "選擇題",
-        "question": "古早窯主要是生產哪些產品？",
-        "options": [
-          "碗盤與茶具",
-          "磁磚(馬賽克)",
-          "花器與陶甕",
-          "工業用磁器"
-        ]
-      },
-      {
-        "qtype": "選擇題",
-        "question": "隧道窯燒製時,工人是如何將成品運送進出窯爐呢？",
-        "options": [
-          "人力搬運",
-          "用鐵鈎勾窯車方式進出",
-          "用台車一節接一節依序運送",
-          "以輸送帶傳動運送"
-        ]
-      },
-      {
-        "qtype": "選擇題",
-        "question": "隧道窯引進臺灣後，為提升燒製效率，燃料後來改用什麼？",
-        "options": [
-          "木柴",
-          "柴油",
-          "重油",
-          "天然氣"
-        ]
-      }
-    ]
-  }
-];
 
 // ---------- Backend API (Google Apps Script Web App) ----------
 // 正確答案、過關判定、票券核銷全部都在伺服器端處理，前端只負責顯示與呼叫 API
@@ -1290,6 +824,7 @@ async function handleLogin() {
     state.code = res.code;
     loadPlayerIntoState(res);
     localStorage.setItem("yingge_last_code", res.code);
+    resetIdleTimer();
     showMap();
   } catch (e) {
     errEl.textContent = "連線失敗，請檢查網路後再試一次";
@@ -1308,10 +843,36 @@ function loadPlayerIntoState(data) {
 
 function logout() {
   state = { code: null, progress: {}, name: "", couponA: "locked", couponB: "locked", couponInfo: {} };
+  localStorage.removeItem("yingge_last_code");
+  localStorage.removeItem("yingge_pending_arrival");
   document.getElementById("code-input").value = "";
   document.getElementById("login-error").textContent = "";
+  document.getElementById("login-card").style.display = "";
+  document.getElementById("login-restoring").style.display = "none";
   showScreen("screen-login");
+  stopIdleTimer();
 }
+
+// ---------- Idle auto-logout: stay signed in indefinitely, but log out after 15 minutes with no interaction ----------
+const IDLE_LIMIT_MS = 15 * 60 * 1000;
+let idleTimer = null;
+
+function resetIdleTimer() {
+  if (!state.code) return; // only relevant once logged in
+  clearTimeout(idleTimer);
+  idleTimer = setTimeout(() => {
+    if (state.code) logout();
+  }, IDLE_LIMIT_MS);
+}
+
+function stopIdleTimer() {
+  clearTimeout(idleTimer);
+  idleTimer = null;
+}
+
+["click", "touchstart", "keydown", "scroll"].forEach(evt =>
+  window.addEventListener(evt, resetIdleTimer, { passive: true })
+);
 
 function showScreen(id) {
   if ("speechSynthesis" in window) window.speechSynthesis.cancel(); // don't let TTS keep talking after the player navigates away
@@ -1345,14 +906,12 @@ function renderMap() {
 
     const statusLine = done
       ? `<div class="card-status">✓ 已收藏</div>`
-      : needsTravel
-        ? `<div class="card-status pin">📍 需前往現場</div>`
-        : `<div class="card-status">尚未解鎖</div>`;
+      : `<div class="card-status">尚未解鎖</div>`;
 
-    // the photo only appears once the station is completed; locked cards stay a plain card-back
-    const imageLayer = done && st.background
-      ? `<div class="card-img" style="background-image:url('${encodeURI(st.background)}')"></div>`
-      : `<div class="card-lock">${done ? "🖼️" : "🔒"}</div>`;
+    // locked cards preview the photo in grayscale; it turns full color once the station is completed
+    const imageLayer = st.background
+      ? `<div class="card-img${done ? "" : " grayscale"}" style="background-image:url('${encodeURI(st.background)}')"></div>`
+      : `<div class="card-lock">${done ? "🖼️" : (st.icon || "🔒")}</div>`;
 
     card.innerHTML = `
       ${imageLayer}
@@ -1616,9 +1175,20 @@ let arriveState = null;
 
 function openArrivalGate(st) {
   currentStationId = st.id;
+  localStorage.setItem("yingge_pending_arrival", st.id);
   arriveState = { st, watchId: null };
   document.getElementById("arrive-title").textContent = "站點 " + st.id;
   document.getElementById("arrive-name").textContent = st.name.replace(/^站點[一二三四五六七八九十]+/, "");
+  const photoEl = document.getElementById("arrive-photo");
+  const iconEl = document.getElementById("arrive-icon");
+  if (st.background) {
+    photoEl.style.backgroundImage = `url("${encodeURI(st.background)}")`;
+    photoEl.style.display = "block";
+    iconEl.style.display = "none";
+  } else {
+    photoEl.style.display = "none";
+    iconEl.style.display = "block";
+  }
   const startBtn = document.getElementById("arrive-start-btn");
   startBtn.disabled = true;
   startBtn.textContent = "抵達後即可開始關卡";
@@ -1677,12 +1247,14 @@ function openGoogleNav() {
 
 function confirmArrivalAndStart() {
   const st = arriveState.st;
+  localStorage.removeItem("yingge_pending_arrival");
   stopWatchingLocation();
   enterStationContent(st);
 }
 
 function manualConfirmArrival() {
   const st = arriveState.st;
+  localStorage.removeItem("yingge_pending_arrival");
   stopWatchingLocation();
   enterStationContent(st);
 }
@@ -1724,7 +1296,7 @@ function stopWatchingLocation() {
   if (arriveState) arriveState.watchId = null;
 }
 
-function goToMap() { stopWatchingLocation(); showMap(); }
+function goToMap() { localStorage.removeItem("yingge_pending_arrival"); stopWatchingLocation(); showMap(); }
 
 function renderStation(st) {
   const container = document.getElementById("station-content");
@@ -1765,7 +1337,7 @@ function speakQuestion(stationId, idx) {
   const q = st.questions[idx];
   let text = q.question;
   if (q.options && q.options.length) {
-    text += "。" + q.options.map((opt, i) => `選項${i + 1}：${opt}`).join("。");
+    text += "" + q.options.map((opt, i) => `選項${i + 1}：${opt}`).join("");
   }
   speak(text);
 }
@@ -1951,6 +1523,7 @@ function openStationRPG(st) {
   showScreen("screen-rpg");
   renderRpgBackground(st);
   const intro = document.getElementById("rpg-intro");
+  document.getElementById("rpg-intro-text").textContent = st.name || "";
   intro.classList.add("active");
   setTimeout(() => {
     intro.classList.remove("active");
@@ -2018,13 +1591,23 @@ function renderRpgStep() {
   const textEl = document.getElementById("rpg-text");
   const choicesEl = document.getElementById("rpg-choices");
   const continueEl = document.getElementById("rpg-continue");
+  const noticeEl = document.getElementById("rpg-notice-overlay");
+  const photoEl = document.getElementById("rpg-photo-overlay");
   choicesEl.innerHTML = "";
   continueEl.style.display = "none";
+  noticeEl.classList.remove("active");
+  if (step.type !== "photo") photoEl.classList.remove("active");
 
   if (step.type === "end") {
     speakerEl.textContent = "";
-    textEl.textContent = "";
+    textEl.textContent = "通關中...";
     finishRpgStation();
+    return;
+  }
+
+  if (step.type === "notice") {
+    document.getElementById("rpg-notice-text").textContent = step.text;
+    noticeEl.classList.add("active");
     return;
   }
 
@@ -2033,8 +1616,13 @@ function renderRpgStep() {
   renderRpgCharacters(step);
   rpgState.advanceAfterReaction = false;
   rpgState.showingReaction = false;
+  if (step.type === "photo" && step.photo) {
+    document.getElementById("rpg-photo-img").src = step.photo;
+    document.getElementById("rpg-photo-cap").textContent = step.caption || "";
+    photoEl.classList.add("active");
+  }
   typeText(textEl, step.text, () => {
-    if (step.type === "line") {
+    if (step.type === "line" || step.type === "photo") {
       continueEl.style.display = "block";
     } else if (step.type === "question") {
       renderRpgQuestion(step);
@@ -2047,8 +1635,8 @@ function speakRpgCurrent() {
   let text = rpgState.currentFullText || document.getElementById("rpg-text").textContent;
   const optionBtns = document.querySelectorAll("#rpg-choices .ticket-choice");
   if (optionBtns.length) {
-    const opts = Array.from(optionBtns).map((b, i) => `選項${i + 1}：${b.textContent}`).join("。");
-    text = text + "。" + opts;
+    const opts = Array.from(optionBtns).map((b, i) => `選項${i + 1}：${b.textContent}`).join("");
+    text = text + "" + opts;
   }
   speak(text);
 }
@@ -2087,7 +1675,7 @@ function skipTyping() {
   }
 
   document.getElementById("rpg-text").textContent = step.text;
-  if (step.type === "line") {
+  if (step.type === "line" || step.type === "photo") {
     document.getElementById("rpg-continue").style.display = "block";
   } else if (step.type === "question") {
     renderRpgQuestion(step);
@@ -2106,7 +1694,14 @@ function advanceRpg() {
 function renderRpgQuestion(step) {
   const q = rpgState.st.questions[step.qIndex];
   const choicesEl = document.getElementById("rpg-choices");
-  if (q.options && q.options.length) {
+  if (q.multi) {
+    choicesEl.innerHTML = `<div class="rpg-multi-options">` + q.options.map((opt, i) => `
+      <label class="rpg-option-check">
+        <input type="checkbox" id="rpg-chk-${step.qIndex}-${i}" value="${escapeAttr(opt)}">
+        <span>${opt}</span>
+      </label>`).join("") + `</div>
+      <button type="button" class="rpg-multi-submit-btn" onclick="answerRpgMulti(${step.qIndex})">送出</button>`;
+  } else if (q.options && q.options.length) {
     choicesEl.innerHTML = q.options.map(opt =>
       `<button type="button" class="ticket-choice" onclick="answerRpgQuestion(${step.qIndex}, this, '${escapeAttr(opt)}')">${opt}</button>`
     ).join("");
@@ -2126,6 +1721,11 @@ function answerRpgQuestion(qIndex, btnEl, chosen) {
 function answerRpgFill(qIndex) {
   const input = document.getElementById("rpg-fill-input");
   submitRpgAnswer(qIndex, input.value, null);
+}
+
+function answerRpgMulti(qIndex) {
+  const checked = Array.from(document.querySelectorAll(`#rpg-choices input[type=checkbox]:checked`)).map(el => el.value);
+  submitRpgAnswer(qIndex, checked, null);
 }
 
 async function submitRpgAnswer(qIndex, chosen, btnEl) {
@@ -2198,9 +1798,9 @@ function exitRpgToMap() {
 
 function afterStationComplete(unlocked) {
   if (unlocked === "A") {
-    showRewardModal("🎟", "恭喜解鎖優惠券A！", "完成5個站點，票券已放進你的票券夾");
+    showRewardModal("🎟", "恭喜解鎖優惠券A！", "請至票券夾查看使用");
   } else if (unlocked === "B") {
-    showRewardModal("🏆", "恭喜全破關！解鎖優惠券B", "完成全部10個站點，票券已放進你的票券夾");
+    showRewardModal("🏆", "恭喜全破關！解鎖優惠券B", "請至票券夾查看使用");
   } else {
     goToMap();
   }
@@ -2219,21 +1819,43 @@ function showRewardModal(emoji, title, desc) {
 
 function closeRewardModal() {
   document.getElementById("reward-overlay").classList.remove("active");
-  if (lastUnlockedType) {
-    const type = lastUnlockedType;
-    lastUnlockedType = null;
-    openTicketList();
-    expandTicket(type);
-  } else {
-    goToMap();
-  }
+  lastUnlockedType = null;
+  goToMap();
 }
 
-// auto-fill last used code for convenience during testing
-window.addEventListener("load", () => {
+// stay logged in across page refreshes (until the 15-minute idle timeout above):
+// auto re-login with the last used code as soon as the script runs, without waiting for full page load
+(async () => {
   const last = localStorage.getItem("yingge_last_code");
-  if (last) document.getElementById("code-input").value = last;
-});
+  if (!last) return;
+  document.getElementById("code-input").value = last;
+  const errEl = document.getElementById("login-error");
+  try {
+    const res = await apiGet({ action: "login", code: last });
+    if (!res.ok) {
+      // saved code no longer valid server-side — drop it and fall back to the login form
+      localStorage.removeItem("yingge_last_code");
+      document.getElementById("login-card").style.display = "";
+      document.getElementById("login-restoring").style.display = "none";
+      return;
+    }
+    state.code = res.code;
+    loadPlayerIntoState(res);
+    errEl.textContent = "";
+    resetIdleTimer();
+    const pendingId = localStorage.getItem("yingge_pending_arrival");
+    const pendingSt = pendingId && STATIONS.find(s => String(s.id) === String(pendingId));
+    if (pendingSt && !state.progress[pendingSt.id]) {
+      openArrivalGate(pendingSt);
+    } else {
+      localStorage.removeItem("yingge_pending_arrival");
+      showMap();
+    }
+  } catch (e) {
+    document.getElementById("login-card").style.display = "";
+    document.getElementById("login-restoring").style.display = "none";
+  }
+})();
 </script>
 </body>
 </html>
