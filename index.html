@@ -390,6 +390,10 @@
     box-shadow: 0 14px 32px rgba(0,0,0,0.5); max-width: 320px;
   }
   .rpg-notice-hint { margin-top: 10px; font-size: 12px; opacity: 0.75; font-weight: 400; color: var(--rpg-ember); }
+  .img-loading-hint {
+    font-family: "Noto Sans TC", sans-serif; font-size: 12.5px; color: #8a7a68; text-align: center;
+    padding: 28px 0; margin-top: 10px; background: rgba(0,0,0,0.05); border-radius: 8px;
+  }
   .rpg-notice-img { display: block; width: 100%; max-height: 34vh; object-fit: contain; margin-top: 14px; border-radius: 8px; background: rgba(0,0,0,0.08); }
 
   /* Polaroid-style old-photo popup shown mid-dialogue */
@@ -539,21 +543,24 @@
   .collect-card:active { transform: scale(0.98); }
 
   .collect-card .card-img {
-    position: absolute; inset: 0; background-size: cover; background-position: center 30%;
+    position: absolute; inset: 10px 10px 0 10px; border-radius: 5px;
+    background-size: contain; background-position: center; background-repeat: no-repeat;
+    background-color: var(--card);
+    border: 1px solid rgba(124,152,133,0.3); box-shadow: inset 0 0 0 4px var(--card);
     filter: saturate(1.05) brightness(0.96) contrast(1.02);
   }
   .collect-card .card-img.grayscale {
     filter: grayscale(1) contrast(1.02) brightness(1.05);
-    background-position: center 30%;
-    background-size: 105%;
   }
   .collect-card .card-img.grayscale::after {
-    content: ""; position: absolute; inset: 0; bottom: 22%;
+    content: ""; position: absolute; inset: 0; border-radius: 4px;
     background: linear-gradient(160deg, rgba(124,152,133,0.5), rgba(201,138,94,0.55));
     mix-blend-mode: color;
   }
   .collect-card .card-lock {
-    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    position: absolute; inset: 10px 10px 0 10px; border-radius: 5px;
+    border: 1px solid rgba(124,152,133,0.3);
+    display: flex; align-items: center; justify-content: center;
     font-size: 22px; opacity: 0.45;
     background:
       repeating-linear-gradient(135deg, rgba(124,152,133,0.10) 0 8px, transparent 8px 16px),
@@ -711,12 +718,14 @@
       </div>
     </div>
     <div class="rpg-photo-overlay" id="rpg-photo-overlay">
+      <div class="img-loading-hint" id="rpg-photo-loading">圖片載入中…</div>
       <img id="rpg-photo-img" alt="">
       <div class="rpg-photo-cap" id="rpg-photo-cap"></div>
     </div>
     <div class="rpg-notice-overlay" id="rpg-notice-overlay" onclick="advanceRpg()">
       <div class="rpg-notice-card">
         <div id="rpg-notice-text"></div>
+        <div class="img-loading-hint" id="rpg-notice-loading" style="display:none;">圖片載入中…</div>
         <img class="rpg-notice-img" id="rpg-notice-img" alt="" style="display:none;">
         <div class="rpg-notice-hint">▼ 點擊繼續</div>
       </div>
@@ -730,6 +739,7 @@
     </div>
     <div class="rpg-knowledge-overlay" id="rpg-knowledge-overlay" onclick="advanceRpg()">
       <div class="rpg-knowledge-card">
+        <div class="img-loading-hint" id="rpg-knowledge-loading">圖片載入中…</div>
         <img class="rpg-knowledge-img" id="rpg-knowledge-img" alt="">
         <div class="rpg-knowledge-body">
           <div class="rpg-knowledge-title" id="rpg-knowledge-title"></div>
@@ -1271,8 +1281,9 @@ function openArrivalGate(st) {
   document.getElementById("arrive-name").textContent = st.name.replace(/^站點[一二三四五六七八九十]+/, "");
   const photoEl = document.getElementById("arrive-photo");
   const iconEl = document.getElementById("arrive-icon");
-  if (st.background) {
-    photoEl.style.backgroundImage = `url("${encodeURI(st.background)}")`;
+  const arrivePhoto = st.arrivePhoto || st.background;
+  if (arrivePhoto) {
+    photoEl.style.backgroundImage = `url("${encodeURI(arrivePhoto)}")`;
     photoEl.style.display = "block";
     iconEl.style.display = "none";
   } else {
@@ -1674,6 +1685,19 @@ function renderRpgProgress() {
   ).join("");
 }
 
+// shows a "圖片載入中…" placeholder while a dialogue image is still fetching, since on a
+// slow connection the surrounding text/card can appear well before the photo does
+function setImgWithLoading(imgEl, loadingId, src) {
+  const loadingEl = document.getElementById(loadingId);
+  imgEl.style.display = "none";
+  loadingEl.style.display = "block";
+  const done = () => { loadingEl.style.display = "none"; imgEl.style.display = "block"; };
+  imgEl.onload = done;
+  imgEl.onerror = done;
+  imgEl.src = src;
+  if (imgEl.complete && imgEl.naturalWidth > 0) done();
+}
+
 function renderRpgStep() {
   if ("speechSynthesis" in window) window.speechSynthesis.cancel(); // stop last step's TTS before showing the next one
   const step = rpgState.st.dialogue[rpgState.idx];
@@ -1702,16 +1726,24 @@ function renderRpgStep() {
   if (step.type === "notice") {
     document.getElementById("rpg-notice-text").textContent = step.text;
     const noticeImgEl = document.getElementById("rpg-notice-img");
-    if (step.photo) { noticeImgEl.src = step.photo; noticeImgEl.style.display = "block"; }
-    else { noticeImgEl.style.display = "none"; }
+    if (step.photo) {
+      setImgWithLoading(noticeImgEl, "rpg-notice-loading", step.photo);
+    } else {
+      noticeImgEl.style.display = "none";
+      document.getElementById("rpg-notice-loading").style.display = "none";
+    }
     noticeEl.classList.add("active");
     return;
   }
 
   if (step.type === "knowledge") {
     const imgEl = document.getElementById("rpg-knowledge-img");
-    if (step.photo) { imgEl.src = step.photo; imgEl.style.display = "block"; }
-    else { imgEl.style.display = "none"; }
+    if (step.photo) {
+      setImgWithLoading(imgEl, "rpg-knowledge-loading", step.photo);
+    } else {
+      imgEl.style.display = "none";
+      document.getElementById("rpg-knowledge-loading").style.display = "none";
+    }
     document.getElementById("rpg-knowledge-title").textContent = step.title || "";
     document.getElementById("rpg-knowledge-text").textContent = step.text || "";
     knowledgeEl.classList.add("active");
@@ -1724,7 +1756,7 @@ function renderRpgStep() {
   rpgState.advanceAfterReaction = false;
   rpgState.showingReaction = false;
   if ((step.type === "photo" || step.type === "find") && step.photo) {
-    document.getElementById("rpg-photo-img").src = step.photo;
+    setImgWithLoading(document.getElementById("rpg-photo-img"), "rpg-photo-loading", step.photo);
     document.getElementById("rpg-photo-cap").textContent = step.caption || "";
     photoEl.classList.add("active");
   }

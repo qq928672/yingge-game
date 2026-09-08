@@ -204,7 +204,8 @@ const STATIONS = [
         "type": "end"
       }
     ],
-    "background": "角色照片素材庫/站點一/台鐵鶯歌火車站.jpg",
+    "background": "角色照片素材庫/站點一/台鐵鶯歌火車站.png",
+    "arrivePhoto": "角色照片素材庫/站點一/火車站售票口.png",
     "characters": {
       "guide": {
         "name": "楊嚮導",
@@ -446,7 +447,7 @@ const STATIONS = [
       "lng": 121.3547,
       "radius": 50
     },
-    "background": "角色照片素材庫/站點二/市拿陶藝.jpg"
+    "background": "角色照片素材庫/站點二/市拿陶藝.png"
   },
   {
     "id": 3,
@@ -777,7 +778,7 @@ const STATIONS = [
       "lng": 121.35938,
       "radius": 50
     },
-    "background": "角色照片素材庫/站點三/鶯歌石.jpg"
+    "background": "角色照片素材庫/站點三/鶯歌石.png"
   },
   {
     "id": 4,
@@ -960,7 +961,7 @@ const STATIONS = [
       "lng": 121.35817,
       "radius": 40
     },
-    "background": "角色照片素材庫/站點四/東享瓷器.jpg"
+    "background": "角色照片素材庫/站點四/東享瓷器.png"
   },
   {
     "id": 5,
@@ -1143,7 +1144,7 @@ const STATIONS = [
       "lng": 121.355479,
       "radius": 40
     },
-    "background": "角色照片素材庫/站點五/烘爐窯.jpg"
+    "background": "角色照片素材庫/站點五/烘爐窯.png"
   },
   {
     "id": 6,
@@ -1298,7 +1299,8 @@ const STATIONS = [
       "lat": 24.9535,
       "lng": 121.3557,
       "radius": 65
-    }
+    },
+    "background": "角色照片素材庫/站點六/益成記.png"
   },
   {
     "id": 7,
@@ -1438,7 +1440,7 @@ const STATIONS = [
         "side": "right"
       }
     },
-    "background": "角色照片素材庫/站點七/榕樹.jpg"
+    "background": "角色照片素材庫/站點七/榕樹.png"
   },
   {
     "id": 8,
@@ -1481,7 +1483,7 @@ const STATIONS = [
       "lng": 121.3553,
       "radius": 65
     },
-    "background": "角色照片素材庫/站點八/陳映真故居.jpg"
+    "background": "角色照片素材庫/站點八/陳映真故居.png"
   },
   {
     "id": 9,
@@ -1524,7 +1526,7 @@ const STATIONS = [
       "lng": 121.3508,
       "radius": 40
     },
-    "background": "角色照片素材庫/站點九/福興宮.jpg"
+    "background": "角色照片素材庫/站點九/福興宮.png"
   },
   {
     "id": 10,
@@ -1577,6 +1579,6 @@ const STATIONS = [
       "lng": 121.3505,
       "radius": 35
     },
-    "background": "角色照片素材庫/站點十/古早窯.jpg"
+    "background": "角色照片素材庫/站點十/古早窯.png"
   }
 ];
