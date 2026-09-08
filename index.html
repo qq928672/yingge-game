@@ -5,20 +5,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>鶯歌壯遊實境解謎</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Noto+Serif+TC:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Noto+Serif+TC:wght@500;600;700&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #f6f1e9;
-    --card: #ffffff;
-    --ink: #2b2117;
-    --sub: #8a7a68;
-    --accent: #c05621;
-    --accent-dark: #9c3d16;
+    --bg: #f4f0e6;
+    --card: #fdfbf5;
+    --ink: #3a332c;
+    --sub: #96897a;
+    --accent: #7c9885;
+    --accent-dark: #5f7a68;
+    --clay: #c98a5e;
+    --clay-dark: #a86a42;
     --done: #4a7c59;
     --line: #e6dcc9;
     --danger: #c0392b;
   }
   * { box-sizing: border-box; }
+  html { scrollbar-width: thin; scrollbar-color: var(--accent) transparent; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; opacity: 0.5; }
+  ::-webkit-scrollbar-button { display: none; height: 0; width: 0; }
   body {
     margin: 0;
     font-family: -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif;
@@ -40,8 +47,11 @@
     top: 0;
     z-index: 5;
   }
-  .topbar h1 { font-size: 17px; margin: 0; }
-  .topbar .back { cursor: pointer; font-size: 20px; padding: 4px 8px; }
+  .topbar h1 { font-family: "Noto Serif TC", serif; font-weight: 600; font-size: 17px; letter-spacing: 0.5px; margin: 0; }
+  .topbar .back {
+    cursor: pointer; font-family: "Noto Serif TC", serif; font-weight: 600;
+    font-size: 14px; letter-spacing: 0.5px; padding: 4px 8px;
+  }
   .content { padding: 20px; flex: 1; max-width: 480px; margin: 0 auto; width: 100%; }
 
   /* Login screen */
@@ -249,20 +259,22 @@
 
   /* ================= RPG dialogue scene (time-travel station) ================= */
   :root {
-    --rpg-void: #150d08;
-    --rpg-walnut: #3a2718;
-    --rpg-walnut-dark: #26190f;
-    --rpg-mid: #7a5636;
-    --rpg-brass: #cf9a4c;
-    --rpg-brass-bright: #e8bb72;
-    --rpg-parchment: #ecdcb4;
-    --rpg-cream: #f5e9cc;
-    --rpg-ember: #c76a3d;
+    /* dark "night mode" of the same celadon/clay ceramic palette used elsewhere in the app —
+       kept dark for the story scenes' focus/mood, but the same hue family as the light UI */
+    --rpg-void: #141a16;
+    --rpg-walnut: #2c362f;
+    --rpg-walnut-dark: #1c2420;
+    --rpg-mid: #5f6b5c;
+    --rpg-brass: #c98a5e;
+    --rpg-brass-bright: #e0a877;
+    --rpg-parchment: #f0ead9;
+    --rpg-cream: #ece7da;
+    --rpg-ember: #b56a4a;
   }
   #screen-rpg.screen.active { display: block; }
   .rpg-scene {
     position: relative; height: 100vh; height: 100dvh; width: 100%; max-width: 480px; margin: 0 auto; overflow: hidden;
-    background: linear-gradient(180deg, #4a3220 0%, #2c1c11 55%, var(--rpg-void) 100%);
+    background: linear-gradient(180deg, var(--rpg-walnut) 0%, var(--rpg-walnut-dark) 55%, var(--rpg-void) 100%);
     font-family: "Noto Serif TC", serif;
     color: var(--rpg-cream);
   }
@@ -277,8 +289,8 @@
 
   /* Character sprites: full-body cutouts standing in the scene, VN-style */
   .rpg-char-slot {
-    position: absolute; bottom: 0; height: 66%; width: 48%;
-    background-repeat: no-repeat; background-position: bottom center; background-size: contain;
+    position: absolute; bottom: 0; height: 66%; width: 48%; overflow: visible;
+    background-repeat: no-repeat; background-position: bottom center; background-size: auto 100%;
     filter: sepia(0.35) contrast(1.05) drop-shadow(0 14px 16px rgba(0,0,0,0.45));
     transition: opacity 0.3s ease, filter 0.3s ease, transform 0.3s ease;
     pointer-events: none;
@@ -306,7 +318,7 @@
   .rpg-lantern {
     position: absolute; top: 14%; left: 50%; transform: translateX(-50%);
     width: 10px; height: 14px; border-radius: 3px; background: var(--rpg-brass-bright);
-    box-shadow: 0 0 24px 10px rgba(232,187,114,0.55);
+    box-shadow: 0 0 24px 10px rgba(224,168,119,0.55);
     animation: rpg-flicker 3.2s ease-in-out infinite;
   }
   @keyframes rpg-flicker {
@@ -329,7 +341,7 @@
   .rpg-topbar-right { display: flex; align-items: center; gap: 12px; }
   .rpg-speak-btn {
     font-size: 17px; cursor: pointer; padding: 4px 8px; border-radius: 50%;
-    background: rgba(0,0,0,0.3); border: 1px solid rgba(207,154,76,0.4); line-height: 1;
+    background: rgba(0,0,0,0.3); border: 1px solid rgba(201,138,94,0.4); line-height: 1;
   }
   .rpg-speak-btn:active { background: rgba(0,0,0,0.5); }
   .rpg-progress { display: flex; gap: 7px; }
@@ -337,13 +349,13 @@
     width: 11px; height: 11px; border-radius: 50%; border: 1.5px solid var(--rpg-brass);
     background: transparent; display: inline-block;
   }
-  .rpg-progress .hole.punched { background: var(--rpg-brass-bright); box-shadow: 0 0 6px rgba(232,187,114,0.8); }
+  .rpg-progress .hole.punched { background: var(--rpg-brass-bright); box-shadow: 0 0 6px rgba(224,168,119,0.8); }
 
   .rpg-dialogue-box {
     position: absolute; left: 16px; right: 16px; bottom: 22px; z-index: 4;
     max-width: 480px; margin: 0 auto;
     background: linear-gradient(180deg, var(--rpg-walnut) 0%, var(--rpg-walnut-dark) 100%);
-    border: 1px solid rgba(207,154,76,0.4);
+    border: 1px solid rgba(201,138,94,0.4);
     box-shadow: 0 0 0 1px rgba(0,0,0,0.4), 0 14px 32px rgba(0,0,0,0.5), inset 0 0 40px rgba(0,0,0,0.35);
     border-radius: 14px; padding: 20px 20px 18px; cursor: pointer;
   }
@@ -372,12 +384,13 @@
   }
   .rpg-notice-overlay.active { display: flex; }
   .rpg-notice-card {
-    background: linear-gradient(180deg, var(--rpg-brass-bright), var(--rpg-brass));
-    color: #2b1a0c; font-family: "Cinzel", serif; font-weight: 700;
+    background: var(--rpg-parchment);
+    color: #2b1a0c; font-family: "Noto Serif TC", serif; font-weight: 700;
     font-size: 17px; line-height: 1.7; padding: 22px 26px; border-radius: 14px;
     box-shadow: 0 14px 32px rgba(0,0,0,0.5); max-width: 320px;
   }
-  .rpg-notice-hint { margin-top: 10px; font-size: 12px; opacity: 0.7; font-weight: 400; }
+  .rpg-notice-hint { margin-top: 10px; font-size: 12px; opacity: 0.75; font-weight: 400; color: var(--rpg-ember); }
+  .rpg-notice-img { display: block; width: 100%; max-height: 34vh; object-fit: contain; margin-top: 14px; border-radius: 8px; background: rgba(0,0,0,0.08); }
 
   /* Polaroid-style old-photo popup shown mid-dialogue */
   .rpg-photo-overlay {
@@ -390,6 +403,27 @@
   .rpg-photo-overlay img { width: 100%; display: block; filter: sepia(0.4) contrast(1.05); border-radius: 2px; }
   .rpg-photo-overlay .rpg-photo-cap {
     margin-top: 8px; font-family: "Noto Serif TC", serif; font-size: 12px; color: #5a4a33; text-align: center;
+  }
+
+  /* Knowledge card: a dense factual/numeric aside gets its own card instead of a spoken line */
+  .rpg-knowledge-overlay {
+    position: absolute; inset: 0; z-index: 6; display: none;
+    align-items: center; justify-content: center; background: rgba(10,14,11,0.6); cursor: pointer; padding: 0 22px;
+  }
+  .rpg-knowledge-overlay.active { display: flex; }
+  .rpg-knowledge-card {
+    width: 100%; max-width: 340px; background: var(--rpg-parchment); border-radius: 14px; overflow: hidden;
+    box-shadow: 0 16px 36px rgba(0,0,0,0.5); text-align: left;
+  }
+  .rpg-knowledge-img { width: 100%; max-height: 42vh; object-fit: contain; display: block; background: var(--rpg-parchment); }
+  .rpg-knowledge-body { padding: 16px 18px 4px; }
+  .rpg-knowledge-title {
+    font-family: "Noto Serif TC", serif; font-weight: 700; font-size: 15px; color: #2b1a0c; margin-bottom: 6px;
+  }
+  .rpg-knowledge-text { font-family: "Noto Sans TC", sans-serif; font-size: 13px; line-height: 1.7; color: #3a2718; }
+  .rpg-knowledge-hint {
+    text-align: right; padding: 8px 18px 14px; font-family: "Noto Serif TC", serif; font-size: 12px;
+    color: var(--rpg-ember); opacity: 0.85;
   }
 
   .rpg-choices { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
@@ -419,14 +453,14 @@
   .rpg-option-check input[type=checkbox] { width: 18px; height: 18px; flex-shrink: 0; }
   .rpg-multi-submit-btn {
     width: 100%; padding: 12px; font-family: "Cinzel", serif; font-weight: 700; font-size: 14px;
-    border: 1px solid rgba(207,154,76,0.5); border-radius: 10px; cursor: pointer;
+    border: 1px solid rgba(201,138,94,0.5); border-radius: 10px; cursor: pointer;
     background: linear-gradient(180deg, var(--rpg-brass-bright), var(--rpg-brass)); color: #2b1a0c;
   }
   .rpg-multi-submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
   .rpg-find-btn {
     display: none; width: 100%; margin-top: 10px; padding: 13px; font-family: "Cinzel", serif;
-    font-weight: 700; font-size: 15px; letter-spacing: 1px; border: 1px solid rgba(207,154,76,0.5);
+    font-weight: 700; font-size: 15px; letter-spacing: 1px; border: 1px solid rgba(201,138,94,0.5);
     border-radius: 10px; cursor: pointer;
     background: linear-gradient(180deg, var(--rpg-brass-bright), var(--rpg-brass)); color: #2b1a0c;
   }
@@ -444,102 +478,119 @@
   }
 
   .rpg-intro-overlay {
-    position: fixed; inset: 0; z-index: 20; background: var(--rpg-void);
+    position: fixed; inset: 0; z-index: 20; background: var(--bg);
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     opacity: 0; pointer-events: none; transition: opacity 0.6s ease;
   }
   .rpg-intro-overlay.active { opacity: 1; pointer-events: auto; }
-  .rpg-watch { font-size: 46px; animation: rpg-tick 1.6s steps(2) infinite; }
-  @keyframes rpg-tick { 0%, 100% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } }
+  .rpg-watch { font-size: 40px; color: var(--accent); animation: rpg-tick 1.6s ease-in-out infinite; }
+  @keyframes rpg-tick { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
   .rpg-intro-text {
-    margin-top: 16px; font-family: "Cinzel", serif; letter-spacing: 3px; font-size: 14px;
-    color: var(--rpg-brass-bright);
+    margin-top: 16px; font-family: "Noto Serif TC", serif; font-weight: 600; letter-spacing: 1px; font-size: 15px;
+    color: var(--ink);
   }
 
   /* ================= Map screen: RPG world-map style level select ================= */
   #screen-map.screen.active { display: block; }
   .map-world {
     height: 100vh; height: 100dvh; display: flex; flex-direction: column;
-    background: linear-gradient(180deg, #4a3220 0%, #2c1c11 45%, var(--rpg-void) 100%);
-    font-family: "Noto Serif TC", serif; color: var(--rpg-cream);
+    background: var(--bg);
+    font-family: "Noto Serif TC", serif; color: var(--ink);
     max-width: 480px; margin: 0 auto;
   }
-  .map-grain {
-    position: absolute; inset: 0; opacity: 0.08; mix-blend-mode: overlay; pointer-events: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  }
+  .map-grain { display: none; }
   .map-topbar {
     position: relative; z-index: 2; display: flex; align-items: center; justify-content: space-between;
-    padding: 12px 14px 10px; border-bottom: 1px solid rgba(207,154,76,0.3);
-    background: linear-gradient(180deg, rgba(0,0,0,0.25), transparent);
+    padding: 14px 16px 10px;
+    border-bottom: 1px solid rgba(124,152,133,0.18);
+    box-shadow: 0 2px 6px rgba(58,51,44,0.05);
   }
-  .map-title { font-family: "Cinzel", serif; font-size: 14px; letter-spacing: 0.5px; color: var(--rpg-brass-bright); }
-  .map-subtitle { font-size: 10.5px; color: var(--rpg-cream); opacity: 0.8; margin-top: 2px; }
+  .map-title { font-family: "Noto Serif TC", serif; font-weight: 600; font-size: 15px; letter-spacing: 0.5px; color: var(--ink); }
+  .map-subtitle { font-family: "Noto Sans TC", sans-serif; font-size: 10.5px; color: var(--sub); margin-top: 2px; }
   .map-topbar-right { display: flex; align-items: center; gap: 10px; }
-  .map-count { font-family: "Cinzel", serif; font-size: 16px; font-weight: 700; color: var(--rpg-brass-bright); }
-  .map-count-total { font-size: 10.5px; opacity: 0.7; margin-left: 2px; }
+  .map-count { font-family: "Noto Serif TC", serif; font-size: 16px; font-weight: 700; color: var(--accent); }
+  .map-count-total { font-size: 10.5px; opacity: 0.6; margin-left: 2px; }
   .map-logout {
     display: flex; align-items: center; gap: 4px;
-    font-family: "Noto Serif TC", serif; font-size: 12px; color: var(--rpg-cream);
+    font-family: "Noto Sans TC", sans-serif; font-size: 12px; color: var(--sub);
     cursor: pointer; padding: 6px 10px; border-radius: 20px;
-    background: rgba(0,0,0,0.28); border: 1px solid rgba(207,154,76,0.5);
+    background: var(--card); border: 1px solid var(--line);
   }
-  .map-logout:active { background: rgba(0,0,0,0.45); }
+  .map-logout:active { background: var(--line); }
 
-  .map-scroll { position: relative; z-index: 2; flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .map-scroll {
+    position: relative; z-index: 2; flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin; scrollbar-color: var(--accent) transparent;
+  }
+  .map-scroll::-webkit-scrollbar { width: 6px; }
+  .map-scroll::-webkit-scrollbar-track { background: transparent; }
+  .map-scroll::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; opacity: 0.5; }
+  .map-scroll::-webkit-scrollbar-button { display: none; height: 0; width: 0; }
 
-  /* Two-column collectible card grid: locked cards are a plain card-back, completed
-     stations flip to reveal the station's photo (a little sticker-album feel). */
-  .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; padding: 12px; }
+  /* Single-column "field journal" card: a landscape photo blending into an aged-paper
+     panel carrying a hand-stamped badge and typewriter notes. Locked stations without a
+     photo yet fall back to a plain card-back on the photo side. */
+  .card-grid { display: grid; grid-template-columns: 1fr; gap: 14px; padding: 14px; }
   .collect-card {
-    position: relative; aspect-ratio: 1 / 1; border-radius: 12px; overflow: hidden; cursor: pointer;
-    border: 2px solid rgba(207,154,76,0.35); box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-    background:
-      repeating-linear-gradient(135deg, rgba(207,154,76,0.10) 0 8px, transparent 8px 16px),
-      linear-gradient(160deg, var(--rpg-walnut) 0%, var(--rpg-walnut-dark) 100%);
+    position: relative; aspect-ratio: 4 / 3; border-radius: 6px; overflow: hidden; cursor: pointer;
+    border: 1px solid rgba(124,152,133,0.3); box-shadow: 0 4px 14px rgba(58,51,44,0.12);
     transition: transform 0.15s ease;
   }
-  .collect-card:active { transform: scale(0.97); }
+  .collect-card:active { transform: scale(0.98); }
+
   .collect-card .card-img {
     position: absolute; inset: 0; background-size: cover; background-position: center 30%;
-    filter: sepia(0.5) saturate(1.1) brightness(0.65) contrast(1.05);
-    transition: filter 0.3s ease;
+    filter: saturate(1.05) brightness(0.96) contrast(1.02);
   }
   .collect-card .card-img.grayscale {
-    filter: grayscale(1) contrast(1.15) brightness(0.65);
-    background-position: center 90%;
-    background-size: 145%;
+    filter: grayscale(1) contrast(1.02) brightness(1.05);
+    background-position: center 30%;
+    background-size: 105%;
   }
   .collect-card .card-img.grayscale::after {
-    content: ""; position: absolute; inset: 0;
-    background: linear-gradient(160deg, rgba(232,187,114,0.75), rgba(43,26,12,0.9));
+    content: ""; position: absolute; inset: 0; bottom: 22%;
+    background: linear-gradient(160deg, rgba(124,152,133,0.5), rgba(201,138,94,0.55));
     mix-blend-mode: color;
   }
   .collect-card .card-lock {
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -55%);
-    font-size: 18px; opacity: 0.55;
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-size: 22px; opacity: 0.45;
+    background:
+      repeating-linear-gradient(135deg, rgba(124,152,133,0.10) 0 8px, transparent 8px 16px),
+      linear-gradient(160deg, #e4ddc9 0%, #d6cdb4 100%);
   }
-  .collect-card .card-overlay {
-    position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end;
-    padding: 6px 7px 6px; background: linear-gradient(180deg, transparent 40%, rgba(15,9,5,0.85) 100%);
+
+  /* compact caption strip along the bottom of the photo, instead of a large side panel */
+  .card-bottom {
+    position: absolute; left: 0; right: 0; bottom: 0; z-index: 1;
+    display: flex; align-items: center; gap: 9px;
+    padding: 7px 10px; background: var(--card); border-top: 1px solid rgba(124,152,133,0.25);
   }
-  .collect-card .card-num { font-family: "Cinzel", serif; font-size: 9px; color: var(--rpg-brass-bright); letter-spacing: 0.5px; }
-  .collect-card .card-name { font-size: 10px; line-height: 1.3; color: var(--rpg-cream); margin-top: 1px; }
-  .collect-card .card-status { font-size: 8.5px; margin-top: 2px; opacity: 0.75; color: var(--rpg-cream); }
-  .collect-card .card-status.pin { color: var(--rpg-ember); opacity: 0.95; }
-  .collect-card.done { border-color: var(--rpg-brass-bright); box-shadow: 0 0 0 2px rgba(232,187,114,0.3), 0 4px 12px rgba(0,0,0,0.5); }
-  .collect-card.done .card-num { color: var(--rpg-brass-bright); }
-  .collect-card .card-stamp {
-    position: absolute; top: 5px; right: 5px; width: 18px; height: 18px; border-radius: 50%;
-    background: var(--rpg-brass-bright); color: #2b1a0c; font-size: 11px; font-weight: 700;
-    display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+  .card-stamp { width: 34px; height: 34px; flex: none; }
+  .card-stamp svg { width: 100%; height: 100%; display: block; }
+  .card-notes { min-width: 0; flex: 1; }
+  .card-no { font-family: "Noto Sans TC", sans-serif; font-size: 9px; letter-spacing: 1.5px; opacity: 0.5; }
+  .card-name {
+    font-family: "Noto Serif TC", serif; font-weight: 600; font-size: 12.5px; line-height: 1.3;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .card-status { font-family: "Noto Sans TC", sans-serif; font-size: 9.5px; margin-top: 1px; opacity: 0.65; }
+  .collect-card { border-color: rgba(124,152,133,0.3); }
+  .collect-card.done { border-color: var(--accent); }
+  .collect-card .card-badge {
+    position: absolute; top: 8px; right: 8px; width: 20px; height: 20px; border-radius: 50%;
+    background: var(--clay); color: #fff9ee; font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.25);
+    z-index: 2;
   }
 
   .map-bottom { padding: 10px 20px 34px; text-align: center; }
   .map-wallet-btn {
-    background: none; border: 1px solid rgba(232,187,114,0.5); color: var(--rpg-brass-bright);
+    background: var(--accent); border: none; color: #fff9ee;
     font-family: "Noto Serif TC", serif; font-size: 13px; padding: 10px 22px; border-radius: 24px; cursor: pointer;
+    box-shadow: 0 3px 10px rgba(124,152,133,0.35);
   }
+  .map-wallet-btn:active { background: var(--accent-dark); }
 </style>
 </head>
 <body>
@@ -557,7 +608,7 @@
     <div class="login-card" id="login-restoring" style="display:none;">
       <p class="desc" style="margin:0;">登入中...</p>
     </div>
-    <div class="stores-entry-link" onclick="openStores()">🏪 查看合作店家與兌換資訊</div>
+    <div class="stores-entry-link" onclick="openStores()">查看合作店家與兌換資訊</div>
   </div>
 </div>
 <script>
@@ -587,7 +638,7 @@
       <div class="card-grid" id="station-grid"></div>
 
       <div class="map-bottom">
-        <button class="map-wallet-btn" onclick="openTicketList()">🎫 查看我的票券夾</button>
+        <button class="map-wallet-btn" onclick="openTicketList()">查看我的票券夾</button>
       </div>
     </div>
   </div>
@@ -596,7 +647,7 @@
 <!-- ARRIVAL GATE SCREEN -->
 <div id="screen-arrive" class="screen">
   <div class="topbar">
-    <span class="back" onclick="goToMap()">‹</span>
+    <span class="back" onclick="goToMap()">‹ 返回選擇關卡</span>
     <h1 id="arrive-title">前往站點</h1>
     <span style="width:20px"></span>
   </div>
@@ -605,7 +656,7 @@
       <div class="arrive-photo" id="arrive-photo" style="display:none;"></div>
       <div class="arrive-icon" id="arrive-icon">📍</div>
       <h2 id="arrive-name" class="arrive-name"></h2>
-      <p class="arrive-hint">請先實際前往這個地點，抵達後才能開始這一站的關卡</p>
+      <p class="arrive-hint">請先實際前往這個地點，抵達後搭手扶梯前往二樓才開始遊戲</p>
 
       <button class="nav-btn" id="arrive-nav-btn" onclick="openGoogleNav()">🧭 開始導航前往</button>
 
@@ -635,7 +686,7 @@
 <!-- STATION DETAIL SCREEN -->
 <div id="screen-station" class="screen">
   <div class="topbar">
-    <span class="back" onclick="goToMap()">‹</span>
+    <span class="back" onclick="goToMap()">‹ 返回選擇關卡</span>
     <h1 id="station-title">站點</h1>
     <span style="width:20px"></span>
   </div>
@@ -666,6 +717,7 @@
     <div class="rpg-notice-overlay" id="rpg-notice-overlay" onclick="advanceRpg()">
       <div class="rpg-notice-card">
         <div id="rpg-notice-text"></div>
+        <img class="rpg-notice-img" id="rpg-notice-img" alt="" style="display:none;">
         <div class="rpg-notice-hint">▼ 點擊繼續</div>
       </div>
     </div>
@@ -675,6 +727,16 @@
       <div class="rpg-choices" id="rpg-choices"></div>
       <div class="rpg-continue" id="rpg-continue">▼ 點擊繼續</div>
       <button type="button" class="rpg-find-btn" id="rpg-find-btn" onclick="event.stopPropagation(); confirmFound()">找到了</button>
+    </div>
+    <div class="rpg-knowledge-overlay" id="rpg-knowledge-overlay" onclick="advanceRpg()">
+      <div class="rpg-knowledge-card">
+        <img class="rpg-knowledge-img" id="rpg-knowledge-img" alt="">
+        <div class="rpg-knowledge-body">
+          <div class="rpg-knowledge-title" id="rpg-knowledge-title"></div>
+          <div class="rpg-knowledge-text" id="rpg-knowledge-text"></div>
+        </div>
+        <div class="rpg-knowledge-hint">▼ 點擊繼續</div>
+      </div>
     </div>
   </div>
   <div class="rpg-intro-overlay" id="rpg-intro">
@@ -686,9 +748,9 @@
 <!-- WALLET SCREEN -->
 <div id="screen-wallet" class="screen">
   <div class="topbar">
-    <span class="back" onclick="goToMap()">‹</span>
+    <span class="back" onclick="goToMap()">‹ 返回選擇關卡</span>
     <h1>我的票券夾</h1>
-    <span class="back" onclick="openStores()" title="合作店家">🏪</span>
+    <span class="back" onclick="openStores()" title="合作店家">查看合作店家</span>
   </div>
   <div class="content">
     <p style="color:var(--sub);font-size:13px;margin:0 0 16px;">點擊票券卡片放大，由店家核對後點選兌換</p>
@@ -699,7 +761,7 @@
 <!-- PARTNER STORES SCREEN -->
 <div id="screen-stores" class="screen">
   <div class="topbar">
-    <span class="back" onclick="closeStores()">‹</span>
+    <span class="back" onclick="closeStores()">‹ 返回</span>
     <h1>合作店家</h1>
     <span style="width:20px"></span>
   </div>
@@ -899,6 +961,19 @@ function showMap() {
   renderMap();
 }
 
+// A hand-stamped-looking badge for each station: two off-register rings (like a real rubber
+// stamp with imperfect registration) around the station number. No image generation involved —
+// this is a CSS/SVG stand-in until real per-location artwork exists.
+const STAMP_PALETTE = ["#7c9885", "#c98a5e", "#8a95a8", "#a8896f", "#7c9885"];
+function stampSvg(st) {
+  const c = STAMP_PALETTE[(st.id - 1) % STAMP_PALETTE.length];
+  const num = String(st.id).padStart(2, "0");
+  return `<svg viewBox="0 0 100 100">
+    <circle cx="50" cy="50" r="41" fill="none" stroke="${c}" stroke-width="2.5" opacity="0.9"/>
+    <text x="50" y="63" text-anchor="middle" font-family="'Noto Serif TC', serif" font-weight="600" font-size="40" fill="${c}">${num}</text>
+  </svg>`;
+}
+
 function renderMap() {
   const grid = document.getElementById("station-grid");
   grid.innerHTML = "";
@@ -918,17 +993,23 @@ function renderMap() {
       : `<div class="card-status">尚未解鎖</div>`;
 
     // locked cards preview the photo in grayscale; it turns full color once the station is completed
+    // most photos crop fine with the CSS default; set a station's optional "bgPosition"
+    // (e.g. "center 20%") when a particular photo needs a different focal point
+    const posOverride = st.bgPosition ? `background-position:${st.bgPosition};` : "";
     const imageLayer = st.background
-      ? `<div class="card-img${done ? "" : " grayscale"}" style="background-image:url('${encodeURI(st.background)}')"></div>`
+      ? `<div class="card-img${done ? "" : " grayscale"}" style="background-image:url('${encodeURI(st.background)}');${posOverride}"></div>`
       : `<div class="card-lock">${done ? "🖼️" : (st.icon || "🔒")}</div>`;
 
     card.innerHTML = `
       ${imageLayer}
-      ${done ? `<div class="card-stamp">✓</div>` : ""}
-      <div class="card-overlay">
-        <div class="card-num">站點 ${st.id}</div>
-        <div class="card-name">${name}</div>
-        ${statusLine}
+      ${done ? `<div class="card-badge">✓</div>` : ""}
+      <div class="card-bottom">
+        <div class="card-stamp">${stampSvg(st)}</div>
+        <div class="card-notes">
+          <div class="card-no">NO. ${String(st.id).padStart(2, "0")}</div>
+          <div class="card-name">${name}</div>
+          ${statusLine}
+        </div>
       </div>
     `;
 
@@ -1173,7 +1254,7 @@ function enterStationContent(st) {
     openStationRPG(st);
     return;
   }
-  document.getElementById("station-title").textContent = "站點 " + st.id;
+  document.getElementById("station-title").textContent = "NO. " + String(st.id).padStart(2, "0") + "　" + st.name.replace(/^站點[一二三四五六七八九十]+\s*/, "");
   showScreen("screen-station");
   renderStation(st);
 }
@@ -1186,7 +1267,7 @@ function openArrivalGate(st) {
   currentStationId = st.id;
   localStorage.setItem("yingge_pending_arrival", st.id);
   arriveState = { st, watchId: null };
-  document.getElementById("arrive-title").textContent = "站點 " + st.id;
+  document.getElementById("arrive-title").textContent = "NO. " + String(st.id).padStart(2, "0") + "　" + st.name.replace(/^站點[一二三四五六七八九十]+\s*/, "");
   document.getElementById("arrive-name").textContent = st.name.replace(/^站點[一二三四五六七八九十]+/, "");
   const photoEl = document.getElementById("arrive-photo");
   const iconEl = document.getElementById("arrive-icon");
@@ -1603,10 +1684,12 @@ function renderRpgStep() {
   const noticeEl = document.getElementById("rpg-notice-overlay");
   const photoEl = document.getElementById("rpg-photo-overlay");
   const findBtn = document.getElementById("rpg-find-btn");
+  const knowledgeEl = document.getElementById("rpg-knowledge-overlay");
   choicesEl.innerHTML = "";
   continueEl.style.display = "none";
   findBtn.style.display = "none";
   noticeEl.classList.remove("active");
+  knowledgeEl.classList.remove("active");
   if (step.type !== "photo" && step.type !== "find") photoEl.classList.remove("active");
 
   if (step.type === "end") {
@@ -1618,7 +1701,20 @@ function renderRpgStep() {
 
   if (step.type === "notice") {
     document.getElementById("rpg-notice-text").textContent = step.text;
+    const noticeImgEl = document.getElementById("rpg-notice-img");
+    if (step.photo) { noticeImgEl.src = step.photo; noticeImgEl.style.display = "block"; }
+    else { noticeImgEl.style.display = "none"; }
     noticeEl.classList.add("active");
+    return;
+  }
+
+  if (step.type === "knowledge") {
+    const imgEl = document.getElementById("rpg-knowledge-img");
+    if (step.photo) { imgEl.src = step.photo; imgEl.style.display = "block"; }
+    else { imgEl.style.display = "none"; }
+    document.getElementById("rpg-knowledge-title").textContent = step.title || "";
+    document.getElementById("rpg-knowledge-text").textContent = step.text || "";
+    knowledgeEl.classList.add("active");
     return;
   }
 

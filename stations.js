@@ -1,7 +1,7 @@
 const STATIONS = [
   {
     "id": 1,
-    "name": "站點一 鶯歌車站的時光線索",
+    "name": "站點一 鶯歌車站",
     "icon": "🚆",
     "questions": [
       {
@@ -57,7 +57,7 @@ const STATIONS = [
       {
         "type": "line",
         "char": "hero",
-        "text": "第一次來鶯歌，之前只有經過，還真的沒仔細看過車站"
+        "text": "第一次來鶯歌，之前只有經過，沒有在這裡停過"
       },
       {
         "type": "line",
@@ -65,15 +65,14 @@ const STATIONS = [
         "text": "那先別急著往前走，跟我過來"
       },
       {
+        "type": "notice",
+        "text": "請在出口建國路跟文化路手扶梯旁的平台，觀察鐵軌",
+        "photo": "角色照片素材庫/站點一/鐵軌.jpg"
+      },
+      {
         "type": "line",
         "char": "guide",
         "text": "你先往下看看"
-      },
-      {
-        "type": "find",
-        "char": "guide",
-        "text": "請在四周找找看軌道在哪裡",
-        "photo": "角色照片素材庫/站點一/鐵軌.jpg"
       },
       {
         "type": "question",
@@ -176,16 +175,15 @@ const STATIONS = [
         ]
       },
       {
-        "type": "photo",
-        "char": "guide",
-        "text": "（楊嚮導從口袋裡拿出一張老照片，遞給小明看）",
-        "photo": "角色照片素材庫/站點一/鶯歌舊車站.jpg",
-        "caption": "鶯歌車站舊照"
-      },
-      {
         "type": "line",
         "char": "guide",
-        "text": "鶯歌車站最早於1901年（明治34年）8月25日設站，當時命名為鶯歌石驛（早期也曾稱鶯歌石乘降場或停車場）"
+        "text": "來，你看這張老照片"
+      },
+      {
+        "type": "knowledge",
+        "title": "鶯歌車站舊照",
+        "text": "鶯歌車站最早於1901年（明治34年）8月25日設站，當時命名為鶯歌石驛（早期也曾稱鶯歌石乘降場或停車場）。",
+        "photo": "角色照片素材庫/站點一/鶯歌舊車站.jpg"
       },
       {
         "type": "line",
@@ -228,7 +226,7 @@ const STATIONS = [
   },
   {
     "id": 2,
-    "name": "站點二走進市拿陶藝",
+    "name": "站點二 市拿陶藝",
     "questions": [
       {
         "qtype": "選擇題",
@@ -284,7 +282,7 @@ const STATIONS = [
       },
       {
         "type": "line",
-        "char": "hero",
+        "char": "guide",
         "text": "這間工坊在鶯歌陶瓷發展上，可是大有來頭"
       },
       {
@@ -346,7 +344,18 @@ const STATIONS = [
       {
         "type": "line",
         "char": "guide",
-        "text": "運用青花、粉彩、鬥彩、釉裡紅等傳統彩繪技法，因此也被稱為專門製作仿古瓷器的「現代官窯」"
+        "text": "剛好我這裡有張照片，你看看就知道了"
+      },
+      {
+        "type": "knowledge",
+        "title": "現代官窯",
+        "text": "市拿陶瓷以仿製元、明、清瓷器精品聞名，運用青花、粉彩、鬥彩、釉裡紅等傳統彩繪技法，因此也被稱為專門製作仿古瓷器的「現代官窯」。",
+        "photo": "https://innews.com.tw/wp-content/uploads/2020/10/1091021%E9%99%B6%E5%8D%9A%E9%A4%A8%E5%85%AC%E9%97%9C%E7%85%A73-scaled.jpg"
+      },
+      {
+        "type": "line",
+        "char": "guide",
+        "text": "因為做得夠精緻，這些仿古瓷器還曾經被當作禮物，贈送給外賓"
       },
       {
         "type": "line",
@@ -441,7 +450,7 @@ const STATIONS = [
   },
   {
     "id": 3,
-    "name": "站點三鶯歌石",
+    "name": "站點三 鶯歌石",
     "questions": [
       {
         "qtype": "選擇題",
@@ -772,7 +781,7 @@ const STATIONS = [
   },
   {
     "id": 4,
-    "name": "站點四尋找老煙囪",
+    "name": "站點四 尋找老煙囪",
     "questions": [
       {
         "qtype": "選擇題",
@@ -955,7 +964,7 @@ const STATIONS = [
   },
   {
     "id": 5,
-    "name": "站點五烘爐窯",
+    "name": "站點五 烘爐窯",
     "questions": [
       {
         "qtype": "選擇題",
@@ -1138,7 +1147,7 @@ const STATIONS = [
   },
   {
     "id": 6,
-    "name": "站點六益成記",
+    "name": "站點六 益成記",
     "questions": [
       {
         "qtype": "選擇題",
@@ -1293,7 +1302,7 @@ const STATIONS = [
   },
   {
     "id": 7,
-    "name": "站點七大榕樹和窯工聚落遺址",
+    "name": "站點七 大榕樹和窯工聚落遺址",
     "questions": [
       {
         "qtype": "選擇題",
@@ -1433,7 +1442,7 @@ const STATIONS = [
   },
   {
     "id": 8,
-    "name": "站點八陳映真故居",
+    "name": "站點八 陳映真故居",
     "questions": [
       {
         "qtype": "選擇題",
@@ -1476,7 +1485,7 @@ const STATIONS = [
   },
   {
     "id": 9,
-    "name": "站點九鶯歌福興宮",
+    "name": "站點九 鶯歌福興宮",
     "questions": [
       {
         "qtype": "選擇題",
@@ -1519,7 +1528,7 @@ const STATIONS = [
   },
   {
     "id": 10,
-    "name": "站點十鶯歌老街-古早窯(觀察)",
+    "name": "站點十 鶯歌老街-古早窯",
     "questions": [
       {
         "qtype": "選擇題",
