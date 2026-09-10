@@ -5,600 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>鶯歌壯遊實境解謎</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Noto+Serif+TC:wght@500;600;700&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #f4f0e6;
-    --card: #fdfbf5;
-    --ink: #3a332c;
-    --sub: #96897a;
-    --accent: #7c9885;
-    --accent-dark: #5f7a68;
-    --clay: #c98a5e;
-    --clay-dark: #a86a42;
-    --done: #4a7c59;
-    --line: #e6dcc9;
-    --danger: #c0392b;
-  }
-  * { box-sizing: border-box; }
-  html { scrollbar-width: thin; scrollbar-color: var(--accent) transparent; }
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; opacity: 0.5; }
-  ::-webkit-scrollbar-button { display: none; height: 0; width: 0; }
-  body {
-    margin: 0;
-    font-family: -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif;
-    background: var(--bg);
-    color: var(--ink);
-    min-height: 100vh;
-    min-height: 100dvh;
-  }
-  .screen { display: none; min-height: 100vh; min-height: 100dvh; flex-direction: column; }
-  .screen.active { display: flex; }
-  .topbar {
-    padding: 16px 20px;
-    background: var(--accent);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 5;
-  }
-  .topbar h1 { font-family: "Noto Serif TC", serif; font-weight: 600; font-size: 17px; letter-spacing: 0.5px; margin: 0; }
-  .topbar .back {
-    cursor: pointer; font-family: "Noto Serif TC", serif; font-weight: 600;
-    font-size: 14px; letter-spacing: 0.5px; padding: 4px 8px;
-  }
-  .content { padding: 20px; flex: 1; max-width: 480px; margin: 0 auto; width: 100%; }
-
-  /* Login screen */
-  .login-wrap { display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; min-height: 100dvh; padding: 24px; }
-  .login-card { background: var(--card); border-radius: 16px; padding: 32px 24px; width: 100%; max-width: 360px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); text-align: center; }
-  .login-card h2 { margin: 0 0 4px; font-size: 20px; }
-  .login-card p.desc { color: var(--sub); font-size: 13px; margin: 0 0 24px; }
-  .stores-entry-link { margin-top: 18px; color: var(--sub); font-size: 13px; text-decoration: underline; cursor: pointer; }
-  input[type=text] {
-    width: 100%; padding: 14px; font-size: 16px; border: 2px solid var(--line);
-    border-radius: 10px; text-align: center; letter-spacing: 2px; margin-bottom: 12px;
-  }
-  input[type=text]:focus { outline: none; border-color: var(--accent); }
-  button {
-    width: 100%; padding: 14px; font-size: 16px; font-weight: 600;
-    background: var(--accent); color: white; border: none; border-radius: 10px;
-    cursor: pointer; transition: background 0.15s;
-  }
-  button:hover { background: var(--accent-dark); }
-  button.secondary { background: transparent; color: var(--accent); border: 2px solid var(--accent); }
-  .error-msg { color: var(--danger); font-size: 13px; margin-top: 8px; min-height: 18px; }
-  .test-codes { margin-top: 20px; font-size: 12px; color: var(--sub); }
-
-  /* Progress bar */
-  .progress-wrap { background: var(--card); border-radius: 14px; padding: 16px; margin-bottom: 16px; }
-  .progress-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
-  .progress-top .count { font-size: 22px; font-weight: 700; color: var(--accent); }
-  .progress-bar-bg { height: 10px; background: var(--line); border-radius: 6px; overflow: hidden; }
-  .progress-bar-fill { height: 100%; background: var(--accent); transition: width 0.3s; }
-  .reward-hint { font-size: 12px; color: var(--sub); margin-top: 8px; }
-
-  /* Station grid */
-  .station-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-  .station-card {
-    background: var(--card); border-radius: 14px; padding: 16px; cursor: pointer;
-    border: 2px solid var(--line); transition: transform 0.1s;
-    display: flex; flex-direction: column; gap: 6px;
-  }
-  .station-card:active { transform: scale(0.97); }
-  .station-card.done { border-color: var(--done); background: #f0f7f1; }
-  .station-num { font-size: 12px; color: var(--sub); }
-  .station-name { font-size: 14px; font-weight: 600; line-height: 1.4; }
-  .station-status { font-size: 12px; margin-top: auto; }
-  .station-status.done { color: var(--done); font-weight: 600; }
-  .station-status.todo { color: var(--sub); }
-
-  /* Ticket wallet */
-  .wallet-list { display: flex; flex-direction: column; gap: 18px; }
-  .ticket-card {
-    position: relative; border-radius: 18px; padding: 20px; color: white; cursor: pointer;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.14); transition: transform .12s;
-  }
-  .ticket-card:active { transform: scale(0.97); }
-  .ticket-card.type-a { background: linear-gradient(135deg, #e8a445, #c05621); }
-  .ticket-card.type-b { background: linear-gradient(135deg, #9b7ae0, #5b3aa0); }
-  .ticket-card.locked { background: #d8cfc0; color: #6b5f4f; box-shadow: none; }
-  .ticket-card .tc-top { display: flex; justify-content: space-between; align-items: center; }
-  .ticket-card .tc-emoji { font-size: 26px; }
-  .ticket-card .tc-status { font-size: 11px; padding: 4px 10px; border-radius: 20px; background: rgba(255,255,255,0.28); }
-  .ticket-card.locked .tc-status { background: rgba(0,0,0,0.08); }
-  .ticket-card .tc-title { font-size: 19px; font-weight: 700; margin-top: 12px; }
-  .ticket-card .tc-sub { font-size: 12px; opacity: 0.85; margin-top: 4px; }
-
-  .ticket-expand {
-    position: relative; width: 100%; max-width: 340px; border-radius: 22px; padding: 32px 26px;
-    color: white; text-align: center; box-shadow: 0 12px 32px rgba(0,0,0,0.3); overflow: hidden;
-  }
-  .ticket-expand.type-a { background: linear-gradient(160deg, #e8a445, #c05621); }
-  .ticket-expand.type-b { background: linear-gradient(160deg, #9b7ae0, #5b3aa0); }
-  .ticket-expand.locked { background: linear-gradient(160deg, #cfc4b4, #a89880); }
-  .ticket-expand.redeemed { background: linear-gradient(160deg, #7fa88c, #4a7c59); }
-  .te-close { position: absolute; top: 14px; right: 16px; font-size: 16px; opacity: 0.8; cursor: pointer; padding: 4px; }
-  .te-emoji { font-size: 40px; }
-  .te-label { font-size: 18px; font-weight: 700; margin-top: 4px; }
-  .te-desc { font-size: 13px; opacity: 0.9; margin-top: 4px; }
-  .te-detail { font-size: 12px; opacity: 0.9; line-height: 1.6; text-align: left; }
-  .te-detail b { display: inline-block; min-width: 64px; opacity: 0.85; }
-  .te-divider { border-top: 2px dashed rgba(255,255,255,0.45); margin: 16px 0; }
-  .te-name { font-size: 22px; font-weight: 700; }
-  .te-code { font-size: 15px; letter-spacing: 2px; opacity: 0.9; margin-top: 4px; }
-  .te-hint { font-size: 13px; opacity: 0.95; line-height: 1.6; margin: 4px 0 16px; }
-  .te-hint.error { color: #ffd1cc; margin: 8px 0 0; min-height: 16px; }
-  .te-passcode {
-    width: 100%; padding: 12px; font-size: 15px; border: none; border-radius: 10px;
-    margin-bottom: 12px; box-sizing: border-box; text-align: center; letter-spacing: 1px;
-  }
-  .te-actions { display: flex; gap: 10px; }
-  .te-btn {
-    flex: 1; padding: 13px; font-size: 15px; font-weight: 700; border: none; border-radius: 10px;
-    background: white; color: var(--accent-dark); cursor: pointer;
-  }
-  .te-btn.danger { background: var(--danger); color: white; }
-  .te-btn.ghost { background: rgba(255,255,255,0.25); color: white; }
-  .te-stamp {
-    position: absolute; top: 46%; left: 50%; transform: translate(-50%, -50%) rotate(-16deg);
-    border: 3px solid rgba(255,255,255,0.85); color: rgba(255,255,255,0.85);
-    font-size: 22px; font-weight: 800; padding: 5px 16px; border-radius: 10px; letter-spacing: 3px;
-    white-space: nowrap; pointer-events: none;
-  }
-
-  /* Station detail */
-  .station-image { width: 100%; border-radius: 14px; margin-bottom: 14px; display: block; }
-  .story-block { background: var(--card); border-radius: 14px; padding: 18px; margin-bottom: 14px; font-size: 14px; line-height: 1.8; color: var(--ink); border-left: 4px solid var(--accent); }
-
-  /* Partner store directory */
-  .store-card { background: var(--card); border-radius: 14px; overflow: hidden; margin-bottom: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
-  .store-photo { width: 100%; height: 160px; background-size: cover; background-position: center; background-color: var(--line); }
-  .store-body { padding: 16px; }
-  .store-name { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
-  .store-offer { color: var(--accent-dark); font-size: 13px; font-weight: 600; background: #fdf1e6; border-radius: 8px; padding: 8px 10px; margin-bottom: 10px; }
-  .store-row { font-size: 13px; color: var(--sub); line-height: 1.7; }
-  .store-map-btn { display: inline-block; margin-top: 10px; padding: 9px 16px; background: var(--accent); color: white; border-radius: 8px; font-size: 13px; text-decoration: none; }
-  .stores-empty { color: var(--sub); font-size: 13px; text-align: center; padding: 30px 0; }
-  .fact-box { margin-top: 10px; background: #fff8e6; border: 1px solid #e8d38a; border-radius: 10px; padding: 10px 12px; font-size: 13px; color: #8a6d00; line-height: 1.6; }
-  .q-block { background: var(--card); border-radius: 14px; padding: 18px; margin-bottom: 14px; }
-  .q-title { font-size: 13px; color: var(--sub); margin-bottom: 6px; }
-  .speak-btn { cursor: pointer; margin-left: 8px; font-size: 14px; opacity: 0.8; }
-  .speak-btn:active { opacity: 1; }
-  .q-text { font-size: 16px; font-weight: 600; line-height: 1.6; margin-bottom: 14px; }
-  .option-btn {
-    display: block; width: 100%; text-align: left; padding: 12px 14px; margin-bottom: 8px;
-    border: 2px solid var(--line); border-radius: 10px; background: white; font-size: 14px;
-    cursor: pointer; color: var(--ink);
-  }
-  .option-btn:hover { border-color: var(--accent); }
-  .option-btn.correct { border-color: var(--done); background: #eaf5ec; }
-  .option-btn.wrong { border-color: var(--danger); background: #fbeae8; }
-  .option-btn.disabled { pointer-events: none; opacity: 0.6; }
-  .multi-options { margin-bottom: 10px; }
-  .option-check {
-    display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; padding: 12px 14px; margin-bottom: 8px;
-    border: 2px solid var(--line); border-radius: 10px; background: white; font-size: 14px; color: var(--ink);
-  }
-  .option-check input[type=checkbox] { width: 18px; height: 18px; flex-shrink: 0; }
-  .multi-submit-btn { width: 100%; padding: 12px; font-size: 14px; font-weight: 700; border: none; border-radius: 10px; background: var(--accent); color: white; cursor: pointer; }
-  .multi-submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-  .q-feedback { font-size: 13px; margin-top: 6px; min-height: 18px; }
-  .q-feedback.correct { color: var(--done); font-weight: 600; }
-  .q-feedback.wrong { color: var(--danger); }
-  .q-done-tag { display: inline-block; font-size: 12px; color: var(--done); background: #eaf5ec; padding: 3px 10px; border-radius: 20px; margin-bottom: 10px; }
-
-  .fill-row { display: flex; gap: 8px; }
-  .fill-row input { flex: 1; margin-bottom: 0; }
-  .fill-row button { width: auto; padding: 12px 18px; }
-
-  /* Toast / modal for reward unlock */
-  .overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none;
-    align-items: center; justify-content: center; z-index: 50; padding: 24px;
-  }
-  .overlay.active { display: flex; }
-  .modal { background: white; border-radius: 16px; padding: 28px 24px; text-align: center; max-width: 340px; }
-  .modal .emoji { font-size: 44px; margin-bottom: 10px; }
-  .modal h3 { margin: 0 0 8px; font-size: 19px; }
-  .modal p { color: var(--sub); font-size: 14px; margin: 0 0 18px; }
-  .modal .code-box { background: var(--bg); border-radius: 10px; padding: 12px; font-size: 20px; font-weight: 700; letter-spacing: 2px; margin-bottom: 18px; color: var(--accent); }
-
-  .footer-link { text-align: center; margin-top: 20px; }
-  .footer-link a { color: var(--sub); font-size: 12px; cursor: pointer; text-decoration: underline; }
-
-  /* Arrival gate (GPS check before a station unlocks) */
-  .arrive-card { background: var(--card); border-radius: 18px; padding: 32px 24px; text-align: center; margin-top: 16px; }
-  .arrive-photo {
-    width: 100%; max-width: 320px; height: 170px; margin: 0 auto 14px;
-    border-radius: 14px; background-size: cover; background-position: center;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-  }
-  .arrive-icon { font-size: 40px; margin-bottom: 6px; }
-  .arrive-name { font-size: 19px; margin: 0 0 10px; }
-  .arrive-hint { color: var(--sub); font-size: 13px; line-height: 1.6; margin: 0 0 22px; }
-  .nav-btn {
-    width: 100%; padding: 15px; font-size: 15px; font-weight: 700; border: none; border-radius: 12px;
-    background: #4285f4; color: white; cursor: pointer; margin-bottom: 16px;
-  }
-  .nav-btn:active { background: #3367d6; }
-  .arrive-status {
-    font-size: 13px; color: var(--sub); margin-bottom: 16px; padding: 10px; border-radius: 10px;
-    background: var(--bg); min-height: 18px;
-  }
-  .arrive-status.near { color: var(--done); font-weight: 700; background: #eaf5ec; }
-  .arrive-status.far { color: var(--sub); }
-  .arrive-status.error { color: var(--danger); }
-  .start-btn {
-    width: 100%; padding: 15px; font-size: 16px; font-weight: 700; border: none; border-radius: 12px;
-    background: var(--done); color: white; cursor: pointer; transition: opacity .2s;
-  }
-  .start-btn:disabled { background: #cfc4b4; color: #8a7d6a; cursor: not-allowed; }
-  .arrive-fallback { margin-top: 16px; }
-  .arrive-fallback a { color: var(--sub); font-size: 12px; text-decoration: underline; cursor: pointer; }
-
-  .arrive-debug {
-    margin-top: 24px; padding: 14px; border: 2px dashed #d4a017; border-radius: 12px;
-    background: #fff8e6; text-align: left;
-  }
-  .arrive-debug-title { font-size: 11px; color: #8a6d00; font-weight: 700; margin-bottom: 10px; }
-  .arrive-debug-row { display: flex; gap: 8px; margin-bottom: 8px; }
-  .arrive-debug-row:last-child { margin-bottom: 0; }
-  .arrive-debug-row button {
-    flex: 1; padding: 9px 6px; font-size: 12px; border: none; border-radius: 8px;
-    background: #d4a017; color: white; cursor: pointer;
-  }
-  .arrive-debug-row input {
-    flex: 1; min-width: 0; padding: 9px 8px; font-size: 12px; border: 1px solid #d4a017; border-radius: 8px;
-  }
-
-  /* ================= RPG dialogue scene (time-travel station) ================= */
-  :root {
-    /* dark "night mode" of the same celadon/clay ceramic palette used elsewhere in the app —
-       kept dark for the story scenes' focus/mood, but the same hue family as the light UI */
-    --rpg-void: #141a16;
-    --rpg-walnut: #2c362f;
-    --rpg-walnut-dark: #1c2420;
-    --rpg-mid: #5f6b5c;
-    --rpg-brass: #c98a5e;
-    --rpg-brass-bright: #e0a877;
-    --rpg-parchment: #f0ead9;
-    --rpg-cream: #ece7da;
-    --rpg-ember: #b56a4a;
-  }
-  #screen-rpg.screen.active { display: block; }
-  .rpg-scene {
-    position: relative; height: 100vh; height: 100dvh; width: 100%; max-width: 480px; margin: 0 auto; overflow: hidden;
-    background: linear-gradient(180deg, var(--rpg-walnut) 0%, var(--rpg-walnut-dark) 55%, var(--rpg-void) 100%);
-    font-family: "Noto Serif TC", serif;
-    color: var(--rpg-cream);
-  }
-  /* Real background photo (optional, replaces the CSS illustration when a station provides one) */
-  .rpg-bg-photo {
-    position: absolute; inset: 0; background-size: cover; background-position: center 30%;
-    filter: sepia(0.5) saturate(1.15) brightness(0.55) contrast(1.05);
-  }
-  .rpg-scene.has-photo .rpg-roofline,
-  .rpg-scene.has-photo .rpg-lantern,
-  .rpg-scene.has-photo .rpg-tracks { display: none; }
-
-  /* Character sprites: full-body cutouts standing in the scene, VN-style */
-  .rpg-char-slot {
-    position: absolute; bottom: 0; height: 66%; width: 48%; overflow: visible;
-    background-repeat: no-repeat; background-position: bottom center; background-size: auto 100%;
-    filter: sepia(0.35) contrast(1.05) drop-shadow(0 14px 16px rgba(0,0,0,0.45));
-    transition: opacity 0.3s ease, filter 0.3s ease, transform 0.3s ease;
-    pointer-events: none;
-  }
-  .rpg-char-slot.left { left: -1%; }
-  .rpg-char-slot.right { right: -1%; }
-  .rpg-char-slot.hidden { opacity: 0; }
-  .rpg-char-slot.dim { opacity: 0.42; filter: sepia(0.55) brightness(0.55) contrast(1.05); }
-  .rpg-char-slot.active { filter: sepia(0.15) contrast(1.08) drop-shadow(0 14px 20px rgba(0,0,0,0.5)); transform: scale(1.02); }
-
-  .rpg-grain {
-    position: absolute; inset: 0; opacity: 0.10; mix-blend-mode: overlay; pointer-events: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  }
-  .rpg-vignette {
-    position: absolute; inset: 0; pointer-events: none;
-    background: radial-gradient(ellipse at center, rgba(0,0,0,0) 40%, rgba(0,0,0,0.65) 100%);
-  }
-  .rpg-roofline {
-    position: absolute; left: 0; right: 0; bottom: 38%; height: 90px;
-    background: var(--rpg-walnut-dark);
-    clip-path: polygon(0% 100%, 0% 40%, 10% 0%, 22% 40%, 34% 5%, 46% 40%, 58% 0%, 70% 40%, 82% 8%, 94% 40%, 100% 15%, 100% 100%);
-    opacity: 0.9;
-  }
-  .rpg-lantern {
-    position: absolute; top: 14%; left: 50%; transform: translateX(-50%);
-    width: 10px; height: 14px; border-radius: 3px; background: var(--rpg-brass-bright);
-    box-shadow: 0 0 24px 10px rgba(224,168,119,0.55);
-    animation: rpg-flicker 3.2s ease-in-out infinite;
-  }
-  @keyframes rpg-flicker {
-    0%, 100% { opacity: 1; } 45% { opacity: 0.85; } 50% { opacity: 0.55; } 55% { opacity: 0.9; }
-  }
-  .rpg-tracks {
-    position: absolute; left: 0; right: 0; bottom: 30%; height: 8%;
-    background: repeating-linear-gradient(90deg, var(--rpg-mid) 0 3px, transparent 3px 26px);
-    opacity: 0.5;
-  }
-  .rpg-topbar {
-    position: absolute; top: 0; left: 0; right: 0; z-index: 3;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 16px 18px; background: linear-gradient(180deg, rgba(10,6,3,0.55), transparent);
-  }
-  .rpg-back {
-    font-family: "Noto Serif TC", serif; font-size: 13px; color: var(--rpg-cream); opacity: 0.85;
-    cursor: pointer; padding: 4px 6px;
-  }
-  .rpg-topbar-right { display: flex; align-items: center; gap: 12px; }
-  .rpg-speak-btn {
-    font-size: 17px; cursor: pointer; padding: 4px 8px; border-radius: 50%;
-    background: rgba(0,0,0,0.3); border: 1px solid rgba(201,138,94,0.4); line-height: 1;
-  }
-  .rpg-speak-btn:active { background: rgba(0,0,0,0.5); }
-  .rpg-progress { display: flex; gap: 7px; }
-  .rpg-progress .hole {
-    width: 11px; height: 11px; border-radius: 50%; border: 1.5px solid var(--rpg-brass);
-    background: transparent; display: inline-block;
-  }
-  .rpg-progress .hole.punched { background: var(--rpg-brass-bright); box-shadow: 0 0 6px rgba(224,168,119,0.8); }
-
-  .rpg-dialogue-box {
-    position: absolute; left: 16px; right: 16px; bottom: 22px; z-index: 4;
-    max-width: 480px; margin: 0 auto;
-    background: linear-gradient(180deg, var(--rpg-walnut) 0%, var(--rpg-walnut-dark) 100%);
-    border: 1px solid rgba(201,138,94,0.4);
-    box-shadow: 0 0 0 1px rgba(0,0,0,0.4), 0 14px 32px rgba(0,0,0,0.5), inset 0 0 40px rgba(0,0,0,0.35);
-    border-radius: 14px; padding: 20px 20px 18px; cursor: pointer;
-  }
-  .rpg-nameplate {
-    position: absolute; top: -16px; left: 16px;
-    background: linear-gradient(180deg, var(--rpg-brass-bright), var(--rpg-brass));
-    color: #2b1a0c; font-family: "Cinzel", serif; font-weight: 700; font-size: 13px;
-    letter-spacing: 1px; padding: 5px 14px; border-radius: 20px;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.4);
-  }
-  .rpg-text {
-    font-size: 16px; line-height: 1.85; color: var(--rpg-cream); min-height: 3.7em;
-    margin-top: 6px; white-space: pre-wrap;
-  }
-  .rpg-continue {
-    display: none; text-align: right; color: var(--rpg-brass-bright); font-size: 13px;
-    animation: rpg-bounce 1.3s ease-in-out infinite;
-  }
-  @keyframes rpg-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(4px); } }
-
-  /* Centered on-screen guidance banner, e.g. "請前往一樓前站廣場" */
-  .rpg-notice-overlay {
-    position: absolute; inset: 0; z-index: 6; display: none;
-    align-items: center; justify-content: center; text-align: center;
-    background: rgba(10,6,3,0.55); cursor: pointer; padding: 0 32px;
-  }
-  .rpg-notice-overlay.active { display: flex; }
-  .rpg-notice-card {
-    background: var(--rpg-parchment);
-    color: #2b1a0c; font-family: "Noto Serif TC", serif; font-weight: 700;
-    font-size: 17px; line-height: 1.7; padding: 22px 26px; border-radius: 14px;
-    box-shadow: 0 14px 32px rgba(0,0,0,0.5); max-width: 320px;
-  }
-  .rpg-notice-hint { margin-top: 10px; font-size: 12px; opacity: 0.75; font-weight: 400; color: var(--rpg-ember); }
-  .img-loading-hint {
-    font-family: "Noto Sans TC", sans-serif; font-size: 12.5px; color: #8a7a68; text-align: center;
-    padding: 28px 0; margin-top: 10px; background: rgba(0,0,0,0.05); border-radius: 8px;
-  }
-  .rpg-notice-img { display: block; width: 100%; max-height: 34vh; object-fit: contain; margin-top: 14px; border-radius: 8px; background: rgba(0,0,0,0.08); }
-
-  /* Polaroid-style old-photo popup shown mid-dialogue */
-  .rpg-photo-overlay {
-    position: absolute; left: 50%; bottom: 190px; transform: translateX(-50%) rotate(-2deg);
-    z-index: 5; display: none; width: min(78%, 320px);
-    background: #fdf8ee; padding: 10px 10px 16px; border-radius: 4px;
-    box-shadow: 0 14px 28px rgba(0,0,0,0.5);
-  }
-  .rpg-photo-overlay.active { display: block; }
-  .rpg-photo-overlay img { width: 100%; display: block; filter: sepia(0.4) contrast(1.05); border-radius: 2px; }
-  .rpg-photo-overlay .rpg-photo-cap {
-    margin-top: 8px; font-family: "Noto Serif TC", serif; font-size: 12px; color: #5a4a33; text-align: center;
-  }
-
-  /* Knowledge card: a dense factual/numeric aside gets its own card instead of a spoken line */
-  .rpg-knowledge-overlay {
-    position: absolute; inset: 0; z-index: 6; display: none;
-    align-items: center; justify-content: center; background: rgba(10,14,11,0.6); cursor: pointer; padding: 0 22px;
-  }
-  .rpg-knowledge-overlay.active { display: flex; }
-  .rpg-knowledge-card {
-    width: 100%; max-width: 340px; background: var(--rpg-parchment); border-radius: 14px; overflow: hidden;
-    box-shadow: 0 16px 36px rgba(0,0,0,0.5); text-align: left;
-  }
-  .rpg-knowledge-img { width: 100%; max-height: 42vh; object-fit: contain; display: block; background: var(--rpg-parchment); }
-  .rpg-knowledge-body { padding: 16px 18px 4px; }
-  .rpg-knowledge-title {
-    font-family: "Noto Serif TC", serif; font-weight: 700; font-size: 15px; color: #2b1a0c; margin-bottom: 6px;
-  }
-  .rpg-knowledge-text { font-family: "Noto Sans TC", sans-serif; font-size: 13px; line-height: 1.7; color: #3a2718; }
-  .rpg-knowledge-hint {
-    text-align: right; padding: 8px 18px 14px; font-family: "Noto Serif TC", serif; font-size: 12px;
-    color: var(--rpg-ember); opacity: 0.85;
-  }
-
-  .rpg-choices { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
-  .rpg-pending { font-family: "Noto Serif TC", serif; font-size: 13px; color: var(--rpg-parchment); opacity: 0.75; text-align: center; }
-  .ticket-choice {
-    position: relative; text-align: left; font-family: "Noto Serif TC", serif;
-    background: var(--rpg-parchment); color: #3a2718; border: none; border-radius: 8px;
-    padding: 12px 16px 12px 20px; font-size: 14.5px; cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-  }
-  .ticket-choice::before {
-    content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
-    background: repeating-linear-gradient(180deg, var(--rpg-ember) 0 6px, transparent 6px 11px);
-    border-radius: 8px 0 0 8px;
-  }
-  .ticket-choice:active { transform: scale(0.98); }
-  .ticket-choice.correct { background: #d9e8d2; }
-  .ticket-choice.wrong { background: #ecc7bb; }
-
-  .rpg-multi-options { margin-bottom: 4px; }
-  .rpg-option-check {
-    display: flex; align-items: center; gap: 10px; width: 100%; text-align: left;
-    font-family: "Noto Serif TC", serif; background: var(--rpg-parchment); color: #3a2718;
-    border: none; border-radius: 8px; padding: 12px 16px; margin-bottom: 8px; font-size: 14.5px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.3); cursor: pointer;
-  }
-  .rpg-option-check input[type=checkbox] { width: 18px; height: 18px; flex-shrink: 0; }
-  .rpg-multi-submit-btn {
-    width: 100%; padding: 12px; font-family: "Cinzel", serif; font-weight: 700; font-size: 14px;
-    border: 1px solid rgba(201,138,94,0.5); border-radius: 10px; cursor: pointer;
-    background: linear-gradient(180deg, var(--rpg-brass-bright), var(--rpg-brass)); color: #2b1a0c;
-  }
-  .rpg-multi-submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-
-  .rpg-find-btn {
-    display: none; width: 100%; margin-top: 10px; padding: 13px; font-family: "Cinzel", serif;
-    font-weight: 700; font-size: 15px; letter-spacing: 1px; border: 1px solid rgba(201,138,94,0.5);
-    border-radius: 10px; cursor: pointer;
-    background: linear-gradient(180deg, var(--rpg-brass-bright), var(--rpg-brass)); color: #2b1a0c;
-  }
-  .rpg-find-btn:active { transform: scale(0.98); }
-
-  .ticket-fill { display: flex; gap: 8px; margin-top: 12px; }
-  .ticket-fill input {
-    flex: 1; padding: 12px 14px; font-size: 15px; border-radius: 8px; border: none;
-    background: var(--rpg-parchment); color: #3a2718; font-family: "Noto Serif TC", serif;
-  }
-  .ticket-fill input:focus { outline: 2px solid var(--rpg-brass-bright); }
-  .ticket-fill button {
-    flex: none; width: auto; padding: 12px 16px; border: none; border-radius: 8px; background: var(--rpg-brass);
-    color: #2b1a0c; font-weight: 700; cursor: pointer; font-family: "Noto Serif TC", serif;
-  }
-
-  .rpg-intro-overlay {
-    position: fixed; inset: 0; z-index: 20; background: var(--bg);
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    opacity: 0; pointer-events: none; transition: opacity 0.6s ease;
-  }
-  .rpg-intro-overlay.active { opacity: 1; pointer-events: auto; }
-  .rpg-watch { font-size: 40px; color: var(--accent); animation: rpg-tick 1.6s ease-in-out infinite; }
-  @keyframes rpg-tick { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-  .rpg-intro-text {
-    margin-top: 16px; font-family: "Noto Serif TC", serif; font-weight: 600; letter-spacing: 1px; font-size: 15px;
-    color: var(--ink);
-  }
-
-  /* ================= Map screen: RPG world-map style level select ================= */
-  #screen-map.screen.active { display: block; }
-  .map-world {
-    height: 100vh; height: 100dvh; display: flex; flex-direction: column;
-    background: var(--bg);
-    font-family: "Noto Serif TC", serif; color: var(--ink);
-    max-width: 480px; margin: 0 auto;
-  }
-  .map-grain { display: none; }
-  .map-topbar {
-    position: relative; z-index: 2; display: flex; align-items: center; justify-content: space-between;
-    padding: 14px 16px 10px;
-    border-bottom: 1px solid rgba(124,152,133,0.18);
-    box-shadow: 0 2px 6px rgba(58,51,44,0.05);
-  }
-  .map-title { font-family: "Noto Serif TC", serif; font-weight: 600; font-size: 15px; letter-spacing: 0.5px; color: var(--ink); }
-  .map-subtitle { font-family: "Noto Sans TC", sans-serif; font-size: 10.5px; color: var(--sub); margin-top: 2px; }
-  .map-topbar-right { display: flex; align-items: center; gap: 10px; }
-  .map-count { font-family: "Noto Serif TC", serif; font-size: 16px; font-weight: 700; color: var(--accent); }
-  .map-count-total { font-size: 10.5px; opacity: 0.6; margin-left: 2px; }
-  .map-logout {
-    display: flex; align-items: center; gap: 4px;
-    font-family: "Noto Sans TC", sans-serif; font-size: 12px; color: var(--sub);
-    cursor: pointer; padding: 6px 10px; border-radius: 20px;
-    background: var(--card); border: 1px solid var(--line);
-  }
-  .map-logout:active { background: var(--line); }
-
-  .map-scroll {
-    position: relative; z-index: 2; flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
-    scrollbar-width: thin; scrollbar-color: var(--accent) transparent;
-  }
-  .map-scroll::-webkit-scrollbar { width: 6px; }
-  .map-scroll::-webkit-scrollbar-track { background: transparent; }
-  .map-scroll::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; opacity: 0.5; }
-  .map-scroll::-webkit-scrollbar-button { display: none; height: 0; width: 0; }
-
-  /* Single-column "field journal" card: a landscape photo blending into an aged-paper
-     panel carrying a hand-stamped badge and typewriter notes. Locked stations without a
-     photo yet fall back to a plain card-back on the photo side. */
-  .card-grid { display: grid; grid-template-columns: 1fr; gap: 14px; padding: 14px; }
-  .collect-card {
-    position: relative; aspect-ratio: 4 / 3; border-radius: 6px; overflow: hidden; cursor: pointer;
-    border: 1px solid rgba(124,152,133,0.3); box-shadow: 0 4px 14px rgba(58,51,44,0.12);
-    transition: transform 0.15s ease;
-  }
-  .collect-card:active { transform: scale(0.98); }
-
-  .collect-card .card-img {
-    position: absolute; inset: 10px 10px 0 10px; border-radius: 5px;
-    background-size: contain; background-position: center; background-repeat: no-repeat;
-    background-color: var(--card);
-    border: 1px solid rgba(124,152,133,0.3); box-shadow: inset 0 0 0 4px var(--card);
-    filter: saturate(1.05) brightness(0.96) contrast(1.02);
-  }
-  .collect-card .card-img.grayscale {
-    filter: grayscale(1) contrast(1.02) brightness(1.05);
-  }
-  .collect-card .card-img.grayscale::after {
-    content: ""; position: absolute; inset: 0; border-radius: 4px;
-    background: linear-gradient(160deg, rgba(124,152,133,0.5), rgba(201,138,94,0.55));
-    mix-blend-mode: color;
-  }
-  .collect-card .card-lock {
-    position: absolute; inset: 10px 10px 0 10px; border-radius: 5px;
-    border: 1px solid rgba(124,152,133,0.3);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px; opacity: 0.45;
-    background:
-      repeating-linear-gradient(135deg, rgba(124,152,133,0.10) 0 8px, transparent 8px 16px),
-      linear-gradient(160deg, #e4ddc9 0%, #d6cdb4 100%);
-  }
-
-  /* compact caption strip along the bottom of the photo, instead of a large side panel */
-  .card-bottom {
-    position: absolute; left: 0; right: 0; bottom: 0; z-index: 1;
-    display: flex; align-items: center; gap: 9px;
-    padding: 7px 10px; background: var(--card); border-top: 1px solid rgba(124,152,133,0.25);
-  }
-  .card-stamp { width: 34px; height: 34px; flex: none; }
-  .card-stamp svg { width: 100%; height: 100%; display: block; }
-  .card-notes { min-width: 0; flex: 1; }
-  .card-no { font-family: "Noto Sans TC", sans-serif; font-size: 9px; letter-spacing: 1.5px; opacity: 0.5; }
-  .card-name {
-    font-family: "Noto Serif TC", serif; font-weight: 600; font-size: 12.5px; line-height: 1.3;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
-  .card-status { font-family: "Noto Sans TC", sans-serif; font-size: 9.5px; margin-top: 1px; opacity: 0.65; }
-  .collect-card { border-color: rgba(124,152,133,0.3); }
-  .collect-card.done { border-color: var(--accent); }
-  .collect-card .card-badge {
-    position: absolute; top: 8px; right: 8px; width: 20px; height: 20px; border-radius: 50%;
-    background: var(--clay); color: #fff9ee; font-size: 11px; font-weight: 700;
-    display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.25);
-    z-index: 2;
-  }
-
-  .map-bottom { padding: 10px 20px 34px; text-align: center; }
-  .map-wallet-btn {
-    background: var(--accent); border: none; color: #fff9ee;
-    font-family: "Noto Serif TC", serif; font-size: 13px; padding: 10px 22px; border-radius: 24px; cursor: pointer;
-    box-shadow: 0 3px 10px rgba(124,152,133,0.35);
-  }
-  .map-wallet-btn:active { background: var(--accent-dark); }
-</style>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Cinzel:wght@600;700&family=Noto+Serif+TC:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
@@ -615,15 +24,49 @@
     <div class="login-card" id="login-restoring" style="display:none;">
       <p class="desc" style="margin:0;">登入中...</p>
     </div>
-    <div class="stores-entry-link" onclick="openStores()">查看合作店家與兌換資訊</div>
+    <div class="login-links">
+      <div class="stores-entry-link" onclick="openStores()">查看合作店家與兌換資訊</div>
+      <div class="about-entry-link" onclick="openAbout()">關於本遊戲</div>
+    </div>
   </div>
 </div>
+
+<div class="about-overlay" id="about-overlay">
+  <div class="about-card">
+    <h3 class="about-title">關於鶯歌壯遊實境解謎</h3>
+    <div class="about-row">
+      <div class="about-label">協會／主辦單位</div>
+      <div class="about-value">新北鶯歌環境文教協會</div>
+    </div>
+    <div class="about-row">
+      <div class="about-label">Facebook</div>
+      <div class="about-value"><a href="https://www.facebook.com/ntcecea" target="_blank" rel="noopener">facebook.com/ntcecea</a></div>
+    </div>
+    <div class="about-row">
+      <div class="about-label">製作單位</div>
+      <div class="about-value">新北鶯歌環境文教協會</div>
+    </div>
+    <div class="about-row">
+      <div class="about-label">製作人</div>
+      <div class="about-value">見習生-承翰</div>
+    </div>
+    <div class="about-row">
+      <div class="about-label">輔導／協力單位</div>
+      <div class="about-value">&nbsp;</div>
+    </div>
+    <p class="about-intro">「鶯歌壯遊實境解謎」是新北鶯歌環境文教協會推出的走讀式實境解謎遊戲，帶領玩家實際走進鶯歌老街，透過劇情任務、GPS定位打卡與知識問答，認識鶯歌的陶瓷工藝、百年街廓與在地文化。完成各站任務即可累積徽章，兌換合作店家提供的優惠與小禮，用雙腳認識這座陶瓷小鎮。</p>
+    <div class="about-close" onclick="closeAbout()">關閉</div>
+  </div>
+</div>
+
 <script>
   // avoid a flash of the empty login form while we auto-restore a saved session below
   if (localStorage.getItem("yingge_last_code")) {
     document.getElementById("login-card").style.display = "none";
     document.getElementById("login-restoring").style.display = "block";
   }
+  function openAbout() { document.getElementById("about-overlay").classList.add("active"); }
+  function closeAbout() { document.getElementById("about-overlay").classList.remove("active"); }
 </script>
 
 <!-- MAP SCREEN -->
@@ -637,17 +80,78 @@
       </div>
       <div class="map-topbar-right">
         <div class="map-count"><span id="done-count">0</span><span class="map-count-total">/10</span></div>
-        <span class="map-logout" onclick="logout()" title="登出">⎋ 登出</span>
+        <span class="map-logout" onclick="logout()" title="登出">登出</span>
       </div>
     </div>
 
     <div class="map-scroll">
-      <div class="card-grid" id="station-grid"></div>
-
-      <div class="map-bottom">
-        <button class="map-wallet-btn" onclick="openTicketList()">查看我的票券夾</button>
+      <div class="station-map-wrap">
+        <div class="nearest-chip" id="nearestChip" style="display:none;">
+          <div class="dot"></div>
+          <div>
+            <div class="label">離你最近</div>
+            <div class="name" id="nearestName">—</div>
+          </div>
+          <div class="dist" id="nearestDist">—</div>
+        </div>
+        <div id="stationMap"></div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- STAMP BOOK SCREEN (station checklist) -->
+<div id="screen-stamps" class="screen">
+  <div class="topbar">
+    <span style="width:20px"></span>
+    <h1>我的集章本</h1>
+    <span style="width:20px"></span>
+  </div>
+  <div class="content tab-page-content">
+    <div class="stampcard">
+      <div class="stampcard-top">
+        <div>
+          <div class="stampcard-label">目前進度</div>
+          <div class="stampcard-count" id="stampCount">0<small>／10</small></div>
+        </div>
+        <div class="stampcard-reward" id="stampReward">每完成一站可得 1 枚獎章</div>
+      </div>
+      <div class="stamp-grid" id="stampGrid"></div>
+    </div>
+    <div class="card-grid" id="station-grid"></div>
+  </div>
+</div>
+
+<!-- MAP STATION DETAIL SHEET -->
+<div class="map-sheet-backdrop" id="mapSheetBackdrop" onclick="closeMapSheet()"></div>
+<div class="map-sheet" id="mapSheet">
+  <div class="map-sheet-handle"></div>
+  <button class="map-sheet-close" id="mapSheetClose" onclick="closeMapSheet()">✕</button>
+  <div class="map-sheet-photo" id="mapSheetPhoto"></div>
+  <div class="map-sheet-body">
+    <div class="map-sheet-no" id="mapSheetNo">NO. 01</div>
+    <div class="map-sheet-name" id="mapSheetName">站點名稱</div>
+    <div class="map-sheet-addr" id="mapSheetAddr">📍 地址</div>
+    <div class="map-sheet-dist" id="mapSheetDist"></div>
+    <div class="map-sheet-status" id="mapSheetStatus">尚未解鎖</div>
+    <button class="map-sheet-nav-btn nav-btn" id="mapSheetNav">開始導航前往</button>
+    <button class="map-sheet-btn" id="mapSheetGo">開始關卡</button>
+  </div>
+</div>
+
+<!-- BOTTOM TAB BAR (shown on map / stamp book / rewards shop / backpack) -->
+<div class="tabbar" id="tabbar">
+  <div class="tab-btn" data-screen="map" onclick="showMap()">
+    <span class="tab-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3 3 5.5v15L9 18l6 2.5 6-2.5v-15L15 5.5 9 3z"/><path d="M9 3v15M15 5.5v15"/></svg></span>地圖
+  </div>
+  <div class="tab-btn" data-screen="stamps" onclick="openStampBook()">
+    <span class="tab-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="6"/><path d="M9 14.2 7 21l5-3 5 3-2-6.8"/></svg></span>集章本
+  </div>
+  <div class="tab-btn" data-screen="rewards" onclick="openRewardsShop()">
+    <span class="tab-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 8h11l-1 13h-9l-1-13z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg></span>交換所
+  </div>
+  <div class="tab-btn" data-screen="backpack" onclick="openBackpack()">
+    <span class="tab-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 8V6a5 5 0 0 1 10 0v2"/><rect x="4" y="8" width="16" height="13" rx="3.5"/><path d="M9 8v3a3 3 0 0 0 6 0V8"/></svg></span>背包
   </div>
 </div>
 
@@ -663,9 +167,7 @@
       <div class="arrive-photo" id="arrive-photo" style="display:none;"></div>
       <div class="arrive-icon" id="arrive-icon">📍</div>
       <h2 id="arrive-name" class="arrive-name"></h2>
-      <p class="arrive-hint">請先實際前往這個地點，抵達後搭手扶梯前往二樓才開始遊戲</p>
-
-      <button class="nav-btn" id="arrive-nav-btn" onclick="openGoogleNav()">🧭 開始導航前往</button>
+      <p class="arrive-hint" id="arrive-hint"></p>
 
       <div class="arrive-status" id="arrive-status">尚未取得目前位置</div>
 
@@ -713,8 +215,22 @@
     <div class="rpg-topbar">
       <span class="rpg-back" onclick="exitRpgToMap()">‹ 返回地圖</span>
       <div class="rpg-topbar-right">
-        <span class="rpg-speak-btn" onclick="event.stopPropagation(); speakRpgCurrent()">🔊</span>
+        <span class="rpg-speak-btn" id="rpg-speak-btn" onclick="event.stopPropagation(); openVoiceSettings()">🔈</span>
         <div class="rpg-progress" id="rpg-progress"></div>
+      </div>
+    </div>
+    <div class="rpg-voice-overlay" id="rpg-voice-overlay" onclick="closeVoiceSettings()">
+      <div class="rpg-voice-card" onclick="event.stopPropagation()">
+        <div class="rpg-voice-title">語音設定</div>
+        <div class="rpg-voice-row">
+          <div class="rpg-voice-label">自動語音朗讀</div>
+          <label class="rpg-switch">
+            <input type="checkbox" id="rpg-voice-switch" onchange="onVoiceSwitchChange(this.checked)">
+            <span class="rpg-switch-slider"></span>
+          </label>
+        </div>
+        <div class="rpg-voice-hint">開啟後，每句對話、提示與題目都會自動念出來；關閉則恢復安靜模式。</div>
+        <div class="rpg-voice-close" onclick="closeVoiceSettings()">完成</div>
       </div>
     </div>
     <div class="rpg-photo-overlay" id="rpg-photo-overlay">
@@ -724,10 +240,19 @@
     </div>
     <div class="rpg-notice-overlay" id="rpg-notice-overlay" onclick="advanceRpg()">
       <div class="rpg-notice-card">
+        <div class="rpg-card-badge">現場提示</div>
         <div id="rpg-notice-text"></div>
         <div class="img-loading-hint" id="rpg-notice-loading" style="display:none;">圖片載入中…</div>
         <img class="rpg-notice-img" id="rpg-notice-img" alt="" style="display:none;">
-        <div class="rpg-notice-hint">▼ 點擊繼續</div>
+        <div class="rpg-notice-hint">點一下畫面繼續</div>
+      </div>
+    </div>
+    <div class="rpg-gps-overlay" id="rpg-gps-overlay">
+      <div class="rpg-notice-card">
+        <div id="rpg-gps-text"></div>
+        <div class="rpg-gps-status" id="rpg-gps-status"></div>
+        <button type="button" class="rpg-gps-retry-btn" id="rpg-gps-retry-btn" onclick="event.stopPropagation(); retryGpsCheck()">重新定位</button>
+        <button type="button" class="rpg-gps-test-btn" onclick="event.stopPropagation(); simulateGpsArrived()">🧪 測試用：我已抵達（正式上線前記得移除）</button>
       </div>
     </div>
     <div class="rpg-dialogue-box" onclick="advanceRpg()">
@@ -738,36 +263,21 @@
       <button type="button" class="rpg-find-btn" id="rpg-find-btn" onclick="event.stopPropagation(); confirmFound()">找到了</button>
     </div>
     <div class="rpg-knowledge-overlay" id="rpg-knowledge-overlay" onclick="advanceRpg()">
-      <div class="rpg-knowledge-card">
+      <div class="rpg-knowledge-card" id="rpg-knowledge-card">
+        <div class="rpg-card-badge" id="rpg-knowledge-badge"></div>
         <div class="img-loading-hint" id="rpg-knowledge-loading">圖片載入中…</div>
         <img class="rpg-knowledge-img" id="rpg-knowledge-img" alt="">
         <div class="rpg-knowledge-body">
           <div class="rpg-knowledge-title" id="rpg-knowledge-title"></div>
           <div class="rpg-knowledge-text" id="rpg-knowledge-text"></div>
         </div>
-        <div class="rpg-knowledge-hint">▼ 點擊繼續</div>
+        <div class="rpg-knowledge-hint"><span>點一下繼續</span></div>
       </div>
     </div>
-  </div>
-  <div class="rpg-intro-overlay" id="rpg-intro">
-    <div class="rpg-watch">📍</div>
-    <div class="rpg-intro-text" id="rpg-intro-text"></div>
   </div>
 </div>
 
 <!-- WALLET SCREEN -->
-<div id="screen-wallet" class="screen">
-  <div class="topbar">
-    <span class="back" onclick="goToMap()">‹ 返回選擇關卡</span>
-    <h1>我的票券夾</h1>
-    <span class="back" onclick="openStores()" title="合作店家">查看合作店家</span>
-  </div>
-  <div class="content">
-    <p style="color:var(--sub);font-size:13px;margin:0 0 16px;">點擊票券卡片放大，由店家核對後點選兌換</p>
-    <div class="wallet-list" id="wallet-list"></div>
-  </div>
-</div>
-
 <!-- PARTNER STORES SCREEN -->
 <div id="screen-stores" class="screen">
   <div class="topbar">
@@ -776,1237 +286,45 @@
     <span style="width:20px"></span>
   </div>
   <div class="content">
-    <p style="color:var(--sub);font-size:13px;margin:0 0 16px;">憑解鎖的優惠券至以下店家兌換</p>
+    <p style="color:var(--sub);font-size:13px;margin:0 0 16px;">鶯歌壯遊合作店家一覽</p>
     <div id="stores-list"></div>
   </div>
 </div>
 
-<!-- TICKET EXPAND OVERLAY -->
-<div class="overlay" id="ticket-overlay" onclick="if(event.target===this) closeTicketOverlay()">
-  <div id="ticket-expand-card"></div>
-</div>
-
-<!-- REWARD MODAL (celebratory popup right when a coupon unlocks) -->
-<div class="overlay" id="reward-overlay">
-  <div class="modal">
-    <div class="emoji" id="reward-emoji">🎉</div>
-    <h3 id="reward-title">恭喜解鎖優惠券</h3>
-    <p id="reward-desc">請至服務台出示序號兌換</p>
-    <div class="code-box" id="reward-code"></div>
-    <button onclick="closeRewardModal()">我知道了</button>
+<!-- REWARDS SHOP SCREEN -->
+<div id="screen-rewards" class="screen">
+  <div class="topbar">
+    <span style="width:20px"></span>
+    <h1>獎章商城</h1>
+    <span style="width:20px"></span>
+  </div>
+  <div class="content tab-page-content">
+    <div class="shop-balance-banner">可用獎章 <b id="shop-balance-num">0</b> 枚</div>
+    <p style="color:var(--sub);font-size:13px;margin:0 0 16px;">點選商家看看有哪些好禮，兌換後會存入背包，到現場請店家核銷</p>
+    <div id="merchant-list"></div>
   </div>
 </div>
 
+<!-- BACKPACK SCREEN -->
+<div id="screen-backpack" class="screen">
+  <div class="topbar">
+    <span style="width:20px"></span>
+    <h1>我的背包</h1>
+    <span style="width:20px"></span>
+  </div>
+  <div class="content tab-page-content">
+    <p style="color:var(--sub);font-size:13px;margin:0 0 16px;">已兌換、尚未使用的獎勵，到現場消費時出示給店家核銷</p>
+    <div id="bag-list"></div>
+  </div>
+</div>
+
+<!-- SHOP OVERLAY (reused for merchant detail / item detail / purchase success / redeem code) -->
+<div class="overlay" id="shop-overlay" onclick="if(event.target===this) closeShopOverlay()">
+  <div id="shop-overlay-card"></div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="stations.js"></script>
-<script>
-
-// ---------- Backend API (Google Apps Script Web App) ----------
-// 正確答案、過關判定、票券核銷全部都在伺服器端處理，前端只負責顯示與呼叫 API
-const API_URL = "https://script.google.com/macros/s/AKfycbytcB8w4wDFOK32d8g4FrcEiK3TQNDj0Ob8aFPINFo5t7c_jqMDfzBgnVcyailEjpPMeg/exec";
-
-async function apiGet(params) {
-  const url = API_URL + "?" + new URLSearchParams(params).toString();
-  const res = await fetch(url);
-  return res.json();
-}
-
-async function apiPost(body) {
-  // 用 text/plain 避免瀏覽器對 Apps Script 發出 CORS 預檢請求（Apps Script 不處理 OPTIONS）
-  const res = await fetch(API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "text/plain;charset=utf-8" },
-    body: JSON.stringify(body),
-  });
-  return res.json();
-}
-
-let state = { code: null, progress: {}, name: "", couponA: "locked", couponB: "locked", couponInfo: {} };
-
-function normalize(str) {
-  return (str || "").trim().replace(/\s+/g, "").toUpperCase();
-}
-
-// ---------- Text-to-speech (accessibility for players who have trouble reading) ----------
-// Android Chrome loads its voice list asynchronously — calling speak() before that finishes
-// silently produces no sound at all (no error). We warm the list up on load and, if it's
-// still empty when speak() is first called, wait once for "voiceschanged" before speaking.
-
-let ttsVoices = [];
-if ("speechSynthesis" in window) {
-  const loadVoices = () => { ttsVoices = window.speechSynthesis.getVoices(); };
-  loadVoices();
-  window.speechSynthesis.addEventListener("voiceschanged", loadVoices);
-}
-
-function pickChineseVoice() {
-  if (!ttsVoices.length) return null;
-  return (
-    ttsVoices.find(v => v.lang === "zh-TW") ||
-    ttsVoices.find(v => /zh[-_](TW|Hant)/i.test(v.lang)) ||
-    ttsVoices.find(v => v.lang === "zh-CN") ||
-    ttsVoices.find(v => /^zh/i.test(v.lang)) ||
-    null
-  );
-}
-
-function speakNow(text) {
-  window.speechSynthesis.cancel(); // stop any speech already in progress before starting new
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.lang = "zh-TW";
-  utter.rate = 0.95;
-  const voice = pickChineseVoice();
-  if (voice) utter.voice = voice;
-  utter.onerror = (e) => console.warn("TTS failed:", e.error);
-  window.speechSynthesis.speak(utter);
-}
-
-let lastSpeakAt = 0;
-
-function speak(text) {
-  if (!("speechSynthesis" in window) || !text) return;
-  // ignore rapid repeated taps on the speak button — besides being pointless (it just
-  // restarts the same line), spamming speak() in quick succession is what seems to trigger
-  // Android's "Google - tap to see search results" overlay on some devices
-  const now = Date.now();
-  if (now - lastSpeakAt < 600) return;
-  lastSpeakAt = now;
-  if (!ttsVoices.length) {
-    // voice list not ready yet (common on first use in Android Chrome) — wait once, then speak
-    let spoken = false;
-    const trySpeak = () => {
-      if (spoken) return;
-      spoken = true;
-      ttsVoices = window.speechSynthesis.getVoices();
-      speakNow(text);
-    };
-    window.speechSynthesis.addEventListener("voiceschanged", trySpeak, { once: true });
-    // some browsers never fire voiceschanged if there's truly nothing new to load — try anyway after a short delay
-    setTimeout(trySpeak, 300);
-    return;
-  }
-  speakNow(text);
-}
-
-async function handleLogin() {
-  const raw = document.getElementById("code-input").value;
-  const code = normalize(raw);
-  const errEl = document.getElementById("login-error");
-  const btn = document.getElementById("login-btn");
-  if (!code) { errEl.textContent = "請輸入序號"; return; }
-  errEl.textContent = "登入中...";
-  if (btn) btn.disabled = true;
-  try {
-    const res = await apiGet({ action: "login", code });
-    if (!res.ok) {
-      errEl.textContent = res.error || "序號錯誤，請確認報名信件內容";
-      return;
-    }
-    errEl.textContent = "";
-    state.code = res.code;
-    loadPlayerIntoState(res);
-    localStorage.setItem("yingge_last_code", res.code);
-    resetIdleTimer();
-    showMap();
-  } catch (e) {
-    errEl.textContent = "連線失敗，請檢查網路後再試一次";
-  } finally {
-    if (btn) btn.disabled = false;
-  }
-}
-
-function loadPlayerIntoState(data) {
-  state.name = data.name;
-  state.progress = data.progress || {};
-  state.couponA = data.couponA || "locked";
-  state.couponB = data.couponB || "locked";
-  if (data.couponInfo) state.couponInfo = data.couponInfo;
-}
-
-function logout() {
-  state = { code: null, progress: {}, name: "", couponA: "locked", couponB: "locked", couponInfo: {} };
-  localStorage.removeItem("yingge_last_code");
-  localStorage.removeItem("yingge_pending_arrival");
-  document.getElementById("code-input").value = "";
-  document.getElementById("login-error").textContent = "";
-  document.getElementById("login-card").style.display = "";
-  document.getElementById("login-restoring").style.display = "none";
-  showScreen("screen-login");
-  stopIdleTimer();
-}
-
-// ---------- Idle auto-logout: stay signed in indefinitely, but log out after 15 minutes with no interaction ----------
-const IDLE_LIMIT_MS = 15 * 60 * 1000;
-let idleTimer = null;
-
-function resetIdleTimer() {
-  if (!state.code) return; // only relevant once logged in
-  clearTimeout(idleTimer);
-  idleTimer = setTimeout(() => {
-    if (state.code) logout();
-  }, IDLE_LIMIT_MS);
-}
-
-function stopIdleTimer() {
-  clearTimeout(idleTimer);
-  idleTimer = null;
-}
-
-["click", "touchstart", "keydown", "scroll"].forEach(evt =>
-  window.addEventListener(evt, resetIdleTimer, { passive: true })
-);
-
-function showScreen(id) {
-  if ("speechSynthesis" in window) window.speechSynthesis.cancel(); // don't let TTS keep talking after the player navigates away
-  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-  window.scrollTo(0, 0);
-}
-
-function completedCount() {
-  return Object.values(state.progress).filter(Boolean).length;
-}
-
-function showMap() {
-  showScreen("screen-map");
-  renderMap();
-}
-
-// A hand-stamped-looking badge for each station: two off-register rings (like a real rubber
-// stamp with imperfect registration) around the station number. No image generation involved —
-// this is a CSS/SVG stand-in until real per-location artwork exists.
-const STAMP_PALETTE = ["#7c9885", "#c98a5e", "#8a95a8", "#a8896f", "#7c9885"];
-function stampSvg(st) {
-  const c = STAMP_PALETTE[(st.id - 1) % STAMP_PALETTE.length];
-  const num = String(st.id).padStart(2, "0");
-  return `<svg viewBox="0 0 100 100">
-    <circle cx="50" cy="50" r="41" fill="none" stroke="${c}" stroke-width="2.5" opacity="0.9"/>
-    <text x="50" y="63" text-anchor="middle" font-family="'Noto Serif TC', serif" font-weight="600" font-size="40" fill="${c}">${num}</text>
-  </svg>`;
-}
-
-function renderMap() {
-  const grid = document.getElementById("station-grid");
-  grid.innerHTML = "";
-  const scrollEl = document.querySelector(".map-scroll");
-  if (scrollEl) scrollEl.scrollTop = 0;
-  STATIONS.forEach(st => {
-    const done = !!state.progress[st.id];
-    const needsTravel = !!st.location && !done;
-    const name = st.name.replace(/^站點[一二三四五六七八九十]+/, "");
-
-    const card = document.createElement("div");
-    card.className = "collect-card" + (done ? " done" : "");
-    card.onclick = () => openStation(st.id);
-
-    const statusLine = done
-      ? `<div class="card-status">✓ 已收藏</div>`
-      : `<div class="card-status">尚未解鎖</div>`;
-
-    // locked cards preview the photo in grayscale; it turns full color once the station is completed
-    // most photos crop fine with the CSS default; set a station's optional "bgPosition"
-    // (e.g. "center 20%") when a particular photo needs a different focal point
-    const posOverride = st.bgPosition ? `background-position:${st.bgPosition};` : "";
-    const imageLayer = st.background
-      ? `<div class="card-img${done ? "" : " grayscale"}" style="background-image:url('${encodeURI(st.background)}');${posOverride}"></div>`
-      : `<div class="card-lock">${done ? "🖼️" : (st.icon || "🔒")}</div>`;
-
-    card.innerHTML = `
-      ${imageLayer}
-      ${done ? `<div class="card-badge">✓</div>` : ""}
-      <div class="card-bottom">
-        <div class="card-stamp">${stampSvg(st)}</div>
-        <div class="card-notes">
-          <div class="card-no">NO. ${String(st.id).padStart(2, "0")}</div>
-          <div class="card-name">${name}</div>
-          ${statusLine}
-        </div>
-      </div>
-    `;
-
-    grid.appendChild(card);
-  });
-
-  const done = completedCount();
-  document.getElementById("done-count").textContent = done;
-
-  let hint = "";
-  if (done < 5) hint = `再完成 ${5 - done} 關即可解鎖優惠券A`;
-  else if (done < 10) hint = `再完成 ${10 - done} 關即可解鎖優惠券B（全破關）`;
-  else hint = "恭喜全部完成！";
-  document.getElementById("reward-hint").textContent = hint;
-}
-
-// ---------- Ticket wallet ----------
-
-const TICKET_META = {
-  A: { emoji: "🎟", label: "優惠券A", need: "完成5個站點", threshold: 5 },
-  B: { emoji: "🏆", label: "優惠券B", need: "完成全部10個站點", threshold: 10 },
-};
-
-function ticketStatus(type) {
-  return type === "A" ? state.couponA : state.couponB;
-}
-
-function couponInfo(type) {
-  return (state.couponInfo && state.couponInfo[type]) || {};
-}
-
-function openTicketList() {
-  showScreen("screen-wallet");
-  renderWallet();
-}
-
-function renderWallet() {
-  const list = document.getElementById("wallet-list");
-  list.innerHTML = ["A", "B"].map(type => ticketCardHTML(type)).join("");
-}
-
-// ---------- Partner store directory (public — no login required) ----------
-
-let storesReturnScreen = "screen-login";
-let storesCache = null;
-
-function openStores() {
-  const current = document.querySelector(".screen.active");
-  if (current) storesReturnScreen = current.id;
-  showScreen("screen-stores");
-  renderStores();
-}
-
-function closeStores() {
-  showScreen(storesReturnScreen);
-}
-
-async function renderStores() {
-  const list = document.getElementById("stores-list");
-  if (storesCache) {
-    list.innerHTML = storesCache.map(storeCardHTML).join("") || `<div class="stores-empty">目前尚未公布合作店家</div>`;
-    return;
-  }
-  list.innerHTML = `<div class="stores-empty">載入中...</div>`;
-  try {
-    const res = await apiGet({ action: "stores" });
-    if (!res.ok) {
-      list.innerHTML = `<div class="stores-empty">${res.error || "載入失敗，請稍後再試"}</div>`;
-      return;
-    }
-    storesCache = res.stores || [];
-    list.innerHTML = storesCache.map(storeCardHTML).join("") || `<div class="stores-empty">目前尚未公布合作店家</div>`;
-  } catch (e) {
-    list.innerHTML = `<div class="stores-empty">連線失敗，請檢查網路後再試一次</div>`;
-  }
-}
-
-function storeCardHTML(s) {
-  const photo = s.photo
-    ? `<div class="store-photo" style="background-image:url('${encodeURI(s.photo)}')"></div>`
-    : "";
-  const mapBtn = s.mapUrl
-    ? `<a class="store-map-btn" href="${encodeURI(s.mapUrl)}" target="_blank" rel="noopener">📍 開啟地圖導航</a>`
-    : "";
-  return `
-    <div class="store-card">
-      ${photo}
-      <div class="store-body">
-        <div class="store-name">${s.name}</div>
-        ${s.offer ? `<div class="store-offer">🎁 ${s.offer}</div>` : ""}
-        ${s.address ? `<div class="store-row">📍 ${s.address}</div>` : ""}
-        ${s.phone ? `<div class="store-row">📞 ${s.phone}</div>` : ""}
-        ${s.hours ? `<div class="store-row">🕒 ${s.hours}</div>` : ""}
-        ${mapBtn}
-      </div>
-    </div>
-  `;
-}
-
-function ticketCardHTML(type) {
-  const meta = TICKET_META[type];
-  const info = couponInfo(type);
-  const status = ticketStatus(type);
-  const cls = status === "redeemed" ? "redeemed" : status === "unlocked" ? "type-" + type.toLowerCase() : "locked";
-  let statusText = meta.need + "解鎖";
-  if (status === "unlocked") statusText = "已解鎖，待兌換";
-  if (status === "redeemed") statusText = "✓ 已使用";
-  return `
-    <div class="ticket-card ${cls}" onclick="expandTicket('${type}')">
-      <div class="tc-top">
-        <span class="tc-emoji">${meta.emoji}</span>
-        <span class="tc-status">${statusText}</span>
-      </div>
-      <div class="tc-title">${info.name || meta.label}</div>
-      <div class="tc-sub">${state.name} · ${state.code}</div>
-    </div>
-  `;
-}
-
-function expandTicket(type) {
-  document.getElementById("ticket-expand-card").innerHTML = ticketExpandHTML(type);
-  document.getElementById("ticket-overlay").classList.add("active");
-}
-
-function closeTicketOverlay() {
-  document.getElementById("ticket-overlay").classList.remove("active");
-  pendingRedeem = null;
-}
-
-let pendingRedeem = null; // "A" | "B" | null
-
-function ticketExpandHTML(type) {
-  const meta = TICKET_META[type];
-  const info = couponInfo(type);
-  const status = ticketStatus(type);
-  const cls = status === "redeemed" ? "redeemed" : status === "unlocked" ? "type-" + type.toLowerCase() : "locked";
-
-  const detailRows = [
-    info.store ? `<div class="te-detail"><b>合作店家</b>${info.store}</div>` : "",
-    info.expiry ? `<div class="te-detail"><b>使用期限</b>${info.expiry}</div>` : "",
-    info.note ? `<div class="te-detail"><b>注意事項</b>${info.note}</div>` : "",
-  ].join("");
-  const detailBlock = (status === "unlocked" || status === "redeemed") && detailRows
-    ? `<div class="te-divider"></div>${detailRows}`
-    : "";
-
-  let body = "";
-  if (status === "locked") {
-    const done = completedCount();
-    const remain = Math.max(0, meta.threshold - done);
-    body = `<p class="te-hint">${meta.need}即可解鎖，還差 <b>${remain}</b> 關</p>`;
-  } else if (status === "unlocked") {
-    if (pendingRedeem === type) {
-      body = `
-        <p class="te-hint">請由店家輸入通關密語後點選兌換，此動作無法復原</p>
-        <input type="text" id="redeem-passcode" class="te-passcode" placeholder="店家通關密語" autocomplete="off">
-        <div class="te-actions">
-          <button class="te-btn danger" id="redeem-confirm-btn" onclick="confirmRedeemPlayer('${type}')">確認兌換</button>
-          <button class="te-btn ghost" onclick="cancelRedeemPlayer('${type}')">取消</button>
-        </div>
-        <p class="te-hint error" id="redeem-error"></p>
-      `;
-    } else {
-      body = `
-        <p class="te-hint">請將此畫面交給店家核對兌換</p>
-        <button class="te-btn" onclick="askRedeemPlayer('${type}')">店家兌換</button>
-      `;
-    }
-  } else {
-    body = `<p class="te-hint">✓ 此票券已於稍早兌換完成</p>`;
-  }
-
-  return `
-    <div class="ticket-expand ${cls}">
-      <span class="te-close" onclick="closeTicketOverlay()">✕</span>
-      ${status === "redeemed" ? `<div class="te-stamp">已使用</div>` : ""}
-      <div class="te-emoji">${meta.emoji}</div>
-      <div class="te-label">${info.name || meta.label}</div>
-      ${info.desc ? `<div class="te-desc">${info.desc}</div>` : ""}
-      <div class="te-divider"></div>
-      <div class="te-name">${state.name}</div>
-      <div class="te-code">${state.code}</div>
-      <div class="te-divider"></div>
-      ${body}
-      ${detailBlock}
-    </div>
-  `;
-}
-
-function askRedeemPlayer(type) {
-  pendingRedeem = type;
-  expandTicket(type);
-}
-
-function cancelRedeemPlayer(type) {
-  pendingRedeem = null;
-  expandTicket(type);
-}
-
-async function confirmRedeemPlayer(type) {
-  const field = type === "A" ? "couponA" : "couponB";
-  if (state[field] !== "unlocked") return;
-  const passInput = document.getElementById("redeem-passcode");
-  const errEl = document.getElementById("redeem-error");
-  const btn = document.getElementById("redeem-confirm-btn");
-  const passcode = passInput ? passInput.value.trim() : "";
-  if (errEl) errEl.textContent = "";
-  if (btn) btn.disabled = true;
-  try {
-    const res = await apiPost({ action: "redeem", code: state.code, type, staffPasscode: passcode });
-    if (!res.ok) {
-      if (errEl) errEl.textContent = res.error || "兌換失敗，請再試一次";
-      return;
-    }
-    loadPlayerIntoState(res);
-    pendingRedeem = null;
-    expandTicket(type);
-    renderWallet();
-  } catch (e) {
-    if (errEl) errEl.textContent = "連線失敗，請檢查網路後再試一次";
-  } finally {
-    if (btn) btn.disabled = false;
-  }
-}
-
-let currentStationId = null;
-
-function openStation(id) {
-  currentStationId = id;
-  const st = STATIONS.find(s => s.id === id);
-  const done = !!state.progress[id];
-  if (st.location && !done) {
-    openArrivalGate(st);
-    return;
-  }
-  enterStationContent(st);
-}
-
-function enterStationContent(st) {
-  const done = !!state.progress[st.id];
-  if (st.dialogue && !done) {
-    openStationRPG(st);
-    return;
-  }
-  document.getElementById("station-title").textContent = "NO. " + String(st.id).padStart(2, "0") + "　" + st.name.replace(/^站點[一二三四五六七八九十]+\s*/, "");
-  showScreen("screen-station");
-  renderStation(st);
-}
-
-// ---------- Arrival gate: navigate there via Google Maps, unlock once GPS confirms you're close ----------
-
-let arriveState = null;
-
-function openArrivalGate(st) {
-  currentStationId = st.id;
-  localStorage.setItem("yingge_pending_arrival", st.id);
-  arriveState = { st, watchId: null };
-  document.getElementById("arrive-title").textContent = "NO. " + String(st.id).padStart(2, "0") + "　" + st.name.replace(/^站點[一二三四五六七八九十]+\s*/, "");
-  document.getElementById("arrive-name").textContent = st.name.replace(/^站點[一二三四五六七八九十]+/, "");
-  const photoEl = document.getElementById("arrive-photo");
-  const iconEl = document.getElementById("arrive-icon");
-  const arrivePhoto = st.arrivePhoto || st.background;
-  if (arrivePhoto) {
-    photoEl.style.backgroundImage = `url("${encodeURI(arrivePhoto)}")`;
-    photoEl.style.display = "block";
-    iconEl.style.display = "none";
-  } else {
-    photoEl.style.display = "none";
-    iconEl.style.display = "block";
-  }
-  const startBtn = document.getElementById("arrive-start-btn");
-  startBtn.disabled = true;
-  startBtn.textContent = "抵達後即可開始關卡";
-  setArriveStatus("定位中...", "");
-  showScreen("screen-arrive");
-  startWatchingLocation(st);
-}
-
-function startWatchingLocation(st) {
-  if (!navigator.geolocation) {
-    setArriveStatus("此裝置或瀏覽器不支援定位，請確認已實際抵達後，改用下方連結手動開始", "error");
-    return;
-  }
-  arriveState.watchId = navigator.geolocation.watchPosition(
-    pos => handleLocationUpdate(st, pos),
-    err => setArriveStatus("無法取得定位（" + (err.message || "權限被拒") + "），請確認已抵達後，改用下方連結手動開始", "error"),
-    { enableHighAccuracy: true, maximumAge: 5000, timeout: 15000 }
-  );
-}
-
-function handleLocationUpdate(st, pos) {
-  const dist = haversineMeters(pos.coords.latitude, pos.coords.longitude, st.location.lat, st.location.lng);
-  const radius = st.location.radius || 60;
-  const startBtn = document.getElementById("arrive-start-btn");
-  if (dist <= radius) {
-    setArriveStatus("✅ 你已經抵達現場！可以開始關卡了", "near");
-    startBtn.disabled = false;
-    startBtn.textContent = "開始關卡";
-  } else {
-    setArriveStatus(`距離目標約 ${Math.round(dist)} 公尺，再靠近一點`, "far");
-    startBtn.disabled = true;
-    startBtn.textContent = "抵達後即可開始關卡";
-  }
-}
-
-function setArriveStatus(text, cls) {
-  const el = document.getElementById("arrive-status");
-  el.textContent = text;
-  el.className = "arrive-status" + (cls ? " " + cls : "");
-}
-
-function haversineMeters(lat1, lon1, lat2, lon2) {
-  const R = 6371000;
-  const toRad = d => (d * Math.PI) / 180;
-  const dLat = toRad(lat2 - lat1);
-  const dLon = toRad(lon2 - lon1);
-  const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-}
-
-function openGoogleNav() {
-  const st = arriveState.st;
-  const url = `https://www.google.com/maps/dir/?api=1&destination=${st.location.lat},${st.location.lng}&travelmode=walking`;
-  window.open(url, "_blank");
-}
-
-function confirmArrivalAndStart() {
-  const st = arriveState.st;
-  localStorage.removeItem("yingge_pending_arrival");
-  stopWatchingLocation();
-  enterStationContent(st);
-}
-
-function manualConfirmArrival() {
-  const st = arriveState.st;
-  localStorage.removeItem("yingge_pending_arrival");
-  stopWatchingLocation();
-  enterStationContent(st);
-}
-
-// ---------- Test-only: simulate a GPS reading without physically travelling there ----------
-
-function simulateAtStation() {
-  if (!arriveState) return;
-  stopWatchingLocation(); // stop the real GPS watcher so it can't overwrite the simulated reading
-  const st = arriveState.st;
-  handleLocationUpdate(st, { coords: { latitude: st.location.lat, longitude: st.location.lng } });
-}
-
-function simulateFarAway() {
-  if (!arriveState) return;
-  stopWatchingLocation();
-  const st = arriveState.st;
-  handleLocationUpdate(st, { coords: { latitude: st.location.lat + 0.01, longitude: st.location.lng } });
-}
-
-function simulateCustom() {
-  if (!arriveState) return;
-  const raw = document.getElementById("debug-latlng").value;
-  const parts = raw.split(",").map(s => parseFloat(s.trim()));
-  if (parts.length !== 2 || parts.some(isNaN)) {
-    alert("請輸入「緯度, 經度」格式，例如 24.964834, 121.255782");
-    return;
-  }
-  const [lat, lng] = parts;
-  stopWatchingLocation();
-  const st = arriveState.st;
-  handleLocationUpdate(st, { coords: { latitude: lat, longitude: lng } });
-}
-
-function stopWatchingLocation() {
-  if (arriveState && arriveState.watchId !== null && navigator.geolocation) {
-    navigator.geolocation.clearWatch(arriveState.watchId);
-  }
-  if (arriveState) arriveState.watchId = null;
-}
-
-function goToMap() { localStorage.removeItem("yingge_pending_arrival"); stopWatchingLocation(); showMap(); }
-
-function renderStation(st) {
-  const container = document.getElementById("station-content");
-  const done = !!state.progress[st.id];
-  container.innerHTML = "";
-
-  const header = document.createElement("div");
-  header.innerHTML = `<h2 style="margin:0 0 4px;font-size:18px;">${st.name.replace(/^站點[一二三四五六七八九十]+/, "")}</h2>` +
-    (done ? `<div class="q-done-tag">✓ 本站已完成</div>` : `<p style="color:var(--sub);font-size:13px;margin:0 0 14px;">請依序回答以下 ${st.questions.length} 題，全部答對即完成本站</p>`);
-  container.appendChild(header);
-
-  if (st.image) {
-    const img = document.createElement("img");
-    img.src = st.image;
-    img.alt = st.name;
-    img.className = "station-image";
-    container.appendChild(img);
-  }
-
-  if (st.story) {
-    const storyEl = document.createElement("div");
-    storyEl.className = "story-block";
-    storyEl.innerHTML = st.story + `<span class="speak-btn" onclick="speak(${JSON.stringify(st.story)})">🔊</span>`;
-    container.appendChild(storyEl);
-  }
-
-  st.questions.forEach((q, idx) => {
-    const block = document.createElement("div");
-    block.className = "q-block";
-    block.id = `q-${st.id}-${idx}`;
-    block.innerHTML = renderQuestionInner(st, idx, q, done);
-    container.appendChild(block);
-  });
-}
-
-function speakQuestion(stationId, idx) {
-  const st = STATIONS.find(s => s.id === stationId);
-  const q = st.questions[idx];
-  let text = q.question;
-  if (q.options && q.options.length) {
-    text += "" + q.options.map((opt, i) => `選項${i + 1}：${opt}`).join("");
-  }
-  speak(text);
-}
-
-function renderQuestionInner(st, idx, q, forceLocked) {
-  let inner = `<div class="q-title">第 ${idx + 1} 題　${q.qtype}<span class="speak-btn" onclick="speakQuestion(${st.id}, ${idx})">🔊</span></div><div class="q-text">${q.question}</div>`;
-  if (q.multi) {
-    inner += `<div class="multi-options" id="opts-${st.id}-${idx}">` + q.options.map((opt, i) => `
-      <label class="option-check">
-        <input type="checkbox" id="chk-${st.id}-${idx}-${i}" value="${escapeAttr(opt)}" ${forceLocked ? "disabled" : ""}>
-        <span>${opt}</span>
-      </label>`).join("") + `</div>
-      <button type="button" class="multi-submit-btn" onclick="submitMulti(${st.id}, ${idx})" ${forceLocked ? "disabled" : ""}>送出</button>`;
-  } else if (q.options && q.options.length) {
-    inner += q.options.map(opt => {
-      const cls = forceLocked ? "option-btn disabled" : "option-btn";
-      return `<button type="button" class="${cls}" onclick="submitOption(${st.id}, ${idx}, this, '${escapeAttr(opt)}')">${opt}</button>`;
-    }).join("");
-  } else {
-    inner += `<div class="fill-row">
-      <input type="text" id="fill-${st.id}-${idx}" placeholder="輸入答案" ${forceLocked ? "disabled" : ""}>
-      <button type="button" onclick="submitFill(${st.id}, ${idx})" ${forceLocked ? "disabled" : ""}>送出</button>
-    </div>`;
-  }
-  inner += `<div class="q-feedback" id="fb-${st.id}-${idx}"></div>`;
-  if (q.fact) {
-    inner += `<div class="fact-box" id="fact-${st.id}-${idx}" style="display:${forceLocked ? "block" : "none"}">💡 ${q.fact}</div>`;
-  }
-  return inner;
-}
-
-function revealFact(stationId, idx) {
-  const el = document.getElementById(`fact-${stationId}-${idx}`);
-  if (el) el.style.display = "block";
-}
-
-function escapeAttr(s) { return s.replace(/'/g, "\\'"); }
-
-async function submitOption(stationId, idx, btnEl, chosen) {
-  const st = STATIONS.find(s => s.id === stationId);
-  const allBtns = btnEl.parentElement.querySelectorAll(".option-btn");
-  allBtns.forEach(b => b.classList.add("disabled"));
-  setFeedback(stationId, idx, null, "判斷中…");
-  let res;
-  try {
-    res = await apiPost({ action: "submitAnswer", code: state.code, stationId, qIndex: idx, answer: chosen });
-  } catch (e) {
-    allBtns.forEach(b => b.classList.remove("disabled"));
-    setFeedback(stationId, idx, false, "連線失敗，請再試一次");
-    return;
-  }
-  if (!res.ok) {
-    allBtns.forEach(b => b.classList.remove("disabled"));
-    setFeedback(stationId, idx, false, res.error || "發生錯誤，請再試一次");
-    return;
-  }
-  if (res.correct) {
-    btnEl.classList.add("correct");
-    setFeedback(stationId, idx, true, "答對了！");
-    revealFact(stationId, idx);
-    checkStationComplete(st);
-  } else {
-    btnEl.classList.add("wrong");
-    setFeedback(stationId, idx, false, "答錯了，再試一次");
-    setTimeout(() => { allBtns.forEach(b => b.classList.remove("disabled", "wrong")); setFeedback(stationId, idx, null, ""); }, 900);
-  }
-}
-
-async function submitMulti(stationId, idx) {
-  const st = STATIONS.find(s => s.id === stationId);
-  const optsEl = document.getElementById(`opts-${stationId}-${idx}`);
-  const checked = Array.from(optsEl.querySelectorAll("input[type=checkbox]:checked")).map(c => c.value);
-  if (!checked.length) {
-    setFeedback(stationId, idx, false, "請至少勾選一個選項");
-    return;
-  }
-  const checkboxes = optsEl.querySelectorAll("input[type=checkbox]");
-  const submitBtn = document.querySelector(`#q-${stationId}-${idx} .multi-submit-btn`);
-  checkboxes.forEach(c => { c.disabled = true; });
-  if (submitBtn) submitBtn.disabled = true;
-  setFeedback(stationId, idx, null, "判斷中…");
-  let res;
-  try {
-    res = await apiPost({ action: "submitAnswer", code: state.code, stationId, qIndex: idx, answer: checked });
-  } catch (e) {
-    checkboxes.forEach(c => { c.disabled = false; });
-    if (submitBtn) submitBtn.disabled = false;
-    setFeedback(stationId, idx, false, "連線失敗，請再試一次");
-    return;
-  }
-  if (!res.ok) {
-    checkboxes.forEach(c => { c.disabled = false; });
-    if (submitBtn) submitBtn.disabled = false;
-    setFeedback(stationId, idx, false, res.error || "發生錯誤，請再試一次");
-    return;
-  }
-  if (res.correct) {
-    setFeedback(stationId, idx, true, "答對了！");
-    revealFact(stationId, idx);
-    checkStationComplete(st);
-  } else {
-    checkboxes.forEach(c => { c.disabled = false; });
-    if (submitBtn) submitBtn.disabled = false;
-    setFeedback(stationId, idx, false, "答錯了，再試一次");
-  }
-}
-
-async function submitFill(stationId, idx) {
-  const st = STATIONS.find(s => s.id === stationId);
-  const input = document.getElementById(`fill-${stationId}-${idx}`);
-  const submitBtn = document.querySelector(`#q-${stationId}-${idx} button`);
-  const answer = input.value;
-  input.disabled = true;
-  if (submitBtn) submitBtn.disabled = true;
-  setFeedback(stationId, idx, null, "判斷中…");
-  let res;
-  try {
-    res = await apiPost({ action: "submitAnswer", code: state.code, stationId, qIndex: idx, answer });
-  } catch (e) {
-    input.disabled = false;
-    if (submitBtn) submitBtn.disabled = false;
-    setFeedback(stationId, idx, false, "連線失敗，請再試一次");
-    return;
-  }
-  if (!res.ok) {
-    input.disabled = false;
-    if (submitBtn) submitBtn.disabled = false;
-    setFeedback(stationId, idx, false, res.error || "發生錯誤，請再試一次");
-    return;
-  }
-  if (res.correct) {
-    setFeedback(stationId, idx, true, "答對了！");
-    revealFact(stationId, idx);
-    checkStationComplete(st);
-  } else {
-    input.disabled = false;
-    if (submitBtn) submitBtn.disabled = false;
-    setFeedback(stationId, idx, false, "答錯了，再試一次");
-  }
-}
-
-function setFeedback(stationId, idx, ok, text) {
-  const el = document.getElementById(`fb-${stationId}-${idx}`);
-  el.textContent = text;
-  el.className = "q-feedback" + (ok === true ? " correct" : ok === false ? " wrong" : "");
-}
-
-function checkStationComplete(st) {
-  // check if every question block on screen shows a correct feedback
-  let allCorrect = true;
-  st.questions.forEach((q, idx) => {
-    const fb = document.getElementById(`fb-${st.id}-${idx}`);
-    if (!fb || !fb.classList.contains("correct")) allCorrect = false;
-  });
-  if (allCorrect) markStationComplete(st);
-}
-
-async function markStationComplete(st) {
-  const wasAlreadyDone = !!state.progress[st.id];
-  if (wasAlreadyDone) return true;
-  try {
-    const res = await apiPost({ action: "complete", code: state.code, stationId: st.id });
-    if (!res.ok) {
-      alert(res.error || "尚未完成所有題目，請確認後再試一次");
-      return false;
-    }
-    loadPlayerIntoState(res);
-    setTimeout(() => afterStationComplete(res.unlocked), 500);
-    return true;
-  } catch (e) {
-    alert("連線失敗，請檢查網路後再試一次");
-    return false;
-  }
-}
-
-// ---------- RPG dialogue scene (time-travel station experience) ----------
-
-let rpgState = null;
-
-function openStationRPG(st) {
-  currentStationId = st.id;
-  rpgState = { st, idx: 0, typing: false, typeTimer: null, resultsByQ: {}, wrongCount: 0, advanceAfterReaction: false, showingReaction: false };
-  showScreen("screen-rpg");
-  renderRpgBackground(st);
-  const intro = document.getElementById("rpg-intro");
-  document.getElementById("rpg-intro-text").textContent = st.name || "";
-  intro.classList.add("active");
-  setTimeout(() => {
-    intro.classList.remove("active");
-    renderRpgProgress();
-    renderRpgStep();
-  }, 1600);
-}
-
-// Optional real background photo: set st.background = "images/xxx.jpg" to use it.
-// Falls back to the CSS silhouette scene when not provided.
-function renderRpgBackground(st) {
-  const scene = document.getElementById("rpg-scene");
-  let photoEl = document.getElementById("rpg-bg-photo");
-  if (st.background) {
-    if (!photoEl) {
-      photoEl = document.createElement("div");
-      photoEl.id = "rpg-bg-photo";
-      photoEl.className = "rpg-bg-photo";
-      scene.insertBefore(photoEl, scene.firstChild);
-    }
-    photoEl.style.backgroundImage = `url("${encodeURI(st.background)}")`;
-    scene.classList.add("has-photo");
-  } else {
-    if (photoEl) photoEl.remove();
-    scene.classList.remove("has-photo");
-  }
-}
-
-// Optional character portraits: define st.characters = { guide: {name, portrait, side}, hero: {...} }
-// and reference them per dialogue step via step.char = "guide" (falls back to plain step.speaker text if unset).
-function renderRpgCharacters(step) {
-  const chars = (rpgState.st.characters) || {};
-  ["left", "right"].forEach(side => {
-    const slot = document.getElementById("rpg-char-" + side);
-    const entry = Object.entries(chars).find(([, c]) => c.side === side);
-    if (!entry || !entry[1].portrait) {
-      slot.classList.add("hidden");
-      slot.classList.remove("dim", "active");
-      slot.style.backgroundImage = "";
-      return;
-    }
-    const [id, c] = entry;
-    slot.classList.remove("hidden");
-    slot.style.backgroundImage = `url("${encodeURI(c.portrait)}")`;
-    const isActive = step.char === id;
-    slot.classList.toggle("active", isActive);
-    slot.classList.toggle("dim", !isActive);
-  });
-}
-
-function renderRpgProgress() {
-  if (!rpgState) return;
-  const total = rpgState.st.questions.length;
-  const done = Object.keys(rpgState.resultsByQ).length;
-  const el = document.getElementById("rpg-progress");
-  el.innerHTML = Array.from({ length: total }).map((_, i) =>
-    `<span class="hole${i < done ? " punched" : ""}"></span>`
-  ).join("");
-}
-
-// shows a "圖片載入中…" placeholder while a dialogue image is still fetching, since on a
-// slow connection the surrounding text/card can appear well before the photo does
-function setImgWithLoading(imgEl, loadingId, src) {
-  const loadingEl = document.getElementById(loadingId);
-  imgEl.style.display = "none";
-  loadingEl.style.display = "block";
-  const done = () => { loadingEl.style.display = "none"; imgEl.style.display = "block"; };
-  imgEl.onload = done;
-  imgEl.onerror = done;
-  imgEl.src = src;
-  if (imgEl.complete && imgEl.naturalWidth > 0) done();
-}
-
-function renderRpgStep() {
-  if ("speechSynthesis" in window) window.speechSynthesis.cancel(); // stop last step's TTS before showing the next one
-  const step = rpgState.st.dialogue[rpgState.idx];
-  const speakerEl = document.getElementById("rpg-speaker");
-  const textEl = document.getElementById("rpg-text");
-  const choicesEl = document.getElementById("rpg-choices");
-  const continueEl = document.getElementById("rpg-continue");
-  const noticeEl = document.getElementById("rpg-notice-overlay");
-  const photoEl = document.getElementById("rpg-photo-overlay");
-  const findBtn = document.getElementById("rpg-find-btn");
-  const knowledgeEl = document.getElementById("rpg-knowledge-overlay");
-  choicesEl.innerHTML = "";
-  continueEl.style.display = "none";
-  findBtn.style.display = "none";
-  noticeEl.classList.remove("active");
-  knowledgeEl.classList.remove("active");
-  if (step.type !== "photo" && step.type !== "find") photoEl.classList.remove("active");
-
-  if (step.type === "end") {
-    speakerEl.textContent = "";
-    textEl.textContent = "通關中...";
-    finishRpgStation();
-    return;
-  }
-
-  if (step.type === "notice") {
-    document.getElementById("rpg-notice-text").textContent = step.text;
-    const noticeImgEl = document.getElementById("rpg-notice-img");
-    if (step.photo) {
-      setImgWithLoading(noticeImgEl, "rpg-notice-loading", step.photo);
-    } else {
-      noticeImgEl.style.display = "none";
-      document.getElementById("rpg-notice-loading").style.display = "none";
-    }
-    noticeEl.classList.add("active");
-    return;
-  }
-
-  if (step.type === "knowledge") {
-    const imgEl = document.getElementById("rpg-knowledge-img");
-    if (step.photo) {
-      setImgWithLoading(imgEl, "rpg-knowledge-loading", step.photo);
-    } else {
-      imgEl.style.display = "none";
-      document.getElementById("rpg-knowledge-loading").style.display = "none";
-    }
-    document.getElementById("rpg-knowledge-title").textContent = step.title || "";
-    document.getElementById("rpg-knowledge-text").textContent = step.text || "";
-    knowledgeEl.classList.add("active");
-    return;
-  }
-
-  const charDef = step.char && rpgState.st.characters && rpgState.st.characters[step.char];
-  speakerEl.textContent = (charDef && charDef.name) || step.speaker || "";
-  renderRpgCharacters(step);
-  rpgState.advanceAfterReaction = false;
-  rpgState.showingReaction = false;
-  if ((step.type === "photo" || step.type === "find") && step.photo) {
-    setImgWithLoading(document.getElementById("rpg-photo-img"), "rpg-photo-loading", step.photo);
-    document.getElementById("rpg-photo-cap").textContent = step.caption || "";
-    photoEl.classList.add("active");
-  }
-  typeText(textEl, step.text, () => {
-    if (step.type === "line" || step.type === "photo") {
-      continueEl.style.display = "block";
-    } else if (step.type === "find") {
-      findBtn.style.display = "block";
-    } else if (step.type === "question") {
-      renderRpgQuestion(step);
-    }
-  });
-}
-
-function speakRpgCurrent() {
-  if (!rpgState) return;
-  let text = rpgState.currentFullText || document.getElementById("rpg-text").textContent;
-  const optionBtns = document.querySelectorAll("#rpg-choices .ticket-choice");
-  if (optionBtns.length) {
-    const opts = Array.from(optionBtns).map((b, i) => `選項${i + 1}：${b.textContent}`).join("");
-    text = text + "" + opts;
-  }
-  speak(text);
-}
-
-function typeText(el, text, onDone) {
-  el.textContent = "";
-  rpgState.currentFullText = text;
-  rpgState.typing = true;
-  let i = 0;
-  clearInterval(rpgState.typeTimer);
-  rpgState.typeTimer = setInterval(() => {
-    i++;
-    el.textContent = text.slice(0, i);
-    if (i >= text.length) {
-      clearInterval(rpgState.typeTimer);
-      rpgState.typing = false;
-      if (onDone) onDone();
-    }
-  }, 26);
-}
-
-function skipTyping() {
-  clearInterval(rpgState.typeTimer);
-  rpgState.typing = false;
-  const step = rpgState.st.dialogue[rpgState.idx];
-
-  if (rpgState.showingReaction) {
-    // mid-typing on the post-answer reaction text, not the original question — just finish it,
-    // never fall back to re-rendering the question's options
-    const q = rpgState.st.questions[step.qIndex];
-    const reaction = step.correctReaction + (q.fact ? `\n\n💡 ${q.fact}` : "");
-    document.getElementById("rpg-text").textContent = reaction;
-    rpgState.advanceAfterReaction = true;
-    document.getElementById("rpg-continue").style.display = "block";
-    return;
-  }
-
-  document.getElementById("rpg-text").textContent = step.text;
-  if (step.type === "line" || step.type === "photo") {
-    document.getElementById("rpg-continue").style.display = "block";
-  } else if (step.type === "find") {
-    document.getElementById("rpg-find-btn").style.display = "block";
-  } else if (step.type === "question") {
-    renderRpgQuestion(step);
-  }
-}
-
-function advanceRpg() {
-  if (!rpgState) return;
-  const step = rpgState.st.dialogue[rpgState.idx];
-  if (rpgState.typing) { skipTyping(); return; }
-  if (step.type === "question" && !rpgState.advanceAfterReaction) return;
-  if (step.type === "find") return; // only the "找到了" button may advance this step
-  rpgState.idx++;
-  renderRpgStep();
-}
-
-function confirmFound() {
-  if (!rpgState) return;
-  if (rpgState.typing) { skipTyping(); return; }
-  rpgState.idx++;
-  renderRpgStep();
-}
-
-function renderRpgQuestion(step) {
-  const q = rpgState.st.questions[step.qIndex];
-  const choicesEl = document.getElementById("rpg-choices");
-  if (q.multi) {
-    choicesEl.innerHTML = `<div class="rpg-multi-options">` + q.options.map((opt, i) => `
-      <label class="rpg-option-check">
-        <input type="checkbox" id="rpg-chk-${step.qIndex}-${i}" value="${escapeAttr(opt)}">
-        <span>${opt}</span>
-      </label>`).join("") + `</div>
-      <button type="button" class="rpg-multi-submit-btn" onclick="answerRpgMulti(${step.qIndex})">送出</button>`;
-  } else if (q.options && q.options.length) {
-    choicesEl.innerHTML = q.options.map(opt =>
-      `<button type="button" class="ticket-choice" onclick="answerRpgQuestion(${step.qIndex}, this, '${escapeAttr(opt)}')">${opt}</button>`
-    ).join("");
-  } else {
-    choicesEl.innerHTML = `
-      <div class="ticket-fill">
-        <input type="text" id="rpg-fill-input" placeholder="輸入答案">
-        <button type="button" onclick="answerRpgFill(${step.qIndex})">送出</button>
-      </div>`;
-  }
-}
-
-function answerRpgQuestion(qIndex, btnEl, chosen) {
-  submitRpgAnswer(qIndex, chosen, btnEl);
-}
-
-function answerRpgFill(qIndex) {
-  const input = document.getElementById("rpg-fill-input");
-  submitRpgAnswer(qIndex, input.value, null);
-}
-
-function answerRpgMulti(qIndex) {
-  const checked = Array.from(document.querySelectorAll(`#rpg-choices input[type=checkbox]:checked`)).map(el => el.value);
-  submitRpgAnswer(qIndex, checked, null);
-}
-
-async function submitRpgAnswer(qIndex, chosen, btnEl) {
-  const choicesEl = document.getElementById("rpg-choices");
-  choicesEl.querySelectorAll("button").forEach(b => { b.disabled = true; });
-  const pending = document.createElement("div");
-  pending.className = "rpg-pending";
-  pending.textContent = "判斷中…";
-  choicesEl.appendChild(pending);
-  let res;
-  try {
-    res = await apiPost({ action: "submitAnswer", code: state.code, stationId: rpgState.st.id, qIndex, answer: chosen });
-  } catch (e) {
-    pending.remove();
-    choicesEl.querySelectorAll("button").forEach(b => { b.disabled = false; });
-    document.getElementById("rpg-text").textContent = "連線失敗，請再試一次";
-    return;
-  }
-  pending.remove();
-  if (!res.ok) {
-    choicesEl.querySelectorAll("button").forEach(b => { b.disabled = false; });
-    document.getElementById("rpg-text").textContent = res.error || "發生錯誤，請再試一次";
-    return;
-  }
-  handleRpgAnswer(qIndex, res.correct, btnEl);
-}
-
-function handleRpgAnswer(qIndex, correct, btnEl) {
-  const step = rpgState.st.dialogue[rpgState.idx];
-  const choicesEl = document.getElementById("rpg-choices");
-  if (correct) {
-    // lock the options immediately so a second tap before the reaction starts can't re-trigger this
-    choicesEl.querySelectorAll("button").forEach(b => { b.disabled = true; });
-    if (btnEl) btnEl.classList.add("correct");
-    rpgState.resultsByQ[qIndex] = true;
-    renderRpgProgress();
-    const q = rpgState.st.questions[qIndex];
-    const reaction = step.correctReaction + (q.fact ? `\n\n💡 ${q.fact}` : "");
-    setTimeout(() => {
-      if ("speechSynthesis" in window) window.speechSynthesis.cancel(); // stop any TTS still reading the question before the reaction text appears
-      choicesEl.innerHTML = "";
-      rpgState.showingReaction = true;
-      const textEl = document.getElementById("rpg-text");
-      typeText(textEl, reaction, () => {
-        rpgState.advanceAfterReaction = true;
-        document.getElementById("rpg-continue").style.display = "block";
-      });
-    }, 350);
-  } else {
-    choicesEl.querySelectorAll("button").forEach(b => { b.disabled = false; });
-    if (btnEl) { btnEl.classList.add("wrong"); setTimeout(() => btnEl.classList.remove("wrong"), 500); }
-    const hints = step.wrongHints || ["再想想看……"];
-    const hint = hints[Math.min(rpgState.wrongCount, hints.length - 1)];
-    rpgState.wrongCount++;
-    document.getElementById("rpg-text").textContent = hint;
-  }
-}
-
-function finishRpgStation() {
-  const st = rpgState.st;
-  rpgState = null;
-  markStationComplete(st); // schedules afterStationComplete(), which shows the reward modal or goes to the map
-}
-
-function exitRpgToMap() {
-  if (rpgState) clearInterval(rpgState.typeTimer);
-  rpgState = null;
-  goToMap();
-}
-
-function afterStationComplete(unlocked) {
-  if (unlocked === "A") {
-    showRewardModal("🎟", "恭喜解鎖優惠券A！", "請至票券夾查看使用");
-  } else if (unlocked === "B") {
-    showRewardModal("🏆", "恭喜全破關！解鎖優惠券B", "請至票券夾查看使用");
-  } else {
-    goToMap();
-  }
-  lastUnlockedType = unlocked || null;
-}
-
-let lastUnlockedType = null;
-
-function showRewardModal(emoji, title, desc) {
-  document.getElementById("reward-emoji").textContent = emoji;
-  document.getElementById("reward-title").textContent = title;
-  document.getElementById("reward-desc").textContent = desc;
-  document.getElementById("reward-code").innerHTML = `${state.name}<br><span style="font-size:15px;">${state.code}</span>`;
-  document.getElementById("reward-overlay").classList.add("active");
-}
-
-function closeRewardModal() {
-  document.getElementById("reward-overlay").classList.remove("active");
-  lastUnlockedType = null;
-  goToMap();
-}
-
-// stay logged in across page refreshes (until the 15-minute idle timeout above):
-// auto re-login with the last used code as soon as the script runs, without waiting for full page load
-(async () => {
-  const last = localStorage.getItem("yingge_last_code");
-  if (!last) return;
-  document.getElementById("code-input").value = last;
-  const errEl = document.getElementById("login-error");
-  try {
-    const res = await apiGet({ action: "login", code: last });
-    if (!res.ok) {
-      // saved code no longer valid server-side — drop it and fall back to the login form
-      localStorage.removeItem("yingge_last_code");
-      document.getElementById("login-card").style.display = "";
-      document.getElementById("login-restoring").style.display = "none";
-      return;
-    }
-    state.code = res.code;
-    loadPlayerIntoState(res);
-    errEl.textContent = "";
-    resetIdleTimer();
-    const pendingId = localStorage.getItem("yingge_pending_arrival");
-    const pendingSt = pendingId && STATIONS.find(s => String(s.id) === String(pendingId));
-    if (pendingSt && !state.progress[pendingSt.id]) {
-      openArrivalGate(pendingSt);
-    } else {
-      localStorage.removeItem("yingge_pending_arrival");
-      showMap();
-    }
-  } catch (e) {
-    document.getElementById("login-card").style.display = "";
-    document.getElementById("login-restoring").style.display = "none";
-  }
-})();
-</script>
+<script src="app.js"></script>
 </body>
 </html>

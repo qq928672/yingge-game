@@ -206,6 +206,7 @@ const STATIONS = [
     ],
     "background": "角色照片素材庫/站點一/台鐵鶯歌火車站.png",
     "arrivePhoto": "角色照片素材庫/站點一/火車站售票口.png",
+    "arriveHint": "請實際前往站點，抵達後搭手扶梯前往二樓售票處才開始遊戲",
     "characters": {
       "guide": {
         "name": "楊嚮導",
@@ -443,8 +444,8 @@ const STATIONS = [
     },
     "address": "新北市鶯歌區中正一路223巷19號",
     "location": {
-      "lat": 24.9584,
-      "lng": 121.3547,
+      "lat": 24.957876912256797,
+      "lng": 121.35421614844424,
       "radius": 50
     },
     "background": "角色照片素材庫/站點二/市拿陶藝.png"
@@ -578,6 +579,11 @@ const STATIONS = [
       {
         "type": "notice",
         "text": "前往鶯歌石"
+      },
+      {
+        "type": "gpscheck",
+        "text": "請爬到鶯歌石旁，讓我們確認你已經抵達",
+        "location": { "lat": 24.95877201729627, "lng": 121.36043833303971, "radius": 30 }
       },
       {
         "type": "line",
@@ -774,8 +780,8 @@ const STATIONS = [
     },
     "address": "孫龍步道內；入口可由中正一路一帶進入",
     "location": {
-      "lat": 24.95903,
-      "lng": 121.35938,
+      "lat": 24.958025499906736,
+      "lng": 121.35701852069056,
       "radius": 50
     },
     "background": "角色照片素材庫/站點三/鶯歌石.png"
@@ -955,10 +961,10 @@ const STATIONS = [
         "side": "right"
       }
     },
-    "address": "新北市鶯歌區文化路71之2號",
+    "address": "新北市鶯歌區北鶯里239號",
     "location": {
-      "lat": 24.95602,
-      "lng": 121.35817,
+      "lat": 24.956125698562957,
+      "lng": 121.35937340990445,
       "radius": 40
     },
     "background": "角色照片素材庫/站點四/東享瓷器.png"
@@ -1138,10 +1144,10 @@ const STATIONS = [
         "side": "right"
       }
     },
-    "address": "新北市鶯歌區文化路213巷40號",
+    "address": "新北市鶯歌區東鶯里文化路213巷內",
     "location": {
-      "lat": 24.953426,
-      "lng": 121.355479,
+      "lat": 24.95353101601439,
+      "lng": 121.35555712927186,
       "radius": 40
     },
     "background": "角色照片素材庫/站點五/烘爐窯.png"
@@ -1440,6 +1446,11 @@ const STATIONS = [
         "side": "right"
       }
     },
+    "location": {
+      "lat": 24.952790173073712,
+      "lng": 121.35414776308676,
+      "radius": 40
+    },
     "background": "角色照片素材庫/站點七/榕樹.png"
   },
   {
@@ -1477,10 +1488,10 @@ const STATIONS = [
         ]
       }
     ],
-    "address": "新北市鶯歌區文化路215號附近，東鶯市民活動中心旁",
+    "address": "新北市鶯歌區東鶯里文化路221號",
     "location": {
-      "lat": 24.9537,
-      "lng": 121.3553,
+      "lat": 24.953384573507492,
+      "lng": 121.35443331698151,
       "radius": 65
     },
     "background": "角色照片素材庫/站點八/陳映真故居.png"
