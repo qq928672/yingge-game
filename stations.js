@@ -116,7 +116,7 @@ const STATIONS = [
         type: "line",
         char: "guide",
         text: "剛才看了鐵軌，接著來看看車站本身吧！",
-        background: "角色照片素材庫/站點一/台鐵鶯歌火車站.png",
+        background: "角色照片素材庫/站點一/台鐵鶯歌火車站.jpg",
       },
       {
         type: "line",
@@ -139,7 +139,7 @@ const STATIONS = [
       {
         type: "knowledge",
         text: "鶯歌車站牆面頂端的「兩隻鳥相望」設計，源自於在地著名的「鶯歌石」與三峽「鳶山」的民間傳說",
-        photo: "角色照片素材庫/站點一/台鐵鶯歌火車站.png",
+        photo: "角色照片素材庫/站點一/台鐵鶯歌火車站.jpg",
       },
       {
         type: "line",
@@ -189,8 +189,8 @@ const STATIONS = [
         type: "end",
       },
     ],
-    background: "角色照片素材庫/站點一/火車站售票口.png",
-    arrivePhoto: "角色照片素材庫/站點一/火車站售票口.png",
+    background: "角色照片素材庫/站點一/火車站售票口.jpg",
+    arrivePhoto: "角色照片素材庫/站點一/火車站售票口.jpg",
     arriveHint: "請實際前往站點，抵達後搭手扶梯前往二樓售票處才開始遊戲",
     characters: {
       guide: {
@@ -418,7 +418,7 @@ const STATIONS = [
       lng: 121.35421614844424,
       radius: 50,
     },
-    background: "角色照片素材庫/站點二/市拿陶藝.png",
+    background: "角色照片素材庫/站點二/市拿陶藝.jpg",
   },
   {
     id: 3,
@@ -559,7 +559,7 @@ const STATIONS = [
         type: "line",
         char: "hero",
         text: "哇，這就是鶯歌石！",
-        background: "角色照片素材庫/站點三/鶯歌石.png",
+        background: "角色照片素材庫/站點三/鶯歌石.jpg",
       },
       {
         type: "line",
@@ -1110,7 +1110,7 @@ const STATIONS = [
       lng: 121.35555712927186,
       radius: 40,
     },
-    background: "角色照片素材庫/站點五/烘爐窯.png",
+    background: "角色照片素材庫/站點五/烘爐窯.jpg",
   },
   {
     id: 6,
@@ -1264,7 +1264,7 @@ const STATIONS = [
       lng: 121.3557,
       radius: 65,
     },
-    background: "角色照片素材庫/站點六/益成記.png",
+    background: "角色照片素材庫/站點六/益成記.jpg",
   },
   {
     id: 7,
@@ -1414,7 +1414,7 @@ const STATIONS = [
       lng: 121.35414776308676,
       radius: 40,
     },
-    background: "角色照片素材庫/站點七/榕樹.png",
+    background: "角色照片素材庫/站點七/榕樹.jpg",
   },
   {
     id: 8,
@@ -1646,7 +1646,7 @@ const STATIONS = [
       lng: 121.35443331698151,
       radius: 65,
     },
-    background: "角色照片素材庫/站點八/陳映真故居.png",
+    background: "角色照片素材庫/站點八/陳映真故居.jpg",
   },
   {
     id: 9,
@@ -1913,7 +1913,7 @@ const STATIONS = [
       lng: 121.3508,
       radius: 40,
     },
-    background: "角色照片素材庫/站點九/福興宮.png",
+    background: "角色照片素材庫/站點九/福興宮.jpg",
   },
   {
     id: 10,
@@ -2129,6 +2129,6 @@ const STATIONS = [
       lng: 121.3505,
       radius: 35,
     },
-    background: "角色照片素材庫/站點十/古早窯.png",
+    background: "角色照片素材庫/站點十/古早窯.jpg",
   },
 ];

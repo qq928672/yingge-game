@@ -1262,6 +1262,21 @@ function renderNoticeText(raw) {
   return { headingHtml, warnText: warnLines.join(" ") };
 }
 
+// 語音朗讀用：把 notice 文字裡的排版符號（==強調==、【子行】、⚠️）去掉，只留下純文字內容，
+// 不然唸出來會把 == 【 】 這些符號整段唸出來
+function noticeTextForSpeech(raw) {
+  return (raw || "")
+    .split("\n")
+    .map(line => line.trim().replace(/^⚠️\s*/, ""))
+    .map(line => {
+      const subMatch = line.match(/^【(.+)】$/);
+      return subMatch ? subMatch[1] : line;
+    })
+    .map(line => line.replace(/==(.+?)==/g, "$1"))
+    .filter(Boolean)
+    .join("，");
+}
+
 function renderRpgStep() {
   if ("speechSynthesis" in window) window.speechSynthesis.cancel(); // stop last step's TTS before showing the next one
   const step = rpgState.st.dialogue[rpgState.idx];
@@ -1312,7 +1327,7 @@ function renderRpgStep() {
       document.getElementById("rpg-notice-loading").style.display = "none";
     }
     noticeEl.classList.add("active");
-    if (autoSpeak) speak(step.text);
+    if (autoSpeak) speak(noticeTextForSpeech(step.text));
     return;
   }
 
