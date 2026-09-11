@@ -1945,6 +1945,184 @@ const STATIONS = [
         options: ["木柴", "柴油", "重油", "天然氣"],
       },
     ],
+    dialogue: [
+      {
+        type: "line",
+        char: "hero",
+        text: "這裡就是古早窯嗎？看起來好長喔！",
+      },
+      {
+        type: "line",
+        char: "guide",
+        text: "沒錯！不過你知道眼前這座是什麼窯嗎？",
+      },
+      {
+        type: "line",
+        char: "hero",
+        text: "光看外表還真的看不出來。",
+      },
+      {
+        type: "line",
+        char: "guide",
+        text: "那就走進去看看吧！裡面的告示牌藏著答案。",
+      },
+      {
+        type: "notice",
+        text: "走進古早窯，尋找介紹告示牌",
+      },
+      {
+        type: "question",
+        qIndex: 0,
+        char: "guide",
+        text: "觀察窯內的告示牌，「古早窯」屬於哪一種窯？",
+        correctReaction: "找到了！這就是「隧道窯」。",
+      },
+      {
+        type: "line",
+        char: "hero",
+        text: "難怪這麼長，真的就像一條隧道！",
+      },
+      {
+        type: "line",
+        char: "guide",
+        text: "以前這座窯可是用來生產陶瓷的。",
+      },
+      {
+        type: "line",
+        char: "hero",
+        text: "那這裡以前主要燒什麼？",
+      },
+      {
+        type: "line",
+        char: "guide",
+        text: "答案就在附近，找找看窯裡留下了什麼。",
+      },
+      {
+        type: "notice",
+        text: "觀察隧道窯內留下的物品",
+      },
+      {
+        type: "question",
+        qIndex: 1,
+        char: "guide",
+        text: "根據窯內留下的線索，古早窯過去主要生產哪一類產品？",
+        correctReaction: "答對了！以前這裡主要生產磁磚，也就是常見的馬賽克。",
+      },
+      {
+        type: "line",
+        char: "hero",
+        text: "原來我剛才看到的，就是以前在這裡燒製的產品！",
+      },
+      {
+        type: "line",
+        char: "guide",
+        text: "沒錯！不過窯這麼長，這麼多產品要怎麼送進去呢？",
+      },
+      {
+        type: "line",
+        char: "hero",
+        text: "總不會一件一件搬吧？",
+      },
+      {
+        type: "line",
+        char: "guide",
+        text: "當然不是，來猜猜以前的工人怎麼做。",
+      },
+      {
+        type: "question",
+        qIndex: 2,
+        char: "guide",
+        text: "隧道窯燒製時，工人如何將產品運送進出窯爐？",
+        correctReaction: "沒錯！產品會放在窯車上，一節接著一節送進窯裡。",
+      },
+      {
+        type: "line",
+        char: "hero",
+        text: "原來是讓整台窯車慢慢通過！",
+      },
+      {
+        type: "line",
+        char: "guide",
+        text: "沒錯！這樣就能讓產品依序進入窯內燒製。",
+      },
+      {
+        type: "knowledge",
+        title: "像生產線一樣的窯",
+        text: "隧道窯就像一條長長的生產線，產品隨著窯車依序通過不同的燒製區域，讓燒製能持續進行，也更適合大量生產。",
+      },
+      {
+        type: "line",
+        char: "hero",
+        text: "原來隧道窯的運作方式這麼有意思。",
+      },
+      {
+        type: "line",
+        char: "guide",
+        text: "而且不只運送方式改變，後來連燒窯使用的燃料也變了。",
+      },
+      {
+        type: "line",
+        char: "hero",
+        text: "那後來改用什麼燃料？",
+      },
+      {
+        type: "line",
+        char: "guide",
+        text: "最後再來看看你能不能答對！",
+      },
+      {
+        type: "question",
+        qIndex: 3,
+        char: "guide",
+        text: "隧道窯引進臺灣後，為提升燒製效率，燃料後來改用什麼？",
+        correctReaction: "答對了！後來改用重油，讓隧道窯的燒製更有效率。",
+      },
+      {
+        type: "line",
+        char: "hero",
+        text: "原來窯爐、運送方式和燃料，都會隨著時代改變。",
+      },
+      {
+        type: "line",
+        char: "guide",
+        text: "沒錯！這些變化，也留下了鶯歌陶瓷產業發展的痕跡。",
+      },
+      {
+        type: "line",
+        char: "hero",
+        text: "剛進來時只覺得這座窯很長，現在終於知道它以前怎麼運作了。",
+      },
+      {
+        type: "line",
+        char: "guide",
+        text: "有些老地方，看起來安安靜靜，其實都藏著以前忙碌的故事。",
+      },
+      {
+        type: "line",
+        char: "hero",
+        text: "看來鶯歌還有很多地方值得去找找看。",
+      },
+      {
+        type: "line",
+        char: "guide",
+        text: "當然！走吧，繼續探索其他地方！",
+      },
+      {
+        type: "end",
+      },
+    ],
+    characters: {
+      guide: {
+        name: "楊嚮導",
+        portrait: "角色照片素材庫/角色/楊嚮導.png",
+        side: "left",
+      },
+      hero: {
+        name: "小明",
+        portrait: "角色照片素材庫/角色/小明.png",
+        side: "right",
+      },
+    },
     address: "新北市鶯歌區重慶街65之1號",
     location: {
       lat: 24.9516,
