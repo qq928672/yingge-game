@@ -20,3 +20,6 @@ inject_characters.py
 worker/.dev.vars
 worker/node_modules/
 worker/.wrangler/
+
+# staff-only admin dashboard — local use only, not part of the public site
+admin.html
