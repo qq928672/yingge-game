@@ -14,3 +14,9 @@ inject_characters.py
 題目_extracted_utf8.txt
 鶯歌實境遊戲題目.doc
 鶯歌實境遊戲題目-改版.doc
+
+# Cloudflare Worker — .dev.vars holds ANSWER_KEY/STAFF_PASSCODE/SYNC_SECRET for local dev,
+# must never be public (production secrets are set via `wrangler secret put`, not committed)
+worker/.dev.vars
+worker/node_modules/
+worker/.wrangler/

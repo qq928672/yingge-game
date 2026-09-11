@@ -1,22 +1,49 @@
 
-// ---------- Backend API (Google Apps Script Web App) ----------
-// 正確答案、過關判定、票券核銷全部都在伺服器端處理，前端只負責顯示與呼叫 API
+// ---------- Backend API ----------
+// 混合架構：報名/商店/兌換品項目錄這些低頻、由 Google Sheets 管理的資料還是走 GAS；
+// 登入、答題、過關判定、點數兌換/核銷這些活動當天會被大量同時呼叫的動作，
+// 改走 Cloudflare Workers + D1（並發撐得比 GAS 高很多），靠 action 名稱分流。
 const API_URL = "https://script.google.com/macros/s/AKfycbytcB8w4wDFOK32d8g4FrcEiK3TQNDj0Ob8aFPINFo5t7c_jqMDfzBgnVcyailEjpPMeg/exec";
+const WORKER_API_URL = "https://yingge-game-api.ntcecea.workers.dev";
+const WORKER_ACTIONS = new Set(["login", "state", "submitAnswer", "complete", "purchase", "redeemItem"]);
+
+// 現場網路常常不穩、後端偶爾會逾時，所以連線失敗時自動重試幾次再放棄，
+// 減少玩家自己手動按「再試一次」的機會（伺服器回傳的業務錯誤，例如序號錯誤，
+// 屬於正常回應不會走到這裡，只有 fetch 本身失敗或回應不是合法 JSON 才會重試）
+async function fetchJsonWithRetry(doFetch, attempts = 3) {
+  let lastErr;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      const res = await doFetch();
+      return await res.json();
+    } catch (e) {
+      lastErr = e;
+      if (i < attempts - 1) await new Promise(r => setTimeout(r, 600 * (i + 1)));
+    }
+  }
+  throw lastErr;
+}
 
 async function apiGet(params) {
-  const url = API_URL + "?" + new URLSearchParams(params).toString();
-  const res = await fetch(url);
-  return res.json();
+  const base = WORKER_ACTIONS.has(params.action) ? WORKER_API_URL : API_URL;
+  const url = base + "?" + new URLSearchParams(params).toString();
+  return fetchJsonWithRetry(() => fetch(url));
 }
 
 async function apiPost(body) {
+  if (WORKER_ACTIONS.has(body.action)) {
+    return fetchJsonWithRetry(() => fetch(WORKER_API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json;charset=utf-8" },
+      body: JSON.stringify(body),
+    }));
+  }
   // 用 text/plain 避免瀏覽器對 Apps Script 發出 CORS 預檢請求（Apps Script 不處理 OPTIONS）
-  const res = await fetch(API_URL, {
+  return fetchJsonWithRetry(() => fetch(API_URL, {
     method: "POST",
     headers: { "Content-Type": "text/plain;charset=utf-8" },
     body: JSON.stringify(body),
-  });
-  return res.json();
+  }));
 }
 
 let state = { code: null, progress: {}, name: "", balance: 0, inventory: [] };
@@ -319,7 +346,22 @@ function locateForMap() {
   );
 }
 
+// 測試用：只清掉本機記憶體裡的完成狀態，讓開發者能重新走一次某一站的 RPG 劇情，
+// 不會呼叫後端、不會動到 Google 試算表的 Progress 分頁——重新整理或重新登入後仍會顯示已完成。
+// 正式上線前記得把這個功能（連同 index.html 裡的按鈕）一起移除。
+let devResetTargetId = null;
+function devResetStation() {
+  if (devResetTargetId == null) return;
+  const st = STATIONS.find(s => s.id === devResetTargetId);
+  if (!confirm(`確定要重置「${st ? st.name.replace(/^站點[一二三四五六七八九十]+\s*/, "") : devResetTargetId}」的完成狀態嗎？\n（只影響這次瀏覽，不會刪除伺服器上的紀錄）`)) return;
+  delete state.progress[devResetTargetId];
+  closeMapSheet();
+  renderMap();
+}
+
 function openMapSheet(st, done) {
+  devResetTargetId = st.id;
+  document.getElementById("mapSheetDevReset").style.display = done ? "block" : "none";
   document.getElementById("mapSheetNo").textContent = "NO. " + String(st.id).padStart(2, "0");
   document.getElementById("mapSheetName").textContent = st.name.replace(/^站點[一二三四五六七八九十]+\s*/, "");
   document.getElementById("mapSheetAddr").textContent = st.address ? "📍 " + st.address : "📍 位置資訊尚未提供";
@@ -417,6 +459,10 @@ async function getRewardsCatalog() {
   return rewardsCatalog;
 }
 
+// 商家分類篩選 — "全部" 一律顯示，其餘只列出目錄裡實際有出現的分類，順序依 MERCHANT_CATEGORIES
+const MERCHANT_CATEGORIES = ["手作體驗", "美食飲品", "伴手禮", "交通"];
+let shopCategoryFilter = "全部";
+
 async function openRewardsShop() {
   showScreen("screen-rewards");
   document.getElementById("shop-balance-num").textContent = state.balance;
@@ -424,10 +470,38 @@ async function openRewardsShop() {
   list.innerHTML = `<p class="shop-empty">載入中...</p>`;
   const catalog = await getRewardsCatalog();
   if (!catalog.length) {
+    document.getElementById("shop-category-filter").innerHTML = "";
     list.innerHTML = `<p class="shop-empty">目前還沒有可兌換的好禮，請稍後再來看看</p>`;
     return;
   }
-  list.innerHTML = catalog.map(m => `
+  renderCategoryFilter(catalog);
+  renderMerchantList(catalog);
+}
+
+function renderCategoryFilter(catalog) {
+  const present = new Set(catalog.map(m => m.category).filter(Boolean));
+  const cats = ["全部", ...MERCHANT_CATEGORIES.filter(c => present.has(c))];
+  const el = document.getElementById("shop-category-filter");
+  el.innerHTML = cats.map(c =>
+    `<div class="shop-category-chip${c === shopCategoryFilter ? " active" : ""}" onclick="selectShopCategory('${escapeAttr(c)}')">${c}</div>`
+  ).join("");
+}
+
+function selectShopCategory(cat) {
+  shopCategoryFilter = cat;
+  const catalog = rewardsCatalog || [];
+  renderCategoryFilter(catalog);
+  renderMerchantList(catalog);
+}
+
+function renderMerchantList(catalog) {
+  const list = document.getElementById("merchant-list");
+  const filtered = shopCategoryFilter === "全部" ? catalog : catalog.filter(m => m.category === shopCategoryFilter);
+  if (!filtered.length) {
+    list.innerHTML = `<p class="shop-empty">這個分類目前還沒有商家</p>`;
+    return;
+  }
+  list.innerHTML = filtered.map(m => `
     <div class="merchant-card" onclick="openMerchantDetail('${escapeAttr(m.id)}')">
       ${thumbHtml(m.photo, m.id, "merchant-thumb")}
       <div class="merchant-body">
@@ -478,22 +552,92 @@ async function openItemDetail(merchantId, itemId) {
   const it = m && m.items.find(x => x.id === itemId);
   if (!it) return;
   const can = state.balance >= it.cost;
+  const photos = (it.photos && it.photos.length) ? it.photos : (it.photo ? [{ src: it.photo, caption: "" }] : []);
   openShopOverlay(`
     <div class="shop-card">
       <div class="shop-card-close" onclick="closeShopOverlay()">✕</div>
       <div class="shop-item-back" onclick="openMerchantDetail('${escapeAttr(merchantId)}')">‹ 返回 ${m.name}</div>
-      ${thumbHtml(it.photo, merchantId, "shop-card-photo")}
+      ${photoCarouselHtml(photos, merchantId)}
       <div class="shop-card-name">${it.name}</div>
       <div class="shop-item-desc">${it.desc || ""}</div>
       <div class="shop-item-cost-big">🏅 ${it.cost} 枚</div>
       <button class="shop-buy-btn" ${can ? "" : "disabled"} onclick="buyItem('${escapeAttr(itemId)}')">${can ? "兌換，存入背包" : "獎章不足"}</button>
     </div>
   `);
+  initShopCarousel(photos);
+}
+
+// 商品照片輪播——只有一張圖時直接顯示（不用輪播的複雜度），兩張以上才會出現左右箭頭／圓點／可滑動
+let shopCarouselPhotos = [];
+let shopCarouselIndex = 0;
+
+function photoCarouselHtml(photos, fallbackKey) {
+  if (!photos.length) return thumbHtml(null, fallbackKey, "shop-card-photo");
+  if (photos.length === 1) {
+    return `
+      ${thumbHtml(photos[0].src, fallbackKey, "shop-card-photo")}
+      ${photos[0].caption ? `<div class="shop-photo-caption-static">${escapeHtmlText(photos[0].caption)}</div>` : ""}
+    `;
+  }
+  const slides = photos.map(p => `<div class="shop-photo-slide" style="background-image:url('${encodeURI(p.src)}')"></div>`).join("");
+  const dots = photos.map((_, i) => `<button type="button" class="shop-photo-dot${i === 0 ? " active" : ""}" onclick="event.stopPropagation(); shopCarouselJump(${i})"></button>`).join("");
+  return `
+    <div class="shop-photo-carousel" id="shopCarousel" data-count="${photos.length}">
+      <div class="shop-photo-track" id="shopCarouselTrack">${slides}</div>
+      <button type="button" class="shop-photo-arrow prev" onclick="event.stopPropagation(); shopCarouselGo(-1)">‹</button>
+      <button type="button" class="shop-photo-arrow next" onclick="event.stopPropagation(); shopCarouselGo(1)">›</button>
+      ${photos[0].caption ? `<div class="shop-photo-caption" id="shopCarouselCaption">${escapeHtmlText(photos[0].caption)}</div>` : `<div class="shop-photo-caption" id="shopCarouselCaption" style="display:none;"></div>`}
+      <div class="shop-photo-dots" id="shopCarouselDots">${dots}</div>
+    </div>
+  `;
+}
+
+function initShopCarousel(photos) {
+  shopCarouselPhotos = photos;
+  shopCarouselIndex = 0;
+  const el = document.getElementById("shopCarousel");
+  if (!el) return;
+  let startX = null;
+  el.addEventListener("touchstart", e => { startX = e.touches[0].clientX; }, { passive: true });
+  el.addEventListener("touchend", e => {
+    if (startX == null) return;
+    const dx = e.changedTouches[0].clientX - startX;
+    if (Math.abs(dx) > 40) shopCarouselGo(dx > 0 ? -1 : 1);
+    startX = null;
+  }, { passive: true });
+}
+
+function shopCarouselGo(dir) {
+  const track = document.getElementById("shopCarouselTrack");
+  const el = document.getElementById("shopCarousel");
+  if (!track || !el) return;
+  const count = Number(el.dataset.count);
+  shopCarouselIndex = (shopCarouselIndex + dir + count) % count;
+  track.style.transform = `translateX(-${shopCarouselIndex * 100}%)`;
+  document.querySelectorAll("#shopCarouselDots .shop-photo-dot").forEach((d, i) => d.classList.toggle("active", i === shopCarouselIndex));
+  const caption = (shopCarouselPhotos[shopCarouselIndex] && shopCarouselPhotos[shopCarouselIndex].caption) || "";
+  const captionEl = document.getElementById("shopCarouselCaption");
+  captionEl.textContent = caption;
+  captionEl.style.display = caption ? "block" : "none";
+}
+
+function shopCarouselJump(i) {
+  shopCarouselGo(i - shopCarouselIndex);
 }
 
 async function buyItem(itemId) {
   try {
-    const res = await apiPost({ action: "purchase", code: state.code, itemId });
+    const catalog = await getRewardsCatalog();
+    let item = null, merchant = null;
+    for (const m of catalog) {
+      const found = m.items.find(it => it.id === itemId);
+      if (found) { item = found; merchant = m; break; }
+    }
+    if (!item) { alert("查無此商品"); return; }
+    const res = await apiPost({
+      action: "purchase", code: state.code,
+      item: { id: item.id, name: item.name, cost: item.cost, merchant: merchant.name },
+    });
     if (!res.ok) { alert(res.error || "兌換失敗，請再試一次"); return; }
     state.balance = res.balance;
     state.inventory = res.inventory || state.inventory;
@@ -1003,29 +1147,47 @@ function openStationRPG(st) {
   currentStationId = st.id;
   rpgState = { st, idx: 0, typing: false, typeTimer: null, resultsByQ: {}, wrongCount: 0, advanceAfterReaction: false, showingReaction: false };
   showScreen("screen-rpg");
-  renderRpgBackground(st);
+  renderRpgBackground(st.background);
   renderRpgProgress();
   renderRpgStep();
 }
 
-// Optional real background photo: set st.background = "images/xxx.jpg" to use it.
-// Falls back to the CSS silhouette scene when not provided.
-function renderRpgBackground(st) {
+// Optional real background photo: set st.background = "images/xxx.jpg" to use it (falls back to
+// the CSS silhouette scene when not provided). Any dialogue step can also carry its own
+// "background" field to switch the scene photo mid-station — e.g. moving from the outdoor
+// track scene to the front-station building — and that switch crossfades instead of cutting.
+let rpgCurrentBackground = null;
+function renderRpgBackground(src, opts) {
+  const smooth = !!(opts && opts.smooth);
   const scene = document.getElementById("rpg-scene");
   let photoEl = document.getElementById("rpg-bg-photo");
-  if (st.background) {
+  if (src) {
+    const newUrl = `url("${encodeURI(src)}")`;
     if (!photoEl) {
       photoEl = document.createElement("div");
       photoEl.id = "rpg-bg-photo";
       photoEl.className = "rpg-bg-photo";
       scene.insertBefore(photoEl, scene.firstChild);
+      photoEl.style.backgroundImage = newUrl;
+    } else if (smooth && photoEl.style.backgroundImage !== newUrl) {
+      const fadeEl = document.createElement("div");
+      fadeEl.className = "rpg-bg-photo rpg-bg-photo-fade";
+      fadeEl.style.backgroundImage = newUrl;
+      photoEl.insertAdjacentElement("afterend", fadeEl);
+      requestAnimationFrame(() => { fadeEl.style.opacity = "1"; });
+      setTimeout(() => {
+        photoEl.style.backgroundImage = newUrl;
+        fadeEl.remove();
+      }, 650);
+    } else {
+      photoEl.style.backgroundImage = newUrl;
     }
-    photoEl.style.backgroundImage = `url("${encodeURI(st.background)}")`;
     scene.classList.add("has-photo");
   } else {
     if (photoEl) photoEl.remove();
     scene.classList.remove("has-photo");
   }
+  rpgCurrentBackground = src || null;
 }
 
 // Optional character portraits: define st.characters = { guide: {name, portrait, side}, hero: {...} }
@@ -1073,9 +1235,39 @@ function setImgWithLoading(imgEl, loadingId, src) {
   if (imgEl.complete && imgEl.naturalWidth > 0) done();
 }
 
+function escapeHtmlText(s) {
+  return (s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+const RPG_NOTICE_PIN_SVG = '<svg viewBox="0 0 24 24" fill="none"><path d="M12 2C7.58 2 4 5.58 4 10c0 5.25 6.16 11.16 7.02 11.94a1.5 1.5 0 0 0 1.96 0C13.84 21.16 20 15.25 20 10c0-4.42-3.58-8-8-8z" fill="currentColor"/><circle cx="12" cy="10" r="3" fill="var(--yellow)"/></svg>';
+
+// notice text authoring convention: a line starting with ⚠️ becomes its own callout box instead
+// of part of the heading; a line wrapped in 【...】 becomes its own pin-icon sub-line instead of
+// showing the literal brackets; ==phrase== anywhere in the heading gets a highlighter mark
+function renderNoticeText(raw) {
+  const lines = (raw || "").split("\n");
+  const warnLines = [];
+  const headingLines = [];
+  lines.forEach(line => {
+    if (line.trim().startsWith("⚠️")) warnLines.push(line.trim().replace(/^⚠️\s*/, ""));
+    else headingLines.push(line);
+  });
+  const headingHtml = headingLines.map(line => {
+    const subMatch = line.match(/^【(.+)】$/);
+    const inner = escapeHtmlText(subMatch ? subMatch[1] : line).replace(/==(.+?)==/g, "<mark>$1</mark>");
+    return subMatch
+      ? `<div class="rpg-notice-subline">${RPG_NOTICE_PIN_SVG}<span>${inner}</span></div>`
+      : `<div class="rpg-notice-line">${inner}</div>`;
+  }).join("");
+  return { headingHtml, warnText: warnLines.join(" ") };
+}
+
 function renderRpgStep() {
   if ("speechSynthesis" in window) window.speechSynthesis.cancel(); // stop last step's TTS before showing the next one
   const step = rpgState.st.dialogue[rpgState.idx];
+  if (step.background !== undefined && step.background !== rpgCurrentBackground) {
+    renderRpgBackground(step.background, { smooth: true });
+  }
   const speakerEl = document.getElementById("rpg-speaker");
   const textEl = document.getElementById("rpg-text");
   const choicesEl = document.getElementById("rpg-choices");
@@ -1084,12 +1276,14 @@ function renderRpgStep() {
   const photoEl = document.getElementById("rpg-photo-overlay");
   const findBtn = document.getElementById("rpg-find-btn");
   const knowledgeEl = document.getElementById("rpg-knowledge-overlay");
+  const storyEl = document.getElementById("rpg-story-overlay");
   const gpsEl = document.getElementById("rpg-gps-overlay");
   choicesEl.innerHTML = "";
   continueEl.style.display = "none";
   findBtn.style.display = "none";
   noticeEl.classList.remove("active");
   knowledgeEl.classList.remove("active");
+  storyEl.classList.remove("active");
   gpsEl.classList.remove("active");
   if (step.type !== "photo" && step.type !== "find") photoEl.classList.remove("active");
 
@@ -1101,7 +1295,15 @@ function renderRpgStep() {
   }
 
   if (step.type === "notice") {
-    document.getElementById("rpg-notice-text").textContent = step.text;
+    const { headingHtml, warnText } = renderNoticeText(step.text);
+    document.getElementById("rpg-notice-text").innerHTML = headingHtml;
+    const warnEl = document.getElementById("rpg-notice-warn");
+    if (warnText) {
+      document.getElementById("rpg-notice-warn-text").textContent = warnText;
+      warnEl.style.display = "flex";
+    } else {
+      warnEl.style.display = "none";
+    }
     const noticeImgEl = document.getElementById("rpg-notice-img");
     if (step.photo) {
       setImgWithLoading(noticeImgEl, "rpg-notice-loading", step.photo);
@@ -1129,21 +1331,42 @@ function renderRpgStep() {
     const imgEl = document.getElementById("rpg-knowledge-img");
     const cardEl = document.getElementById("rpg-knowledge-card");
     const badgeEl = document.getElementById("rpg-knowledge-badge");
-    cardEl.classList.toggle("no-photo", !step.photo);
+    // 「探索發現」還是「小知識」是看有沒有標題（有名字的東西 vs. 隨手補充的小知識），
+    // 不是看有沒有照片——小知識一樣可以配照片，只是卡片風格比較輕、沒有大標題
+    const isCollection = !!step.title;
+    cardEl.classList.toggle("brief", !isCollection);
     if (step.photo) {
       setImgWithLoading(imgEl, "rpg-knowledge-loading", step.photo);
-      badgeEl.classList.add("corner");
-      badgeEl.textContent = "解鎖收藏";
     } else {
       imgEl.style.display = "none";
       document.getElementById("rpg-knowledge-loading").style.display = "none";
-      badgeEl.classList.remove("corner");
+    }
+    // 兩種卡片的徽章都固定在右上角（同一個位置），只有顏色跟文字不同
+    badgeEl.classList.add("corner");
+    badgeEl.classList.toggle("discover", isCollection);
+    if (isCollection) {
+      badgeEl.textContent = "探索發現";
+    } else {
       badgeEl.textContent = "小知識";
     }
     document.getElementById("rpg-knowledge-title").textContent = step.title || "";
     document.getElementById("rpg-knowledge-text").textContent = step.text || "";
     knowledgeEl.classList.add("active");
     if (autoSpeak) speak((step.title ? step.title + "。" : "") + (step.text || ""));
+    return;
+  }
+
+  if (step.type === "story") {
+    const imgEl = document.getElementById("rpg-story-img");
+    if (step.photo) {
+      setImgWithLoading(imgEl, "rpg-story-loading", step.photo);
+    } else {
+      imgEl.style.display = "none";
+      document.getElementById("rpg-story-loading").style.display = "none";
+    }
+    document.getElementById("rpg-story-text").textContent = step.text || "";
+    storyEl.classList.add("active");
+    if (autoSpeak) speak(step.text || "");
     return;
   }
 
@@ -1182,14 +1405,13 @@ function speakRpgCurrent() {
 }
 
 // auto-speak setting: off by default, persisted so the player's choice sticks across visits.
-// the 🔈/🔊 topbar button opens a small settings card with a switch (clearer than a silent
+// the "音效設定" topbar button opens a small settings card with a switch (clearer than a silent
 // toggle-on-tap) — flipping the switch turns auto-narration on/off, and turning it off cancels
 // whatever is currently playing and goes back to fully silent.
 let autoSpeak = localStorage.getItem("yingge_auto_speak") === "1";
 function updateSpeakBtnUI() {
   const btn = document.getElementById("rpg-speak-btn");
   if (!btn) return;
-  btn.textContent = autoSpeak ? "🔊" : "🔈";
   btn.classList.toggle("active", autoSpeak);
   btn.title = autoSpeak ? "自動語音：開啟" : "自動語音：關閉";
 }
@@ -1252,11 +1474,12 @@ function skipTyping() {
 }
 
 function showFactCard(fact) {
-  document.getElementById("rpg-knowledge-card").classList.add("no-photo");
+  document.getElementById("rpg-knowledge-card").classList.add("brief");
   document.getElementById("rpg-knowledge-img").style.display = "none";
   document.getElementById("rpg-knowledge-loading").style.display = "none";
   const badgeEl = document.getElementById("rpg-knowledge-badge");
-  badgeEl.classList.remove("corner");
+  badgeEl.classList.add("corner");
+  badgeEl.classList.remove("discover");
   badgeEl.textContent = "小知識";
   document.getElementById("rpg-knowledge-title").textContent = "";
   document.getElementById("rpg-knowledge-text").textContent = fact;
@@ -1434,6 +1657,9 @@ function handleRpgAnswer(qIndex, correct, btnEl) {
       if ("speechSynthesis" in window) window.speechSynthesis.cancel(); // stop any TTS still reading the question before the reaction text appears
       choicesEl.innerHTML = "";
       rpgState.showingReaction = true;
+      if (step.reactionBackground !== undefined && step.reactionBackground !== rpgCurrentBackground) {
+        renderRpgBackground(step.reactionBackground, { smooth: true });
+      }
       const textEl = document.getElementById("rpg-text");
       typeText(textEl, reaction, () => {
         rpgState.advanceAfterReaction = true;

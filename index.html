@@ -136,6 +136,9 @@
     <div class="map-sheet-status" id="mapSheetStatus">尚未解鎖</div>
     <button class="map-sheet-nav-btn nav-btn" id="mapSheetNav">開始導航前往</button>
     <button class="map-sheet-btn" id="mapSheetGo">開始關卡</button>
+    <div class="map-sheet-devreset" id="mapSheetDevReset" style="display:none;">
+      🧪 <a onclick="devResetStation()">重置本站進度（測試用，正式上線前記得移除這個區塊）</a>
+    </div>
   </div>
 </div>
 
@@ -215,7 +218,7 @@
     <div class="rpg-topbar">
       <span class="rpg-back" onclick="exitRpgToMap()">‹ 返回地圖</span>
       <div class="rpg-topbar-right">
-        <span class="rpg-speak-btn" id="rpg-speak-btn" onclick="event.stopPropagation(); openVoiceSettings()">🔈</span>
+        <span class="rpg-speak-btn" id="rpg-speak-btn" onclick="event.stopPropagation(); openVoiceSettings()">音效設定</span>
         <div class="rpg-progress" id="rpg-progress"></div>
       </div>
     </div>
@@ -240,11 +243,18 @@
     </div>
     <div class="rpg-notice-overlay" id="rpg-notice-overlay" onclick="advanceRpg()">
       <div class="rpg-notice-card">
-        <div class="rpg-card-badge">現場提示</div>
-        <div id="rpg-notice-text"></div>
+        <div class="rpg-notice-badge">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 2C7.58 2 4 5.58 4 10c0 5.25 6.16 11.16 7.02 11.94a1.5 1.5 0 0 0 1.96 0C13.84 21.16 20 15.25 20 10c0-4.42-3.58-8-8-8z" fill="currentColor"/><circle cx="12" cy="10" r="3" fill="var(--yellow)"/></svg>
+          現場提示
+        </div>
+        <div class="rpg-notice-heading" id="rpg-notice-text"></div>
+        <div class="rpg-notice-warn" id="rpg-notice-warn" style="display:none;">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 3.5 2.5 20h19L12 3.5z" fill="var(--yellow)" stroke="var(--ink)" stroke-width="1.5" stroke-linejoin="round"/><rect x="11" y="9" width="2" height="6" rx="1" fill="var(--ink)"/><rect x="11" y="16.5" width="2" height="2" rx="1" fill="var(--ink)"/></svg>
+          <span id="rpg-notice-warn-text"></span>
+        </div>
         <div class="img-loading-hint" id="rpg-notice-loading" style="display:none;">圖片載入中…</div>
         <img class="rpg-notice-img" id="rpg-notice-img" alt="" style="display:none;">
-        <div class="rpg-notice-hint">點一下畫面繼續</div>
+        <div class="rpg-notice-hint">點一下畫面繼續 <span class="rpg-notice-hint-arrow">›</span></div>
       </div>
     </div>
     <div class="rpg-gps-overlay" id="rpg-gps-overlay">
@@ -274,6 +284,15 @@
         <div class="rpg-knowledge-hint"><span>點一下繼續</span></div>
       </div>
     </div>
+    <div class="rpg-story-overlay" id="rpg-story-overlay" onclick="advanceRpg()">
+      <div class="rpg-story-card">
+        <div class="rpg-card-badge story">嚮導回憶</div>
+        <div class="img-loading-hint" id="rpg-story-loading">圖片載入中…</div>
+        <img class="rpg-story-img" id="rpg-story-img" alt="">
+        <div class="rpg-story-text" id="rpg-story-text"></div>
+        <div class="rpg-story-hint">點一下繼續</div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -299,8 +318,12 @@
     <span style="width:20px"></span>
   </div>
   <div class="content tab-page-content">
-    <div class="shop-balance-banner">可用獎章 <b id="shop-balance-num">0</b> 枚</div>
+    <div class="shop-balance-card">
+      <div class="shop-balance-label">可用獎章</div>
+      <div class="shop-balance-value"><span id="shop-balance-num">0</span><small>枚</small></div>
+    </div>
     <p style="color:var(--sub);font-size:13px;margin:0 0 16px;">點選商家看看有哪些好禮，兌換後會存入背包，到現場請店家核銷</p>
+    <div class="shop-category-filter" id="shop-category-filter"></div>
     <div id="merchant-list"></div>
   </div>
 </div>

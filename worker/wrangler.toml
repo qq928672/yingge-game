@@ -1,0 +1,13 @@
+name = "yingge-game-api"
+main = "src/index.js"
+compatibility_date = "2024-09-01"
+
+# 執行 `npx wrangler d1 create yingge-game-db` 之後，把它印出來的 database_id
+# 貼到下面這行（取代 REPLACE_AFTER_WRANGLER_D1_CREATE）
+[[d1_databases]]
+binding = "DB"
+database_name = "yingge-game-db"
+database_id = "a6102bf4-8ec0-4058-9faf-e782488b6cfc"
+
+# 這裡先只放「不是密碼」的設定；ANSWER_KEY / STAFF_PASSCODE / SYNC_SECRET
+# 用 `wrangler secret put` 個別設定（不會寫進這個檔案、不會進 git）

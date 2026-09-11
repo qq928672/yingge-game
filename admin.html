@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>鶯歌壯遊・後台資料</title>
+<style>
+  :root {
+    --ink: #2b2620;
+    --paper: #faf6ee;
+    --card: #ffffff;
+    --line: #e4dccb;
+    --accent: #c1502e;
+    --accent-soft: #f3e2d8;
+    --good: #3f7d5c;
+    --muted: #8a8171;
+    font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); }
+
+  .topbar {
+    padding: 18px 20px; background: var(--card); border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  }
+  .topbar h1 { font-size: 18px; margin: 0; }
+  .topbar .sub { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+
+  .login-wrap {
+    max-width: 360px; margin: 80px auto; background: var(--card); border: 1px solid var(--line);
+    border-radius: 14px; padding: 28px; text-align: center;
+  }
+  .login-wrap h2 { margin: 0 0 6px; font-size: 17px; }
+  .login-wrap p { color: var(--muted); font-size: 13px; margin: 0 0 18px; }
+  .login-wrap input {
+    width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px;
+    font-size: 14px; margin-bottom: 10px;
+  }
+  .login-wrap button, .toolbar button, .refresh-btn {
+    background: var(--accent); color: #fff; border: none; border-radius: 8px;
+    padding: 10px 16px; font-size: 14px; cursor: pointer; font-weight: 600;
+  }
+  .login-wrap button:hover, .toolbar button:hover { opacity: .9; }
+  .err { color: var(--accent); font-size: 12.5px; min-height: 16px; margin-top: 4px; }
+
+  .app { display: none; max-width: 1100px; margin: 0 auto; padding: 18px 16px 60px; }
+  .app.active { display: block; }
+
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 18px; }
+  .stat-card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
+  .stat-card .num { font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .stat-card .label { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .tabs { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+  .tab-btn {
+    background: var(--card); border: 1px solid var(--line); border-radius: 999px;
+    padding: 7px 14px; font-size: 13px; cursor: pointer; color: var(--ink);
+  }
+  .tab-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .toolbar { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
+  .toolbar input[type="search"] {
+    flex: 1; min-width: 180px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; font-size: 13px;
+  }
+  .refresh-btn { background: var(--card); color: var(--ink); border: 1px solid var(--line); }
+
+  .table-wrap { background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; white-space: nowrap; }
+  th, td { padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--line); }
+  th { color: var(--muted); font-weight: 700; font-size: 12px; position: sticky; top: 0; background: var(--card); }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #fbf4ea; }
+
+  .badge { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 11.5px; font-weight: 700; }
+  .badge.used { background: #eee; color: var(--muted); }
+  .badge.unused { background: var(--accent-soft); color: var(--accent); }
+  .badge.balance-pos { background: #e4f0e9; color: var(--good); }
+  .badge.balance-neg { background: var(--accent-soft); color: var(--accent); }
+
+  .empty { padding: 30px; text-align: center; color: var(--muted); font-size: 13px; }
+  code.mono { font-family: ui-monospace, "Cascadia Code", monospace; font-size: 12.5px; }
+</style>
+</head>
+<body>
+
+<div id="loginWrap" class="login-wrap">
+  <h2>鶯歌壯遊・後台資料</h2>
+  <p>輸入工作人員通關密語查看玩家、進度、兌換紀錄</p>
+  <input type="password" id="passcodeInput" placeholder="通關密語" autocomplete="off" />
+  <button onclick="doLogin()">查看資料</button>
+  <div class="err" id="loginErr"></div>
+</div>
+
+<div id="app" class="app">
+  <div class="topbar">
+    <div>
+      <h1>鶯歌壯遊・後台資料</h1>
+      <div class="sub">資料即時來自 Cloudflare D1，僅供工作人員查看</div>
+    </div>
+    <button class="refresh-btn" onclick="loadData()">🔄 重新整理</button>
+  </div>
+
+  <div style="padding: 18px 4px 0;">
+    <div class="stats" id="stats"></div>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="players" onclick="switchTab('players')">玩家一覽</button>
+      <button class="tab-btn" data-tab="progress" onclick="switchTab('progress')">過關紀錄</button>
+      <button class="tab-btn" data-tab="answers" onclick="switchTab('answers')">答題紀錄</button>
+      <button class="tab-btn" data-tab="inventory" onclick="switchTab('inventory')">兌換/核銷紀錄</button>
+    </div>
+
+    <div class="toolbar">
+      <input type="search" id="searchInput" placeholder="搜尋序號、姓名…" oninput="renderTab()" />
+    </div>
+
+    <div class="table-wrap">
+      <table id="table">
+        <thead id="thead"></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+      <div class="empty" id="emptyMsg" style="display:none;">沒有資料</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const WORKER_API_URL = "https://yingge-game-api.ntcecea.workers.dev";
+let passcode = "";
+let data = null;
+let currentTab = "players";
+
+function doLogin() {
+  passcode = document.getElementById("passcodeInput").value.trim();
+  if (!passcode) return;
+  loadData();
+}
+
+async function loadData() {
+  const errEl = document.getElementById("loginErr");
+  errEl.textContent = "";
+  try {
+    const url = WORKER_API_URL + "?action=admin&passcode=" + encodeURIComponent(passcode);
+    const res = await fetch(url);
+    const json = await res.json();
+    if (!json.ok) {
+      errEl.textContent = json.error || "查看失敗";
+      return;
+    }
+    data = json;
+    document.getElementById("loginWrap").style.display = "none";
+    document.getElementById("app").classList.add("active");
+    renderStats();
+    renderTab();
+  } catch (e) {
+    errEl.textContent = "連線失敗，請檢查網路後再試一次";
+  }
+}
+
+function renderStats() {
+  const totalPlayers = data.players.length;
+  const totalCompletions = data.progress.length;
+  const totalAnswers = data.answers.length;
+  const totalInventory = data.inventory.length;
+  const usedInventory = data.inventory.filter(i => i.used).length;
+  const stats = [
+    { label: "報名/測試人數", num: totalPlayers },
+    { label: "站點完成次數", num: totalCompletions },
+    { label: "答對題數", num: totalAnswers },
+    { label: "兌換紀錄", num: totalInventory },
+    { label: "已核銷", num: usedInventory },
+  ];
+  document.getElementById("stats").innerHTML = stats.map(s => `
+    <div class="stat-card"><div class="num">${s.num}</div><div class="label">${s.label}</div></div>
+  `).join("");
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
+  document.getElementById("searchInput").value = "";
+  renderTab();
+}
+
+function fmtTime(s) {
+  if (!s) return "";
+  return s.toString().replace("T", " ").slice(0, 19);
+}
+
+function esc(s) {
+  return (s == null ? "" : String(s)).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+const TAB_CONFIG = {
+  players: {
+    cols: ["序號", "姓名", "完成站數", "餘額", "註冊時間", "最後登入"],
+    rows: d => d.players,
+    match: (r, q) => r.code.toLowerCase().includes(q) || (r.name || "").toLowerCase().includes(q),
+    render: r => `
+      <td><code class="mono">${esc(r.code)}</code></td>
+      <td>${esc(r.name)}</td>
+      <td>${r.completedCount}</td>
+      <td><span class="badge ${r.balance >= 0 ? "balance-pos" : "balance-neg"}">${r.balance}</span></td>
+      <td>${fmtTime(r.created_at)}</td>
+      <td>${fmtTime(r.last_login)}</td>
+    `,
+  },
+  progress: {
+    cols: ["序號", "站點編號", "完成時間"],
+    rows: d => d.progress,
+    match: (r, q) => r.code.toLowerCase().includes(q),
+    render: r => `
+      <td><code class="mono">${esc(r.code)}</code></td>
+      <td>站點 ${r.station_id}</td>
+      <td>${fmtTime(r.completed_at)}</td>
+    `,
+  },
+  answers: {
+    cols: ["序號", "站點編號", "題號", "答對時間"],
+    rows: d => d.answers,
+    match: (r, q) => r.code.toLowerCase().includes(q),
+    render: r => `
+      <td><code class="mono">${esc(r.code)}</code></td>
+      <td>站點 ${r.station_id}</td>
+      <td>第 ${r.q_index + 1} 題</td>
+      <td>${fmtTime(r.answered_at)}</td>
+    `,
+  },
+  inventory: {
+    cols: ["序號", "商家", "品項", "點數", "兌換時間", "狀態", "核銷時間"],
+    rows: d => d.inventory,
+    match: (r, q) => r.code.toLowerCase().includes(q) || (r.item_name || "").toLowerCase().includes(q) || (r.merchant_name || "").toLowerCase().includes(q),
+    render: r => `
+      <td><code class="mono">${esc(r.code)}</code></td>
+      <td>${esc(r.merchant_name)}</td>
+      <td>${esc(r.item_name)}</td>
+      <td>${r.cost}</td>
+      <td>${fmtTime(r.bought_at)}</td>
+      <td><span class="badge ${r.used ? "used" : "unused"}">${r.used ? "已核銷" : "未核銷"}</span></td>
+      <td>${fmtTime(r.used_at)}</td>
+    `,
+  },
+};
+
+function renderTab() {
+  if (!data) return;
+  const cfg = TAB_CONFIG[currentTab];
+  const q = document.getElementById("searchInput").value.trim().toLowerCase();
+  let rows = cfg.rows(data);
+  if (q) rows = rows.filter(r => cfg.match(r, q));
+
+  document.getElementById("thead").innerHTML = "<tr>" + cfg.cols.map(c => `<th>${c}</th>`).join("") + "</tr>";
+  document.getElementById("tbody").innerHTML = rows.map(r => `<tr>${cfg.render(r)}</tr>`).join("");
+  document.getElementById("emptyMsg").style.display = rows.length ? "none" : "block";
+}
+
+document.getElementById("passcodeInput").addEventListener("keydown", e => {
+  if (e.key === "Enter") doLogin();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+# 複製這個檔案成 .dev.vars（已被 .gitignore 排除），拿來本機測試用。
+# 正式環境的值改用 `wrangler secret put <名稱>` 個別設定，不會寫進這個檔案。
+
+ANSWER_KEY_JSON={"1":{"0":["10條"],"1":["鳥"],"2":["煤礦"],"3":["鶯歌石驛"]}}
+STAFF_PASSCODE=NTCECEA2026
+SYNC_SECRET=改成一組隨機字串
