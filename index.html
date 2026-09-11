@@ -346,6 +346,17 @@
   <div id="shop-overlay-card"></div>
 </div>
 
+<!-- FINALE OVERLAY (shown once when all stations are completed) -->
+<div class="overlay" id="finale-overlay" onclick="if(event.target===this) closeFinaleOverlay()">
+  <div class="modal finale-modal">
+    <div class="finale-badge">全破關</div>
+    <div class="emoji">🎉</div>
+    <h3 id="finale-title"></h3>
+    <p id="finale-text"></p>
+    <button onclick="closeFinaleOverlay()">太棒了！</button>
+  </div>
+</div>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="stations.js"></script>
 <script src="app.js"></script>

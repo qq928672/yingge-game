@@ -1696,6 +1696,23 @@ function exitRpgToMap() {
 // 完成站點後直接回地圖；地圖上的獎章餘額會自己反映出剛拿到的獎章
 function afterStationComplete() {
   goToMap();
+  checkFinale();
+}
+
+// 十站全部完成時彈出一次恭喜畫面；用序號記住「已經看過」，避免玩家之後每次回地圖都被彈一次
+function checkFinale() {
+  if (completedCount() < STATIONS.length) return;
+  const key = "yingge_finale_shown_" + state.code;
+  if (localStorage.getItem(key)) return;
+  localStorage.setItem(key, "1");
+  document.getElementById("finale-title").textContent = `恭喜「${state.name || ""}」成功闖完所有關卡！`;
+  document.getElementById("finale-text").textContent =
+    "你已完成所有探索，\n也發現了藏在鶯歌各處的故事。\n恭喜完成這趟鶯歌探索之旅！";
+  document.getElementById("finale-overlay").classList.add("active");
+}
+
+function closeFinaleOverlay() {
+  document.getElementById("finale-overlay").classList.remove("active");
 }
 
 // stay logged in across page refreshes (until the 15-minute idle timeout above):

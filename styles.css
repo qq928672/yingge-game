@@ -335,6 +335,20 @@
   .modal p { color: var(--sub); font-size: 14px; margin: 0 0 18px; }
   .modal .code-box { background: var(--bg); border: 2px solid var(--ink); border-radius: 12px; padding: 12px; font-size: 20px; font-weight: 800; letter-spacing: 2px; margin-bottom: 18px; color: var(--accent-dark); }
 
+  .finale-modal { max-width: 320px; }
+  .finale-badge {
+    display: inline-block; background: var(--purple); color: #fff;
+    font-family: "Baloo 2", "Noto Sans TC", sans-serif; font-weight: 800; font-size: 12px;
+    letter-spacing: 0.5px; padding: 6px 14px; border-radius: 999px; margin-bottom: 12px;
+    border: 3px solid var(--ink); box-shadow: 3px 3px 0 var(--ink);
+  }
+  .finale-modal p { white-space: pre-line; }
+  .finale-modal button {
+    width: 100%; padding: 13px; font-size: 14px; font-weight: 800; font-family: "Baloo 2", "Noto Sans TC", sans-serif;
+    border: 3px solid var(--ink); border-radius: 12px; box-shadow: 3px 3px 0 var(--ink);
+    background: var(--accent); color: white; cursor: pointer; margin-top: 4px;
+  }
+
   .footer-link { text-align: center; margin-top: 20px; }
   .footer-link a { color: var(--sub); font-size: 12px; cursor: pointer; text-decoration: underline; }
 
