@@ -6,6 +6,7 @@ backend_apps_script.gs
 Stations表.csv
 Stations表.tsv
 stations_data.json
+stations_table_new.csv
 parse_quiz.py
 inject_dialogue.py
 inject_characters.py
@@ -23,3 +24,12 @@ worker/.wrangler/
 
 # staff-only admin dashboard — local use only, not part of the public site
 admin.html
+
+# authoring/prototype scratch files, not part of the live site
+script_review.html
+兌換商店原型.html
+地圖原型.html
+集點卡原型.html
+風格草圖_完整版.html
+風格草圖_第一關.html
+鶯歌壯遊_劇情腳本.docx
