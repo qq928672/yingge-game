@@ -1296,6 +1296,7 @@ function renderRpgStep() {
   choicesEl.innerHTML = "";
   continueEl.style.display = "none";
   findBtn.style.display = "none";
+  document.getElementById("rpg-wrong-hint").classList.remove("active");
   noticeEl.classList.remove("active");
   knowledgeEl.classList.remove("active");
   storyEl.classList.remove("active");
@@ -1644,13 +1645,17 @@ async function submitRpgAnswer(qIndex, chosen, btnEl) {
   } catch (e) {
     pending.remove();
     choicesEl.querySelectorAll("button").forEach(b => { b.disabled = false; });
-    document.getElementById("rpg-text").textContent = "連線失敗，請再試一次";
+    const hintEl = document.getElementById("rpg-wrong-hint");
+    hintEl.textContent = "連線失敗，請再試一次";
+    hintEl.classList.add("active");
     return;
   }
   pending.remove();
   if (!res.ok) {
     choicesEl.querySelectorAll("button").forEach(b => { b.disabled = false; });
-    document.getElementById("rpg-text").textContent = res.error || "發生錯誤，請再試一次";
+    const hintEl = document.getElementById("rpg-wrong-hint");
+    hintEl.textContent = res.error || "發生錯誤，請再試一次";
+    hintEl.classList.add("active");
     return;
   }
   handleRpgAnswer(qIndex, res.correct, btnEl);
@@ -1687,7 +1692,10 @@ function handleRpgAnswer(qIndex, correct, btnEl) {
     const hints = step.wrongHints || ["再想想看……"];
     const hint = hints[Math.min(rpgState.wrongCount, hints.length - 1)];
     rpgState.wrongCount++;
-    document.getElementById("rpg-text").textContent = hint;
+    // 顯示在選項下方的獨立提示，不動題目本身的文字，這樣答錯了還是看得到原本的題目
+    const hintEl = document.getElementById("rpg-wrong-hint");
+    hintEl.textContent = hint;
+    hintEl.classList.add("active");
     if (autoSpeak) speak(hint);
     setTimeout(() => {
       choicesEl.querySelectorAll("button").forEach(b => { b.disabled = false; });

@@ -546,6 +546,12 @@
     display: none; text-align: right; font-weight: 800; color: var(--accent-dark); font-size: 12px;
     animation: rpg-bounce 1.3s ease-in-out infinite;
   }
+  /* 答錯提示：獨立顯示在選項下方，不會蓋掉上面的題目文字，玩家隨時能回頭看題目 */
+  .rpg-wrong-hint {
+    display: none; margin-top: 10px; padding: 10px 12px; font-size: 13.5px; line-height: 1.6;
+    color: var(--danger); background: #fdeaec; border: 2px solid var(--danger); border-radius: 12px;
+  }
+  .rpg-wrong-hint.active { display: block; }
   @keyframes rpg-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(4px); } }
 
   /* Centered on-screen guidance banner, e.g. "請前往一樓前站廣場" */
