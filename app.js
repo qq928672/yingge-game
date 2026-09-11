@@ -1,4 +1,7 @@
 
+// 只在本機測試環境顯示測試用功能（例如重置站點進度），正式上線的網址不會出現
+const IS_LOCAL_DEV = ["localhost", "127.0.0.1"].includes(location.hostname);
+
 // ---------- Backend API ----------
 // 混合架構：報名/商店/兌換品項目錄這些低頻、由 Google Sheets 管理的資料還是走 GAS；
 // 登入、答題、過關判定、點數兌換/核銷這些活動當天會被大量同時呼叫的動作，
@@ -348,7 +351,7 @@ function locateForMap() {
 
 // 測試用：只清掉本機記憶體裡的完成狀態，讓開發者能重新走一次某一站的 RPG 劇情，
 // 不會呼叫後端、不會動到 Google 試算表的 Progress 分頁——重新整理或重新登入後仍會顯示已完成。
-// 正式上線前記得把這個功能（連同 index.html 裡的按鈕）一起移除。
+// 只在 IS_LOCAL_DEV 時顯示按鈕，正式上線的網址不會出現，不用手動移除。
 let devResetTargetId = null;
 function devResetStation() {
   if (devResetTargetId == null) return;
@@ -361,7 +364,7 @@ function devResetStation() {
 
 function openMapSheet(st, done) {
   devResetTargetId = st.id;
-  document.getElementById("mapSheetDevReset").style.display = done ? "block" : "none";
+  document.getElementById("mapSheetDevReset").style.display = (IS_LOCAL_DEV && done) ? "block" : "none";
   document.getElementById("mapSheetNo").textContent = "NO. " + String(st.id).padStart(2, "0");
   document.getElementById("mapSheetName").textContent = st.name.replace(/^站點[一二三四五六七八九十]+\s*/, "");
   document.getElementById("mapSheetAddr").textContent = st.address ? "📍 " + st.address : "📍 位置資訊尚未提供";
