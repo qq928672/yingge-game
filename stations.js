@@ -1199,7 +1199,7 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
-        text: "益成記更重要的地方，是技術的傳承與發展許多陶業師傅在這裡學習，也曾經研發不同的生活用陶瓷品",
+        text: "益成記也是陶藝技術傳承的重要地方，許多師傅曾在這裡學習、研發新的陶瓷用品",
       },
       {
         type: "line",
@@ -1209,7 +1209,7 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
-        text: "也有從外地請來的師傅，你覺得是哪裡呢?",
+        text: "當時還特別從外地請來師傅傳授技術，你猜他們是從哪裡來的？",
       },
       {
         type: "question",
@@ -1353,7 +1353,7 @@ const STATIONS = [
       {
         type: "line",
         char: "hero",
-        text: "難怪這裡慢慢形成了聚落",
+        text: "原來如此，難怪這裡後來慢慢形成了陶工聚落！",
       },
       {
         type: "line",
@@ -1365,8 +1365,7 @@ const STATIONS = [
         qIndex: 2,
         char: "guide",
         text: "經過幾代人的傳承後，這些百年老屋為什麼還保留著？",
-        correctReaction:
-          "沒錯，不是單純因為老屋太舊，而是土地和房屋的產權比較複雜",
+        correctReaction: "沒錯！其實不只是房子老舊，更大的問題是土地和房屋的產權比較複雜",
       },
       {
         type: "line",
@@ -1523,7 +1522,7 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
-        text: "還記得一路探索過哪些地方嗎？找找看！",
+        text: "還記得一路探索過哪些地方嗎？想想看！",
       },
       {
         type: "question",
@@ -1575,12 +1574,12 @@ const STATIONS = [
       {
         type: "line",
         char: "hero",
-        text: "是哪些人？",
+        text: "平常不容易被看見的人？是指誰呢？",
       },
       {
         type: "line",
         char: "guide",
-        text: "這次換你來找答案。",
+        text: "這個答案，就換你自己找找看吧！",
       },
       {
         type: "question",
@@ -1688,7 +1687,7 @@ const STATIONS = [
       {
         type: "line",
         char: "hero",
-        text: "這一站是一間廟？",
+        text: "咦？這次要探索的是一間廟嗎？",
       },
       {
         type: "line",
@@ -1698,7 +1697,7 @@ const STATIONS = [
       {
         type: "line",
         char: "hero",
-        text: "哪裡不一樣？",
+        text: "有什麼特別的地方嗎？",
       },
       {
         type: "line",
@@ -1746,11 +1745,6 @@ const STATIONS = [
         type: "line",
         char: "guide",
         text: "是啊！所以製陶人家遇到困難時，常會來福興宮祈求燒窯、生意順利。",
-      },
-      {
-        type: "line",
-        char: "hero",
-        text: "原來福興宮對以前的製陶人來說這麼重要。",
       },
       {
         type: "line",
@@ -1827,7 +1821,7 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
-        text: "沒錯！那你猜猜，羅明先師的聖誕慶典是哪一天？",
+        text: "沒錯！考考你，羅明先師的聖誕慶典是哪一天？",
       },
       {
         type: "question",
@@ -1839,7 +1833,7 @@ const STATIONS = [
       {
         type: "line",
         char: "hero",
-        text: "原來這一天對以前的製陶人來說這麼重要。",
+        text: "沒想到這一天對製陶人這麼重要！",
       },
       {
         type: "line",
@@ -1849,7 +1843,7 @@ const STATIONS = [
       {
         type: "line",
         char: "hero",
-        text: "什麼傳統？",
+        text: "聽起來很有意思，是什麼呢？",
       },
       {
         type: "line",
@@ -1869,22 +1863,7 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
-        text: "以前的製陶人不只靠技術，也把對燒窯順利的期盼寄託在信仰裡。",
-      },
-      {
-        type: "line",
-        char: "hero",
-        text: "所以福興宮留下的不只是廟宇，也是以前製陶人的生活記憶。",
-      },
-      {
-        type: "line",
-        char: "guide",
         text: "沒錯！這也是鶯歌陶瓷文化很重要的一部分。",
-      },
-      {
-        type: "line",
-        char: "hero",
-        text: "看來鶯歌的陶瓷故事，真的到處都找得到！",
       },
       {
         type: "line",
