@@ -390,8 +390,10 @@ function openMapSheet(st, done) {
   const statusEl = document.getElementById("mapSheetStatus");
   if (done) { statusEl.textContent = "✓ 已完成"; statusEl.className = "map-sheet-status done"; }
   else { statusEl.textContent = "尚未解鎖"; statusEl.className = "map-sheet-status locked"; }
-  document.getElementById("mapSheetGo").textContent = done ? "查看內容" : "開始關卡";
-  document.getElementById("mapSheetGo").onclick = () => { closeMapSheet(); openStation(st.id); };
+  document.getElementById("mapSheetGo").textContent = done ? "已完成關卡" : "開始關卡";
+  document.getElementById("mapSheetGo").onclick = done
+    ? () => { alert("此關卡已破關，請前往其他關卡"); }
+    : () => { closeMapSheet(); openStation(st.id); };
   document.getElementById("mapSheet").classList.add("active");
   document.getElementById("mapSheetBackdrop").classList.add("active");
 }
