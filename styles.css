@@ -381,9 +381,6 @@
     background: var(--done); color: white; cursor: pointer; transition: opacity .2s;
   }
   .start-btn:disabled { background: #ddd6c6; color: #8a7d6a; box-shadow: none; cursor: not-allowed; }
-  .arrive-fallback { margin-top: 16px; }
-  .arrive-fallback a { color: var(--sub); font-size: 12px; text-decoration: underline; cursor: pointer; }
-
   .arrive-debug {
     margin-top: 24px; padding: 14px; border: 2px dashed var(--purple); border-radius: 14px;
     background: #f4eeff; text-align: left;

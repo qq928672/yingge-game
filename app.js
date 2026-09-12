@@ -883,13 +883,6 @@ function confirmArrivalAndStart() {
   enterStationContent(st);
 }
 
-function manualConfirmArrival() {
-  const st = arriveState.st;
-  localStorage.removeItem("yingge_pending_arrival");
-  stopWatchingLocation();
-  enterStationContent(st);
-}
-
 // ---------- Test-only: simulate a GPS reading without physically travelling there ----------
 
 function simulateAtStation() {
