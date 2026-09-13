@@ -265,12 +265,16 @@ async function handleAdminData(env, passcode) {
     balance: (progressCountByCode[p.code] || 0) - (spentByCode[p.code] || 0),
   }));
 
+  // 兌換/核銷紀錄只有序號的話看不出來是誰兌換的，順便帶上玩家姓名
+  const nameByCode = {};
+  players.forEach(p => { nameByCode[p.code] = p.name || ""; });
+
   return {
     ok: true,
     players: playersWithStats,
     progress: progressRows,
     answers: answerRows,
-    inventory: inventoryRows.map(r => ({ ...r, used: !!r.used })),
+    inventory: inventoryRows.map(r => ({ ...r, used: !!r.used, name: nameByCode[r.code] || "" })),
   };
 }
 
