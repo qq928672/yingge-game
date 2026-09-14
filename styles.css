@@ -820,7 +820,7 @@
   .me-dot { width: 16px; height: 16px; border-radius: 50%; background: var(--clay); border: 3px solid #fff; box-shadow: 0 0 0 4px rgba(58,160,255,.3); }
 
   .map-recenter-btn {
-    position: absolute; left: 14px; bottom: 14px; z-index: 800;
+    position: absolute; left: 14px; bottom: 88px; z-index: 800;
     width: 42px; height: 42px; border-radius: 50%; padding: 0;
     background: var(--card); border: 2.5px solid var(--ink); box-shadow: 3px 3px 0 var(--ink);
     color: var(--ink); display: flex; align-items: center; justify-content: center; cursor: pointer;
