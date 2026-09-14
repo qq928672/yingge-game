@@ -409,6 +409,7 @@ function renderMap() {
 
   const done = completedCount();
   document.getElementById("done-count").textContent = done;
+  document.getElementById("mapUsername").textContent = state.name || "";
 
   let hint = "";
   if (done < 10) hint = "每完成一站即可獲得 1 枚獎章，快去獎章商城看看";

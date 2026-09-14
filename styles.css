@@ -780,6 +780,10 @@
   .map-title { font-family: "Baloo 2", "Noto Sans TC", sans-serif; font-weight: 700; font-size: 16px; letter-spacing: 0.5px; color: var(--ink); }
   .map-subtitle { font-family: "Noto Sans TC", sans-serif; font-size: 10.5px; color: var(--sub); margin-top: 2px; }
   .map-topbar-right { display: flex; align-items: center; gap: 10px; }
+  .map-username {
+    font-family: "Noto Sans TC", sans-serif; font-size: 12px; font-weight: 700; color: var(--sub);
+    max-width: 88px; overflow-wrap: break-word; text-align: right; line-height: 1.3;
+  }
   .map-count { font-family: "Baloo 2", "Noto Sans TC", sans-serif; font-size: 16px; font-weight: 700; color: var(--accent-dark); }
   .map-count-total { font-size: 10.5px; opacity: 0.6; margin-left: 2px; }
   .map-logout {
