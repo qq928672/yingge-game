@@ -307,15 +307,28 @@ function initStationMap() {
       .addTo(stationMap).on("click", () => openMapSheet(st, done));
   });
   setTimeout(locateForMap, 400);
+
+  // 只有玩家自己滑動/縮放地圖「結束後」才浮現復位按鈕（不是滑動途中），
+  // 這樣手指在地圖上操作時不會不小心先點到它；recenterStationMap 自己觸發的
+  // 位移用 recenterInProgress 擋掉，不會滑完又立刻跳出同一顆按鈕
+  stationMap.on("moveend", () => {
+    if (recenterInProgress) return;
+    document.getElementById("mapRecenterBtn").classList.add("show");
+  });
 }
+
+let recenterInProgress = false;
 
 // 有人把地圖滑到很遠的地方找不回來，按這顆按鈕直接縮放回「看得到所有關卡圖示」的範圍
 function recenterStationMap() {
   if (!stationMap) return;
   const withLoc = STATIONS.filter(s => s.location);
   if (!withLoc.length) return;
+  document.getElementById("mapRecenterBtn").classList.remove("show");
+  recenterInProgress = true;
   const bounds = L.latLngBounds(withLoc.map(s => [s.location.lat, s.location.lng]));
   stationMap.flyToBounds(bounds, { padding: [48, 48], maxZoom: 17 });
+  stationMap.once("moveend", () => { recenterInProgress = false; });
 }
 
 function updateMapMarkers() {

@@ -819,14 +819,17 @@
   .nearest-chip .dist { margin-left: auto; font-weight: 800; color: var(--accent-dark); font-size: 11px; }
   .me-dot { width: 16px; height: 16px; border-radius: 50%; background: var(--clay); border: 3px solid #fff; box-shadow: 0 0 0 4px rgba(58,160,255,.3); }
 
-  /* 放在頂部工具列、不疊在地圖畫布上，滑動/縮放地圖時不會被誤觸 */
+  /* 平常隱藏，玩家把地圖滑走/縮放後才會浮現——出現的時機本身就在提示「這是要帶你回去剛才畫面」，
+     而且是在滑動結束後才顯示（不是滑動途中），手指滑地圖時不會不小心先點到它 */
   .map-recenter-btn {
-    flex: none; width: 32px; height: 32px; border-radius: 50%; padding: 0;
-    background: #fff; border: 2px solid var(--ink); box-shadow: 2px 2px 0 var(--ink);
-    color: var(--ink); display: flex; align-items: center; justify-content: center; cursor: pointer;
+    display: none; position: absolute; left: 50%; bottom: 88px; transform: translateX(-50%); z-index: 800;
+    align-items: center; gap: 6px; padding: 9px 16px; border-radius: 999px;
+    background: var(--ink); border: 2.5px solid var(--ink); box-shadow: 3px 3px 0 rgba(36,28,51,0.35);
+    color: #fff; font-family: "Noto Sans TC", sans-serif; font-weight: 700; font-size: 12.5px; cursor: pointer;
   }
-  .map-recenter-btn svg { width: 16px; height: 16px; }
-  .map-recenter-btn:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--ink); }
+  .map-recenter-btn.show { display: flex; }
+  .map-recenter-btn svg { width: 15px; height: 15px; flex: none; }
+  .map-recenter-btn:active { transform: translateX(-50%) translateY(1px); }
 
   .map-pin-wrap { position: relative; width: 38px; height: 48px; }
   .map-pin-ring {
