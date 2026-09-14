@@ -310,6 +310,15 @@ function initStationMap() {
   setTimeout(locateForMap, 400);
 }
 
+// 有人把地圖滑到很遠的地方找不回來，按這顆按鈕直接縮放回「看得到所有關卡圖示」的範圍
+function recenterStationMap() {
+  if (!stationMap) return;
+  const withLoc = STATIONS.filter(s => s.location);
+  if (!withLoc.length) return;
+  const bounds = L.latLngBounds(withLoc.map(s => [s.location.lat, s.location.lng]));
+  stationMap.flyToBounds(bounds, { padding: [48, 48], maxZoom: 17 });
+}
+
 function updateMapMarkers() {
   Object.keys(mapMarkers).forEach(id => {
     const st = STATIONS.find(s => s.id === Number(id));
