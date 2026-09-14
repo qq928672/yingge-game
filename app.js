@@ -308,12 +308,14 @@ function initStationMap() {
   });
   setTimeout(locateForMap, 400);
 
-  // 只有玩家自己滑動/縮放地圖「結束後」才浮現復位按鈕（不是滑動途中），
-  // 這樣手指在地圖上操作時不會不小心先點到它；recenterStationMap 自己觸發的
-  // 位移用 recenterInProgress 擋掉，不會滑完又立刻跳出同一顆按鈕
+  // 只有「畫面上完全看不到任何一個站點圖示」時才浮現復位按鈕，而且是滑動/縮放
+  // 結束後才判斷（不是滑動途中），手指在地圖上操作時不會不小心先點到它；
+  // recenterStationMap 自己觸發的位移用 recenterInProgress 擋掉，不會滑完又立刻跳出同一顆按鈕
   stationMap.on("moveend", () => {
     if (recenterInProgress) return;
-    document.getElementById("mapRecenterBtn").classList.add("show");
+    const bounds = stationMap.getBounds();
+    const anyStationVisible = withLoc.some(st => bounds.contains([st.location.lat, st.location.lng]));
+    document.getElementById("mapRecenterBtn").classList.toggle("show", !anyStationVisible);
   });
 }
 
