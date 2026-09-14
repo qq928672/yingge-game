@@ -12,6 +12,9 @@
 const RATE_LIMIT_WINDOW_SECONDS = 60;
 const RATE_LIMIT_MAX_ATTEMPTS = 15;
 
+// 商城目錄（Merchants/RewardItems）還在 Google Sheets，purchase 時要回頭查這裡拿權威價格
+const GAS_URL = "https://script.google.com/macros/s/AKfycbytcB8w4wDFOK32d8g4FrcEiK3TQNDj0Ob8aFPINFo5t7c_jqMDfzBgnVcyailEjpPMeg/exec";
+
 function json(obj, status = 200) {
   return new Response(JSON.stringify(obj), {
     status,
@@ -172,26 +175,38 @@ async function handleComplete(env, rawCode, stationId) {
   };
 }
 
-// 商城目錄還是留在 Google Sheets（GAS）管理，這裡用不到，purchase 時前端會另外帶
-// 商品名稱/所需點數過來（跟原本 GAS 版本不同：GAS 版本會回頭查 Sheets 目錄核對，
-// Worker 這邊改成由呼叫端——也就是 app.js——先從 GAS 拿到的目錄裡找出商品資料再傳過來，
-// Worker 仍然會重新核對「餘額夠不夠」，不會盲目相信前端算的點數）
-async function handlePurchase(env, rawCode, item) {
+// 商城目錄還是留在 Google Sheets（GAS）管理。兌換時只信「商品 ID」，價格/名稱/商家
+// 一律回頭去查 GAS 的商城目錄拿權威版本，不會相信前端傳來的任何價格數字
+// ——不然只要改一下瀏覽器送出的請求，就能用 0 點換到任何商品
+async function getAuthoritativeItem(itemId) {
+  const res = await fetch(GAS_URL + "?action=rewards");
+  const data = await res.json();
+  if (!data.ok) return null;
+  for (const merchant of data.merchants || []) {
+    const found = (merchant.items || []).find(it => it.id === itemId);
+    if (found) return { item: found, merchant };
+  }
+  return null;
+}
+
+async function handlePurchase(env, rawCode, itemId) {
   const code = normalizeCode(rawCode);
   if (!code) return { ok: false, error: "序號為空" };
   const player = await env.DB.prepare("SELECT code FROM players WHERE code = ?").bind(code).first();
   if (!player) return { ok: false, error: "查無此序號" };
 
-  if (!item || !item.id || !item.name || typeof item.cost !== "number") {
-    return { ok: false, error: "商品資料不完整" };
-  }
+  if (!itemId) return { ok: false, error: "商品資料不完整" };
+
+  const found = await getAuthoritativeItem(itemId);
+  if (!found) return { ok: false, error: "查無此商品" };
+  const { item, merchant } = found;
 
   const balance = await getBalance(env, code);
   if (balance < item.cost) return { ok: false, error: "獎章不足，無法兌換" };
 
   await env.DB.prepare(
     "INSERT INTO inventory (code, item_id, merchant_name, item_name, cost) VALUES (?, ?, ?, ?, ?)"
-  ).bind(code, item.id, item.merchant || "", item.name, item.cost).run();
+  ).bind(code, item.id, merchant.name || "", item.name, item.cost).run();
 
   return { ok: true, balance: balance - item.cost, inventory: await getInventoryForCode(env, code) };
 }
@@ -308,7 +323,7 @@ export default {
           return json(await handleComplete(env, body.code, body.stationId));
         }
         if (action === "purchase") {
-          return json(await handlePurchase(env, body.code, body.item));
+          return json(await handlePurchase(env, body.code, body.itemId));
         }
         if (action === "redeemItem") {
           return json(await handleRedeemItem(env, body.code, body.invRow, body.staffPasscode));

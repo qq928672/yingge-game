@@ -632,17 +632,12 @@ function shopCarouselJump(i) {
 
 async function buyItem(itemId) {
   try {
+    // 這裡只是先確認商品在目錄裡存在，給個快速的錯誤訊息；實際價格一律由伺服器端
+    // 重新核對，前端算出來的價格/商品資訊不會被信任（也不會送出去）
     const catalog = await getRewardsCatalog();
-    let item = null, merchant = null;
-    for (const m of catalog) {
-      const found = m.items.find(it => it.id === itemId);
-      if (found) { item = found; merchant = m; break; }
-    }
-    if (!item) { alert("查無此商品"); return; }
-    const res = await apiPost({
-      action: "purchase", code: state.code,
-      item: { id: item.id, name: item.name, cost: item.cost, merchant: merchant.name },
-    });
+    const exists = catalog.some(m => m.items.some(it => it.id === itemId));
+    if (!exists) { alert("查無此商品"); return; }
+    const res = await apiPost({ action: "purchase", code: state.code, itemId });
     if (!res.ok) { alert(res.error || "兌換失敗，請再試一次"); return; }
     state.balance = res.balance;
     state.inventory = res.inventory || state.inventory;
