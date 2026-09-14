@@ -116,6 +116,15 @@ function speak(text) {
   speakNow(text);
 }
 
+// 使用者只需輸入 8 碼英數字，橫槓由系統自動補在第 4 碼後面，不需要手打
+(() => {
+  const codeInput = document.getElementById("code-input");
+  codeInput.addEventListener("input", () => {
+    let raw = codeInput.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 8);
+    codeInput.value = raw.length > 4 ? raw.slice(0, 4) + "-" + raw.slice(4) : raw;
+  });
+})();
+
 async function handleLogin() {
   const raw = document.getElementById("code-input").value;
   const code = normalize(raw);

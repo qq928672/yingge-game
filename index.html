@@ -14,48 +14,78 @@
 <!-- LOGIN SCREEN -->
 <div id="screen-login" class="screen active">
   <div class="login-wrap">
-    <div class="login-card" id="login-card">
-      <h2>鶯歌壯遊實境解謎</h2>
-      <p class="desc">請輸入您報名時收到的遊戲序號</p>
-      <input type="text" id="code-input" placeholder="例如 A3K9-XY72" maxlength="12" autocomplete="off">
-      <button id="login-btn" onclick="handleLogin()">開始遊戲</button>
-      <div class="error-msg" id="login-error"></div>
-    </div>
-    <div class="login-card" id="login-restoring" style="display:none;">
-      <p class="desc" style="margin:0;">登入中...</p>
-    </div>
-    <div class="login-links">
-      <div class="stores-entry-link" onclick="openStores()">查看合作店家與兌換資訊</div>
-      <div class="about-entry-link" onclick="openAbout()">關於本遊戲</div>
+    <div class="wrap">
+      <div class="guide-intro">
+        <div class="guide-portrait">
+          <img src="角色照片素材庫/角色/楊嚮導.png" alt="楊嚮導">
+        </div>
+        <div class="guide-bubble">歡迎來到鶯歌，請出示通關密令。</div>
+      </div>
+      <div class="login-card" id="login-card">
+        <div class="dossier-kicker">任 務 委 託 書</div>
+        <h2>鶯歌壯遊實境解謎</h2>
+        <p class="desc">你收到一份<strong>祕密委託</strong></p>
+        <label class="field-label" for="code-input">通關密令</label>
+        <input type="text" id="code-input" placeholder="直接輸入英文和數字組合" maxlength="9" autocomplete="off">
+        <button id="login-btn" onclick="handleLogin()">開始任務</button>
+        <div class="error-msg" id="login-error"></div>
+      </div>
+      <div class="login-card" id="login-restoring" style="display:none;">
+        <p class="desc" style="margin:0;">登入中...</p>
+      </div>
+      <div class="login-links">
+        <div class="stores-entry-link" onclick="openStores()">查看合作店家與兌換資訊</div>
+        <div class="about-entry-link" onclick="openAbout()">關於本遊戲</div>
+      </div>
     </div>
   </div>
 </div>
 
 <div class="about-overlay" id="about-overlay">
-  <div class="about-card">
-    <h3 class="about-title">關於鶯歌壯遊實境解謎</h3>
-    <div class="about-row">
-      <div class="about-label">協會／主辦單位</div>
-      <div class="about-value">新北鶯歌環境文教協會</div>
+  <div class="ticket">
+    <div class="ticket-head">
+      <div class="ticket-route">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fffaf0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="4" y="5" width="16" height="12" rx="3"/><path d="M4 12h16M8 17l-1.5 3M16 17l1.5 3"/><circle cx="8.5" cy="9" r="0.6" fill="#fffaf0"/><circle cx="15.5" cy="9" r="0.6" fill="#fffaf0"/>
+        </svg>
+        <span>鶯歌壯遊</span>
+      </div>
+      <div class="ticket-no">NTC-2026</div>
     </div>
-    <div class="about-row">
-      <div class="about-label">Facebook</div>
-      <div class="about-value"><a href="https://www.facebook.com/ntcecea" target="_blank" rel="noopener">facebook.com/ntcecea</a></div>
+
+    <div class="ticket-body">
+      <h3 class="about-title">關於鶯歌壯遊實境解謎</h3>
+
+      <div class="ticket-field">
+        <div class="k">主辦／製作</div>
+        <div class="v">新北鶯歌環境文教協會</div>
+      </div>
+      <div class="ticket-field">
+        <div class="k">Facebook</div>
+        <div class="v"><a href="https://www.facebook.com/ntcecea" target="_blank" rel="noopener">facebook.com/ntcecea</a></div>
+      </div>
+      <div class="ticket-field">
+        <div class="k">製作人</div>
+        <div class="v">見習生-承翰</div>
+      </div>
+      <div class="ticket-field">
+        <div class="k">編修</div>
+        <div class="v">楊國龍老師</div>
+      </div>
     </div>
-    <div class="about-row">
-      <div class="about-label">製作單位</div>
-      <div class="about-value">新北鶯歌環境文教協會</div>
+
+    <div class="ticket-perf"></div>
+
+    <div class="ticket-desc-wrap">
+      <p class="ticket-desc">走讀式實境解謎遊戲，帶玩家走訪鶯歌街區，透過劇情任務、GPS 打卡與知識問答，探索陶瓷工藝與在地文化。完成任務可累積徽章，兌換合作店家優惠與小禮，用雙腳認識這座陶瓷小鎮。</p>
     </div>
-    <div class="about-row">
-      <div class="about-label">製作人</div>
-      <div class="about-value">見習生-承翰</div>
+
+    <div class="ticket-perf"></div>
+
+    <div class="ticket-stub">
+      <div class="ticket-barcode"></div>
+      <div class="about-close" onclick="closeAbout()">關閉</div>
     </div>
-    <div class="about-row">
-      <div class="about-label">輔導／協力單位</div>
-      <div class="about-value">&nbsp;</div>
-    </div>
-    <p class="about-intro">「鶯歌壯遊實境解謎」是新北鶯歌環境文教協會推出的走讀式實境解謎遊戲，帶領玩家實際走進鶯歌老街，透過劇情任務、GPS定位打卡與知識問答，認識鶯歌的陶瓷工藝、百年街廓與在地文化。完成各站任務即可累積徽章，兌換合作店家提供的優惠與小禮，用雙腳認識這座陶瓷小鎮。</p>
-    <div class="about-close" onclick="closeAbout()">關閉</div>
   </div>
 </div>
 

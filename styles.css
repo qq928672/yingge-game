@@ -55,11 +55,55 @@
   .topbar .back:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
   .content { padding: 20px; flex: 1; max-width: 560px; margin: 0 auto; width: 100%; }
 
-  /* Login screen */
-  .login-wrap { display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; min-height: 100dvh; padding: 24px; }
-  .login-card { background: var(--card); border-radius: 22px; padding: 32px 24px; width: 100%; max-width: 360px; border: 4px solid var(--ink); box-shadow: 6px 6px 0 var(--ink); text-align: center; }
-  .login-card h2 { margin: 0 0 4px; font-size: 22px; font-family: "Baloo 2", "Noto Sans TC", sans-serif; font-weight: 700; }
-  .login-card p.desc { color: var(--sub); font-size: 13px; margin: 0 0 24px; }
+  /* Login screen — 任務委託書風格，楊嚮導在上方登場迎接玩家 */
+  .login-wrap {
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    min-height: 100vh; min-height: 100dvh; padding: 24px; position: relative; overflow-x: hidden;
+    background-image: radial-gradient(circle, rgba(169,112,47,0.16) 1.6px, transparent 1.6px);
+    background-size: 26px 26px;
+  }
+  .login-wrap .wrap { width: 100%; max-width: 360px; display: flex; flex-direction: column; align-items: center; }
+
+  .guide-intro { display: flex; align-items: flex-end; gap: 10px; width: 100%; margin-bottom: -22px; padding-left: 6px; z-index: 2; }
+  .guide-portrait {
+    flex: none; width: 84px; height: 84px; border-radius: 50%; background: var(--card);
+    border: 3px solid var(--ink); box-shadow: 3px 3px 0 var(--ink);
+    display: flex; align-items: center; justify-content: center; overflow: hidden;
+  }
+  .guide-portrait img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 0%; }
+  .guide-bubble {
+    background: #fff; border: 2.5px solid var(--ink); border-radius: 16px 16px 16px 4px;
+    padding: 10px 13px; font-size: 12.5px; font-weight: 700; line-height: 1.55;
+    box-shadow: 3px 3px 0 var(--ink); margin-bottom: 14px; white-space: nowrap;
+  }
+
+  .login-card {
+    background: var(--card); border-radius: 4px; padding: 34px 26px 28px; width: 100%; max-width: 360px;
+    border: 3px solid var(--sepia); box-shadow: 7px 7px 0 var(--sepia-dark); text-align: center; position: relative;
+  }
+  /* 卡片四角的訂書針/圖釘裝飾，強化「文件」的手感 */
+  .login-card::before, .login-card::after {
+    content: ""; position: absolute; top: 10px; width: 9px; height: 9px; border-radius: 50%;
+    background: var(--sepia); box-shadow: inset 0 1px 1px rgba(0,0,0,0.3);
+  }
+  .login-card::before { left: 10px; }
+  .login-card::after { right: 10px; }
+  .dossier-kicker {
+    display: inline-flex; align-items: center; gap: 6px; font-family: "Noto Serif TC", serif;
+    font-size: 11px; font-weight: 700; letter-spacing: 3px; color: var(--sepia-dark);
+    border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 5px 0; margin-bottom: 16px; width: 100%;
+    justify-content: center;
+  }
+  .login-card h2 { margin: 0 0 6px; font-size: 22px; font-family: "Baloo 2", "Noto Sans TC", sans-serif; font-weight: 700; }
+  .login-card p.desc { color: var(--sub); font-size: 13px; margin: 0 0 26px; white-space: nowrap; }
+  .login-card p.desc strong { color: var(--ink); }
+  .field-label {
+    display: block; text-align: left; font-size: 11.5px; font-weight: 800; color: var(--sepia-dark);
+    letter-spacing: 1px; margin: 0 0 6px 2px;
+  }
+  #code-input {
+    font-family: ui-monospace, "SFMono-Regular", Menlo, monospace; letter-spacing: 1px;
+  }
   .login-links { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 360px; }
   .stores-entry-link, .about-entry-link {
     color: var(--ink); font-size: 13.5px; font-weight: 700; font-family: "Baloo 2", "Noto Sans TC", sans-serif;
@@ -67,27 +111,57 @@
     box-shadow: 3px 3px 0 var(--ink); padding: 10px; text-align: center; transition: transform 0.1s;
   }
   .stores-entry-link:active, .about-entry-link:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+
+  /* 關於本遊戲：車票樣式彈窗 */
   .about-overlay {
     position: fixed; inset: 0; z-index: 200; background: rgba(36,28,51,0.55);
-    display: none; align-items: center; justify-content: center; padding: 24px;
+    display: none; align-items: center; justify-content: center; padding: 24px; overflow-y: auto;
   }
   .about-overlay.active { display: flex; }
-  .about-card {
-    width: 100%; max-width: 360px; max-height: 82vh; overflow-y: auto;
-    background: #fff; border: 4px solid var(--ink); border-radius: 20px;
-    padding: 22px 22px 18px; box-shadow: 6px 6px 0 var(--ink); text-align: left;
+  .ticket {
+    position: relative; width: 100%; max-width: 360px;
+    background: var(--card); border: 2.5px solid var(--ink); border-radius: 10px;
+    box-shadow: 8px 8px 0 var(--sepia-dark); overflow: hidden; text-align: left;
   }
-  .about-title { font-family: "Baloo 2", "Noto Sans TC", sans-serif; font-weight: 800; font-size: 18px; color: var(--ink); margin: 0 0 14px; }
-  .about-row { margin-bottom: 12px; }
-  .about-label { font-size: 11.5px; font-weight: 700; color: var(--sub); letter-spacing: 0.5px; margin-bottom: 2px; }
-  .about-value { font-size: 14px; color: var(--ink); line-height: 1.6; }
-  .about-value a { color: var(--accent-dark); font-weight: 700; }
-  .about-intro { font-size: 13.5px; color: var(--ink); line-height: 1.8; margin-top: 14px; padding-top: 14px; border-top: 2px dashed var(--ink); }
+  .ticket-head {
+    background: var(--sepia); color: #fffaf0; border-radius: 8px 8px 0 0;
+    padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  }
+  .ticket-route { display: flex; align-items: center; gap: 6px; font-weight: 800; font-size: 13px; min-width: 0; }
+  .ticket-route svg { width: 14px; height: 14px; flex: none; opacity: 0.9; }
+  .ticket-route span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ticket-no { flex: none; font-family: ui-monospace, "SFMono-Regular", Menlo, monospace; font-size: 9.5px; opacity: 0.85; }
+  .ticket-body { padding: 16px 20px 4px; }
+  .about-title { margin: 0 0 10px; font-size: 16.5px; font-family: "Baloo 2", "Noto Sans TC", sans-serif; font-weight: 700; line-height: 1.4; color: var(--ink); }
+  .ticket-field {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
+    padding: 8px 0; border-bottom: 1px dotted var(--line);
+  }
+  .ticket-field:first-child { padding-top: 0; }
+  .ticket-field .k { flex: none; font-size: 11px; font-weight: 700; color: var(--sepia-dark); letter-spacing: 1px; }
+  .ticket-field .v { flex: 1; min-width: 0; font-size: 13px; font-weight: 500; text-align: right; overflow-wrap: break-word; }
+  .ticket-field .v a { color: var(--accent-dark); font-weight: 700; text-decoration: underline; overflow-wrap: break-word; }
+  .ticket-desc-wrap { padding: 14px 20px; }
+  .ticket-desc { font-family: "Noto Serif TC", serif; font-size: 12.5px; line-height: 1.65; color: var(--ink); margin: 0; }
+  .ticket-perf { position: relative; width: 100%; height: 0; border-top: 2px dashed var(--ink); opacity: 0.75; }
+  .ticket-perf::before, .ticket-perf::after {
+    content: ""; position: absolute; top: -11px; width: 22px; height: 22px; border-radius: 50%; background: var(--bg);
+  }
+  .ticket-perf::before { left: -11px; }
+  .ticket-perf::after { right: -11px; }
+  .ticket-stub { padding: 12px 20px 16px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .ticket-barcode {
+    width: 100%; height: 20px; border-radius: 2px;
+    background: repeating-linear-gradient(90deg, var(--ink) 0 2px, transparent 2px 5px, var(--ink) 5px 6px, transparent 6px 10px);
+    opacity: 0.85;
+  }
   .about-close {
-    margin-top: 18px; text-align: center; font-family: "Baloo 2", "Noto Sans TC", sans-serif; font-weight: 700; font-size: 13px;
-    color: var(--ink); background: var(--yellow); border: 3px solid var(--ink); border-radius: 20px; box-shadow: 3px 3px 0 var(--ink); padding: 9px; cursor: pointer;
+    width: 100%; text-align: center; font-family: "Baloo 2", "Noto Sans TC", sans-serif; font-weight: 800; font-size: 14px;
+    letter-spacing: 1px; color: var(--ink); background: var(--yellow); border: 3px solid var(--ink); border-radius: 999px;
+    box-shadow: 3px 3px 0 var(--ink); padding: 11px; cursor: pointer; box-sizing: border-box;
   }
-  .about-close:active { transform: translate(1px, 1px); box-shadow: 2px 2px 0 var(--ink); }
+  .about-close:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+
   input[type=text] {
     width: 100%; padding: 14px; font-size: 16px; border: 3px solid var(--ink);
     border-radius: 12px; text-align: center; letter-spacing: 2px; margin-bottom: 12px;
@@ -100,7 +174,7 @@
   }
   button:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--ink); }
   button.secondary { background: white; color: var(--ink); }
-  #login-btn { background: var(--clay); }
+  #login-btn { background: var(--sepia); border-radius: 14px; }
   .error-msg { color: var(--danger); font-size: 13px; font-weight: 700; margin-top: 8px; min-height: 18px; }
   .error-msg:not(:empty) {
     background: #fce4e8; border: 2px solid var(--danger); border-radius: 10px; padding: 8px 10px;
