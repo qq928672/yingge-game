@@ -301,7 +301,6 @@ function initStationMap() {
     : [24.9540, 121.3545];
   stationMap = L.map("stationMap", { zoomControl: false }).setView(center, 16);
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: "&copy; OpenStreetMap" }).addTo(stationMap);
-  L.control.zoom({ position: "bottomright" }).addTo(stationMap);
   withLoc.forEach(st => {
     const done = !!state.progress[st.id];
     mapMarkers[st.id] = L.marker([st.location.lat, st.location.lng], { icon: mapPinIcon(st, done, false) })
