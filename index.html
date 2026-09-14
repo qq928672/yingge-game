@@ -79,6 +79,12 @@
         <div class="map-subtitle" id="reward-hint"></div>
       </div>
       <div class="map-topbar-right">
+        <button type="button" class="map-recenter-btn" id="mapRecenterBtn" onclick="recenterStationMap()" title="回到關卡總覽">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="2.5"/>
+            <path d="M12 3v3M12 18v3M3 12h3M18 12h3"/>
+          </svg>
+        </button>
         <span class="map-username" id="mapUsername"></span>
         <div class="map-count"><span id="done-count">0</span><span class="map-count-total">/10</span></div>
         <span class="map-logout" onclick="logout()" title="登出">登出</span>
@@ -96,12 +102,6 @@
           <div class="dist" id="nearestDist">—</div>
         </div>
         <div id="stationMap"></div>
-        <button type="button" class="map-recenter-btn" id="mapRecenterBtn" onclick="recenterStationMap()" title="回到關卡總覽">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="2.5"/>
-            <path d="M12 3v3M12 18v3M3 12h3M18 12h3"/>
-          </svg>
-        </button>
       </div>
     </div>
   </div>
