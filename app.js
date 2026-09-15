@@ -10,6 +10,11 @@ const API_URL = "https://script.google.com/macros/s/AKfycbytcB8w4wDFOK32d8g4FrcE
 const WORKER_API_URL = "https://yingge-game-api.ntcecea.workers.dev";
 const WORKER_ACTIONS = new Set(["login", "state", "submitAnswer", "complete", "purchase", "redeemItem"]);
 
+// 地圖圖磚：透過 Worker 的 /tile 路由轉發（OSM 官方的 tile.openstreetmap.org 只供輕量測試，正式流量
+// 會被擋，之前上線後地圖直接被 OSM 回 403 就是這個原因）。實際的 Thunderforest API Key 藏在 Worker
+// 那端（secret THUNDERFOREST_KEY），不會出現在前端原始碼裡，也順便讓 Worker 邊緣快取圖磚降低用量。
+const TILE_URL = WORKER_API_URL + "/tile/{z}/{x}/{y}.png";
+
 // 現場網路常常不穩、後端偶爾會逾時，所以連線失敗時自動重試幾次再放棄，
 // 減少玩家自己手動按「再試一次」的機會（伺服器回傳的業務錯誤，例如序號錯誤，
 // 屬於正常回應不會走到這裡，只有 fetch 本身失敗或回應不是合法 JSON 才會重試）
@@ -299,8 +304,18 @@ function initStationMap() {
   const center = withLoc.length
     ? [withLoc.reduce((a, s) => a + s.location.lat, 0) / withLoc.length, withLoc.reduce((a, s) => a + s.location.lng, 0) / withLoc.length]
     : [24.9540, 121.3545];
-  stationMap = L.map("stationMap", { zoomControl: false }).setView(center, 16);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: "&copy; OpenStreetMap" }).addTo(stationMap);
+  // 把地圖能拖曳/縮放的範圍鎖在鶯歌活動範圍附近，避免有人滑到國外去把圖磚用量燒光
+  // （padded 30% 讓範圍邊緣還留一些餘裕，不會拖一下就卡住彈回來）
+  const panBounds = withLoc.length ? L.latLngBounds(withLoc.map(s => [s.location.lat, s.location.lng])).pad(0.3) : null;
+  stationMap = L.map("stationMap", {
+    zoomControl: false,
+    maxBounds: panBounds || undefined,
+    maxBoundsViscosity: 1.0,
+    minZoom: 14
+  }).setView(center, 16);
+  L.tileLayer(TILE_URL, {
+    maxZoom: 19, attribution: "&copy; Thunderforest &copy; OpenStreetMap contributors"
+  }).addTo(stationMap);
   withLoc.forEach(st => {
     const done = !!state.progress[st.id];
     mapMarkers[st.id] = L.marker([st.location.lat, st.location.lng], { icon: mapPinIcon(st, done, false) })
@@ -903,6 +918,11 @@ function confirmArrivalAndStart() {
 }
 
 // ---------- Test-only: simulate a GPS reading without physically travelling there ----------
+
+function toggleArriveDebug() {
+  const panel = document.getElementById("arrive-debug");
+  panel.style.display = panel.style.display === "none" ? "block" : "none";
+}
 
 function simulateAtStation() {
   if (!arriveState) return;
@@ -1693,6 +1713,7 @@ function handleRpgAnswer(qIndex, correct, btnEl) {
     setTimeout(() => {
       if ("speechSynthesis" in window) window.speechSynthesis.cancel(); // stop any TTS still reading the question before the reaction text appears
       choicesEl.innerHTML = "";
+      document.getElementById("rpg-wrong-hint").classList.remove("active"); // 答對前如果答錯過，這裡要把殘留的錯誤提示收掉，不然會跟正確反應同時顯示
       rpgState.showingReaction = true;
       if (step.reactionBackground !== undefined && step.reactionBackground !== rpgCurrentBackground) {
         renderRpgBackground(step.reactionBackground, { smooth: true });

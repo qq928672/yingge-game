@@ -4,10 +4,13 @@
 // 報名表單、序號產生與寄信、商家/店家內容管理，仍留在 Google Sheets + Apps Script，
 // 那邊在序號產生後會呼叫這裡的 /sync-code，把新序號同步進來，兩邊序號才會一致。
 //
-// 需要在 Cloudflare 後台（或用 `wrangler secret put`）設定三個 secret：
-//   ANSWER_KEY_JSON — 跟 backend_apps_script.gs 裡的 ANSWER_KEY 內容一模一樣，但是「字串化」
-//   STAFF_PASSCODE  — 核銷背包用的工作人員通關密語，要跟 GAS 那邊設一樣的值（如果兩邊都在用的話）
-//   SYNC_SECRET     — Apps Script 呼叫 /sync-code 時要帶的密鑰，隨便一組隨機字串即可
+// 需要在 Cloudflare 後台（或用 `wrangler secret put`）設定四個 secret：
+//   ANSWER_KEY_JSON     — 跟 backend_apps_script.gs 裡的 ANSWER_KEY 內容一模一樣，但是「字串化」
+//   STAFF_PASSCODE      — 核銷背包用的工作人員通關密語，要跟 GAS 那邊設一樣的值（如果兩邊都在用的話）
+//   SYNC_SECRET         — Apps Script 呼叫 /sync-code 時要帶的密鑰，隨便一組隨機字串即可
+//   THUNDERFOREST_KEY   — 地圖圖磚用的 Thunderforest API Key，前端不直接帶 key，全部透過 /tile 這條路由轉發
+//                         （Thunderforest 沒有像 MapTiler 那種自助網域限制功能，所以 key 藏在 Worker 這邊，
+//                         順便用 Cloudflare 的邊緣快取把同一批圖磚的請求量壓下來）
 
 const RATE_LIMIT_WINDOW_SECONDS = 60;
 const RATE_LIMIT_MAX_ATTEMPTS = 15;
@@ -293,6 +296,36 @@ async function handleAdminData(env, passcode) {
   };
 }
 
+// ---------- map tile proxy ----------
+// 前端打 /tile/{z}/{x}/{y}.png，這裡幫忙補上 Thunderforest 的 key 再轉發出去，
+// 圖磚本身很少變動，用 Cloudflare 的邊緣快取存起來，同一區域大家看到的都是同一批圖磚，
+// 之後不用每次都真的跑去 Thunderforest 拿，用量會壓低很多。
+async function handleTile(request, env, path) {
+  const m = path.match(/^\/tile\/(\d+)\/(-?\d+)\/(-?\d+)\.png$/);
+  if (!m) return new Response("bad tile path", { status: 400 });
+  const [, z, x, y] = m;
+
+  const cache = caches.default;
+  const cacheKey = new Request(new URL(request.url).origin + path, request);
+  let res = await cache.match(cacheKey);
+  if (res) return res;
+
+  const upstream = `https://tile.thunderforest.com/atlas/${z}/${x}/${y}.png?apikey=${env.THUNDERFOREST_KEY}`;
+  const upstreamRes = await fetch(upstream);
+  if (!upstreamRes.ok) return new Response("tile fetch failed", { status: 502 });
+
+  res = new Response(upstreamRes.body, {
+    status: 200,
+    headers: {
+      "Content-Type": "image/png",
+      "Cache-Control": "public, max-age=2592000", // 30 天，圖磚幾乎不會變
+      "Access-Control-Allow-Origin": "*",
+    },
+  });
+  cache.put(cacheKey, res.clone());
+  return res;
+}
+
 // ---------- routing ----------
 
 export default {
@@ -300,6 +333,10 @@ export default {
     if (request.method === "OPTIONS") return json({ ok: true });
 
     const url = new URL(request.url);
+
+    if (request.method === "GET" && url.pathname.startsWith("/tile/")) {
+      return handleTile(request, env, url.pathname);
+    }
 
     try {
       if (request.method === "GET") {

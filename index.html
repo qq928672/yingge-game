@@ -214,8 +214,9 @@
 
       <button class="start-btn" id="arrive-start-btn" onclick="confirmArrivalAndStart()" disabled>抵達後即可開始關卡</button>
 
-      <div class="arrive-debug" id="arrive-debug">
-        <div class="arrive-debug-title">🧪 測試用模擬定位（正式上線前記得移除這個區塊）</div>
+      <div class="arrive-debug-toggle" id="arrive-debug-toggle" onclick="toggleArriveDebug()">🧪 測試工具</div>
+      <div class="arrive-debug" id="arrive-debug" style="display:none;">
+        <div class="arrive-debug-title">測試用模擬定位（正式上線前記得移除這個區塊）</div>
         <div class="arrive-debug-row">
           <button type="button" onclick="simulateAtStation()">📍 模擬：我在現場</button>
           <button type="button" onclick="simulateFarAway()">🚗 模擬：還很遠</button>
