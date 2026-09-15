@@ -492,11 +492,14 @@ function thumbHtml(photo, merchantKey, cls) {
 
 let rewardsCatalog = null; // cached after first fetch; the catalog itself doesn't need a login
 
+// 河濱單車租借站先不上架，暫時在前端濾掉（後端 Google Sheets 那筆資料還在，這裡只是不顯示）
+const HIDDEN_MERCHANT_IDS = new Set(["riverside-bike"]);
+
 async function getRewardsCatalog() {
   if (rewardsCatalog) return rewardsCatalog;
   try {
     const res = await apiGet({ action: "rewards" });
-    rewardsCatalog = res.ok ? (res.merchants || []) : [];
+    rewardsCatalog = res.ok ? (res.merchants || []).filter(m => !HIDDEN_MERCHANT_IDS.has(m.id)) : [];
   } catch (e) {
     rewardsCatalog = [];
   }
