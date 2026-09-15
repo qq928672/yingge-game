@@ -319,8 +319,7 @@ const STATIONS = [
         type: "knowledge",
         title: "仿古藝術陶瓷",
         text: "市拿陶瓷以仿製元、明、清瓷器精品聞名，運用青花、粉彩、鬥彩、釉裡紅等傳統彩繪技法",
-        photo:
-          "https://innews.com.tw/wp-content/uploads/2020/10/1091021%E9%99%B6%E5%8D%9A%E9%A4%A8%E5%85%AC%E9%97%9C%E7%85%A73-scaled.jpg",
+        // 待補：仿古藝術陶瓷授權照片
       },
       {
         type: "line",
@@ -607,8 +606,7 @@ const STATIONS = [
       {
         type: "notice",
         text: "尋找岩洞旁石碑",
-        photo:
-          "https://dguidedwalks.tw/sites/default/files/styles/large/public/listings-gallery/IMG_9938.JPG?itok=omyWpyiI",
+        // 待補：岩洞旁石碑授權照片
       },
       {
         type: "line",
