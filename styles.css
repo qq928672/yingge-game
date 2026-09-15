@@ -114,7 +114,7 @@
 
   /* 關於本遊戲：車票樣式彈窗 */
   .about-overlay {
-    position: fixed; inset: 0; z-index: 200; background: rgba(36,28,51,0.55);
+    position: fixed; inset: 0; z-index: 1000; background: rgba(36,28,51,0.55);
     display: none; align-items: center; justify-content: center; padding: 24px; overflow-y: auto;
   }
   .about-overlay.active { display: flex; }
@@ -395,8 +395,10 @@
 
   /* Toast / modal for reward unlock */
   .overlay {
+    /* z-index 高於底部 tabbar(900)／地圖底部彈出卡(950/960)，不然彈窗開著時這些東西還是點得到，
+       導致沒關閉這個彈窗就能切到別的畫面、又跳出別的東西疊在上面 */
     position: fixed; inset: 0; background: rgba(20,16,28,0.55); display: none;
-    align-items: center; justify-content: center; z-index: 50; padding: 10px;
+    align-items: center; justify-content: center; z-index: 1000; padding: 10px;
   }
   /* the overlay centers its child instead of stretching it (align-items: center), so without an
      explicit width #shop-overlay-card shrinks to fit its content and .shop-card's width:100% then
