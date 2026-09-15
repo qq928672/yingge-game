@@ -1482,7 +1482,8 @@ const STATIONS = [
       },
       {
         type: "knowledge",
-        title: "老照片",
+        title: "陳映真鶯歌故居",
+        vintage: true,
         photo: "角色照片素材庫/站點八/陳映真鶯歌故居.JPG",
       },
       {

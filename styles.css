@@ -740,6 +740,7 @@
     box-shadow: 6px 6px 0 var(--purple-dark); text-align: left;
   }
   .rpg-knowledge-img { width: 100%; max-height: 42vh; object-fit: contain; display: block; background: #fff; }
+  .rpg-knowledge-img.vintage { filter: sepia(0.5) saturate(1.15) contrast(1.05); }
   .rpg-knowledge-body { padding: 16px 18px 4px; }
   .rpg-knowledge-title {
     font-family: "Baloo 2", "Noto Sans TC", sans-serif; font-weight: 800; font-size: 17px; color: var(--purple-dark); margin-bottom: 8px;

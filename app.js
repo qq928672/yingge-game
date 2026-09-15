@@ -1391,6 +1391,9 @@ function renderRpgStep() {
     // 不是看有沒有照片——小知識一樣可以配照片，只是卡片風格比較輕、沒有大標題
     const isCollection = !!step.title;
     cardEl.classList.toggle("brief", !isCollection);
+    // 老照片這種懷舊題材可以掛 vintage: true，圖片套一層淡淡的復古濾鏡，
+    // 卡片本身還是原本的「探索發現／小知識」風格，只有照片濾鏡不一樣
+    imgEl.classList.toggle("vintage", !!step.vintage);
     if (step.photo) {
       setImgWithLoading(imgEl, "rpg-knowledge-loading", step.photo);
     } else {
