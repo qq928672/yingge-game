@@ -1468,6 +1468,31 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
+        text: "眼前這棟房子，就是他小時候住過的地方",
+      },
+      {
+        type: "line",
+        char: "hero",
+        text: "跟現在看到的樣子一樣嗎？",
+      },
+      {
+        type: "line",
+        char: "guide",
+        text: "當然不一樣，你看看以前長什麼樣子",
+      },
+      {
+        type: "knowledge",
+        title: "老照片",
+        photo: "角色照片素材庫/站點八/陳映真鶯歌故居.JPG",
+      },
+      {
+        type: "line",
+        char: "hero",
+        text: "原來以前長這樣，變化真大",
+      },
+      {
+        type: "line",
+        char: "guide",
         text: "他童年住在鶯歌時，常看見陶工、礦工和搬運工辛苦工作的身影",
       },
       {
