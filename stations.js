@@ -599,11 +599,6 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
-        text: "鶯歌有趣的石頭可不只這一顆。走吧，我們先下山",
-      },
-      {
-        type: "line",
-        char: "guide",
         text: "對了小明，剛才登山口前那一小段路，你有注意到嗎？",
       },
       {
@@ -631,12 +626,7 @@ const STATIONS = [
         qIndex: 2,
         char: "guide",
         text: "現在的孫龍步道是一條登山步道，但在百年前，這裡曾有另一種用途。你知道它的前身是什麼嗎？",
-        correctReaction: "沒錯，這裡以前是採礦台車行駛的輕便鐵道",
-      },
-      {
-        type: "line",
-        char: "guide",
-        text: "沒錯！昔日台車行駛的路線，如今成了人們健行的步道。",
+        correctReaction: "沒錯！昔日台車行駛的路線，如今成了人們健行的步道。",
       },
       {
         type: "line",
