@@ -678,7 +678,7 @@ const STATIONS = [
       lng: 121.35701852069056,
       radius: 50,
     },
-    background: "角色照片素材庫/站點三/孫龍步道.jpg",
+    background: "角色照片素材庫/站點三/鶯歌石.jpg",
   },
   {
     id: 4,
