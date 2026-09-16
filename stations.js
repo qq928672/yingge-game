@@ -1103,7 +1103,18 @@ const STATIONS = [
         qIndex: 1,
         char: "guide",
         text: "益成記被稱為鶯歌的「陶瓷大學」，與下列何者無關？",
-        correctReaction: "沒錯，這個稱號跟陶瓷交易沒有關係",
+        correctReaction: "沒錯！這個稱號跟陶瓷交易無關，真正的販賣部在另一個地方",
+      },
+      {
+        type: "line",
+        char: "guide",
+        text: "我這裡正好有一張當年的照片",
+      },
+      {
+        type: "knowledge",
+        title: "益成記陶器販賣部舊照片",
+        vintage: true,
+        // 待補：益成記陶器販賣部授權照片
       },
       {
         type: "line",
