@@ -1044,6 +1044,18 @@ const STATIONS = [
         question: "益成記曾引進哪裡的陶藝師傅？",
         options: ["大陸景德鎮", "日本", "大陸福州", "台灣中南部"],
       },
+      {
+        qtype: "複選題",
+        question:
+          "窯廠燒壞的器皿被打碎掩埋後，後來重新出現在故事巷。這些老瓷片被如何再利用？",
+        options: [
+          "製作新陶器",
+          "製作牆面裝飾",
+          "鑲嵌於步道路面",
+          "製作陶瓷藝術品",
+        ],
+        multi: true,
+      },
     ],
     dialogue: [
       {
@@ -1156,6 +1168,39 @@ const STATIONS = [
         type: "line",
         char: "guide",
         text: "一座窯廠，也能成為技術交流與傳承的地方",
+      },
+      {
+        type: "line",
+        char: "guide",
+        text: "仔細觀察周遭地上，有沒有發現特別之處",
+      },
+      {
+        type: "line",
+        char: "hero",
+        text: "等等，地上這些好像是陶瓷碎片？",
+      },
+      {
+        type: "line",
+        char: "guide",
+        text: "你猜得沒錯，以前窯廠燒壞的器皿，有些會打碎後掩埋，後來這些老瓷片又被重新利用",
+      },
+      {
+        type: "question",
+        qIndex: 3,
+        char: "guide",
+        text: "窯廠燒壞的器皿被打碎掩埋後，後來重新出現在故事巷。這些老瓷片被如何再利用？",
+        correctReaction:
+          "沒錯，這些老瓷片被用來製作牆面裝飾，也有些鑲嵌於步道路面",
+      },
+      {
+        type: "line",
+        char: "hero",
+        text: "被當成廢料的瓷片，現在居然又變成了街道的一部分",
+      },
+      {
+        type: "line",
+        char: "guide",
+        text: "所以你看到的這些老瓷片，其實也是鶯歌陶業留下來的記憶",
       },
       {
         type: "line",
