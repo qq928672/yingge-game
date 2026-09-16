@@ -478,6 +478,7 @@ const STATIONS = [
       {
         type: "notice",
         text: "前往鶯歌石碑",
+        photo: "角色照片素材庫/站點三/鶯歌石碑.jpg",
       },
       {
         type: "gpscheck",
