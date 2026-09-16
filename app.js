@@ -411,6 +411,7 @@ function devResetStation() {
   const st = STATIONS.find(s => s.id === devResetTargetId);
   if (!confirm(`確定要重置「${st ? st.name.replace(/^站點[一二三四五六七八九十]+\s*/, "") : devResetTargetId}」的完成狀態嗎？\n（只影響這次瀏覽，不會刪除伺服器上的紀錄）`)) return;
   delete state.progress[devResetTargetId];
+  if (loadRpgProgress(devResetTargetId)) clearRpgProgress();
   closeMapSheet();
   renderMap();
 }
@@ -1208,15 +1209,53 @@ async function markStationComplete(st) {
 
 let rpgState = null;
 
+// 玩家在關卡對話中途，如果畫面被切掉、滑掉，甚至手機瀏覽器直接把分頁殺掉重載，
+// 原本 rpgState 只存在記憶體裡，重新整理就會歸零，逼玩家從頭把整站劇情、題目再走一次。
+// 這裡把「目前站點、講到第幾句、答對了哪幾題」存進 localStorage，開站時如果發現是
+// 同一個站點就直接接回中斷點，而不是每次都從頭開始。
+const RPG_PROGRESS_KEY = "yingge_rpg_progress";
+function saveRpgProgress() {
+  if (!rpgState) return;
+  try {
+    localStorage.setItem(RPG_PROGRESS_KEY, JSON.stringify({
+      stationId: rpgState.st.id,
+      idx: rpgState.idx,
+      resultsByQ: rpgState.resultsByQ,
+      wrongCount: rpgState.wrongCount,
+    }));
+  } catch (e) { /* 私密模式等情境存不進去就算了，不影響遊戲本身 */ }
+}
+function clearRpgProgress() {
+  try { localStorage.removeItem(RPG_PROGRESS_KEY); } catch (e) {}
+}
+function loadRpgProgress(stationId) {
+  try {
+    const raw = localStorage.getItem(RPG_PROGRESS_KEY);
+    if (!raw) return null;
+    const saved = JSON.parse(raw);
+    if (saved && saved.stationId === stationId) return saved;
+  } catch (e) {}
+  return null;
+}
+
 function openStationRPG(st) {
   currentStationId = st.id;
-  rpgState = { st, idx: 0, typing: false, typeTimer: null, resultsByQ: {}, wrongCount: 0, advanceAfterReaction: false, showingReaction: false };
+  const saved = loadRpgProgress(st.id);
+  const resume = saved && saved.idx > 0 && saved.idx < st.dialogue.length;
+  rpgState = {
+    st,
+    idx: resume ? saved.idx : 0,
+    typing: false, typeTimer: null,
+    resultsByQ: resume ? saved.resultsByQ : {},
+    wrongCount: resume ? saved.wrongCount || 0 : 0,
+    advanceAfterReaction: false, showingReaction: false,
+  };
   showScreen("screen-rpg");
   // st.background 同時也拿去當地圖卡片縮圖／抵達畫面照片用，不一定跟劇情開場的畫面一樣
   // （例如站點三縮圖用鶯歌石，但劇情是從步道入口開始）——一開始就照第一句台詞自己的
   // background 顯示，才不會先閃一下 st.background 才淡出換成正確的畫面
-  const firstStep = st.dialogue[0];
-  renderRpgBackground((firstStep && firstStep.background) || st.background);
+  const firstStep = st.dialogue[rpgState.idx] || st.dialogue[0];
+  renderRpgBackground(firstStep.background || st.background);
   renderRpgProgress();
   renderRpgStep();
 }
@@ -1348,6 +1387,7 @@ function noticeTextForSpeech(raw) {
 
 function renderRpgStep() {
   if ("speechSynthesis" in window) window.speechSynthesis.cancel(); // stop last step's TTS before showing the next one
+  saveRpgProgress();
   const step = rpgState.st.dialogue[rpgState.idx];
   if (step.background !== undefined && step.background !== rpgCurrentBackground) {
     renderRpgBackground(step.background, { smooth: true });
@@ -1784,6 +1824,7 @@ function handleRpgAnswer(qIndex, correct, btnEl) {
 function finishRpgStation() {
   const st = rpgState.st;
   rpgState = null;
+  clearRpgProgress();
   markStationComplete(st); // schedules afterStationComplete(), which goes back to the map
 }
 
