@@ -1386,11 +1386,15 @@ function renderRpgStep() {
       warnEl.style.display = "none";
     }
     const noticeImgEl = document.getElementById("rpg-notice-img");
+    const noticeCapEl = document.getElementById("rpg-notice-cap");
     if (step.photo) {
       setImgWithLoading(noticeImgEl, "rpg-notice-loading", step.photo);
+      noticeCapEl.textContent = step.caption || "";
+      noticeCapEl.style.display = step.caption ? "block" : "none";
     } else {
       noticeImgEl.style.display = "none";
       document.getElementById("rpg-notice-loading").style.display = "none";
+      noticeCapEl.style.display = "none";
     }
     noticeEl.classList.add("active");
     if (autoSpeak) speak(noticeTextForSpeech(step.text));

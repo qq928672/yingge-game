@@ -713,6 +713,9 @@
     padding: 28px 0; margin-top: 10px; background: var(--bg); border-radius: 8px;
   }
   .rpg-notice-img { display: block; width: 100%; max-height: 34vh; object-fit: contain; margin-top: 14px; border-radius: 14px; border: 2px solid var(--ink); background: rgba(0,0,0,0.08); }
+  .rpg-notice-cap {
+    margin-top: 8px; font-family: "Noto Sans TC", sans-serif; font-weight: 700; font-size: 12px; color: var(--ink); text-align: center;
+  }
 
   /* Polaroid-style old-photo popup shown mid-dialogue */
   .rpg-photo-overlay {
