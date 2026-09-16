@@ -900,6 +900,17 @@
   .nearest-chip .dist { margin-left: auto; font-weight: 800; color: var(--accent-dark); font-size: 11px; }
   .me-dot { width: 16px; height: 16px; border-radius: 50%; background: var(--clay); border: 3px solid #fff; box-shadow: 0 0 0 4px rgba(58,160,255,.3); }
 
+  /* 跟 nearest-chip 同一個位置，兩者互斥顯示——定位失敗/被拒絕時顯示這顆按鈕，
+     不然玩家會完全看不到「離你最近」功能，也不知道發生了什麼事、要怎麼恢復 */
+  .locate-me-btn {
+    position: absolute; left: 14px; right: 14px; top: 14px; z-index: 800;
+    background: var(--card); border: 2px solid var(--ink); border-radius: 13px; padding: 9px 11px;
+    box-shadow: 3px 3px 0 var(--ink); cursor: pointer;
+    font-family: "Noto Sans TC", sans-serif; font-weight: 700; font-size: 12px; color: var(--ink);
+    text-align: center;
+  }
+  .locate-me-btn:active { transform: translateY(1px); box-shadow: 2px 2px 0 var(--ink); }
+
   /* 平常隱藏，玩家把地圖滑走/縮放後才會浮現——出現的時機本身就在提示「這是要帶你回去剛才畫面」，
      而且是在滑動結束後才顯示（不是滑動途中），手指滑地圖時不會不小心先點到它 */
   .map-recenter-btn {

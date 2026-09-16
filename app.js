@@ -367,6 +367,7 @@ function updateNearestOnMap(lat, lng) {
     if (d < nearestDist) { nearestDist = d; nearest = st; }
   });
   if (!nearest) return;
+  document.getElementById("locateMeBtn").style.display = "none";
   lastNearestMapId = nearest.id;
   updateMapMarkers();
   if (!mapMeMarker) mapMeMarker = L.marker([lat, lng], { icon: mapMeIcon, zIndexOffset: 500 }).addTo(stationMap);
@@ -378,11 +379,25 @@ function updateNearestOnMap(lat, lng) {
   chip.onclick = () => openMapSheet(nearest, !!state.progress[nearest.id]);
 }
 
+// 用 watchPosition 持續追蹤，不是只在進地圖畫面那一刻抓一次位置就結束——
+// 不然玩家頁面開著、人已經走到別的站點，地圖上的「離你最近」還是會停在剛進地圖時的舊位置不動。
+// initStationMap() 本身只會跑一次（有 guard），所以這裡也只會建立一個 watch，不會重複疊加。
 function locateForMap() {
+  if (!navigator.geolocation) { document.getElementById("locateMeBtn").style.display = "block"; return; }
+  navigator.geolocation.watchPosition(
+    pos => updateNearestOnMap(pos.coords.latitude, pos.coords.longitude),
+    () => { document.getElementById("locateMeBtn").style.display = "block"; }, // 定位被拒絕/逾時/失敗——顯示按鈕讓玩家自己重試，不要整個功能默默消失
+    { enableHighAccuracy: true, timeout: 8000, maximumAge: 10000 }
+  );
+}
+
+// 玩家點「開啟定位」按鈕時重新嘗試一次；如果剛剛是被拒絕權限，大部分瀏覽器不會重新彈出詢問視窗，
+// 這種情況再次失敗一樣會顯示這顆按鈕，順便用 alert 提醒去手機設定裡手動打開定位權限
+function retryLocateForMap() {
   if (!navigator.geolocation) return;
   navigator.geolocation.getCurrentPosition(
     pos => updateNearestOnMap(pos.coords.latitude, pos.coords.longitude),
-    () => {}, // permission denied / unavailable — the map still works fine without the "nearest" banner
+    () => alert("還是無法取得定位，請確認手機的定位服務跟瀏覽器的定位權限都已經打開"),
     { enableHighAccuracy: true, timeout: 8000 }
   );
 }
@@ -608,7 +623,7 @@ async function openItemDetail(merchantId, itemId) {
       <div class="shop-card-name">${it.name}</div>
       <div class="shop-item-desc">${it.desc || ""}</div>
       <div class="shop-item-cost-big">🏅 ${it.cost} 枚</div>
-      <button class="shop-buy-btn" ${can ? "" : "disabled"} onclick="buyItem('${escapeAttr(itemId)}')">${can ? "兌換，存入背包" : "獎章不足"}</button>
+      <button class="shop-buy-btn" ${can ? "" : "disabled"} onclick="buyItem('${escapeAttr(itemId)}', this)">${can ? "兌換，存入背包" : "獎章不足"}</button>
     </div>
   `);
   initShopCarousel(photos);
@@ -672,7 +687,14 @@ function shopCarouselJump(i) {
   shopCarouselGo(i - shopCarouselIndex);
 }
 
-async function buyItem(itemId) {
+// 等後端回應期間鎖住按鈕，不然手速快一點連點兩下，會在第一筆請求回來、
+// 餘額還沒更新之前就送出第二筆，變成買到兩件、點數卻只扣一次
+let buyItemPending = false;
+
+async function buyItem(itemId, btnEl) {
+  if (buyItemPending) return;
+  buyItemPending = true;
+  if (btnEl) { btnEl.disabled = true; btnEl.textContent = "處理中…"; }
   try {
     // 這裡只是先確認商品在目錄裡存在，給個快速的錯誤訊息；實際價格一律由伺服器端
     // 重新核對，前端算出來的價格/商品資訊不會被信任（也不會送出去）
@@ -696,6 +718,9 @@ async function buyItem(itemId) {
     `);
   } catch (e) {
     alert("連線失敗，請檢查網路後再試一次");
+  } finally {
+    buyItemPending = false;
+    if (btnEl) { btnEl.disabled = false; btnEl.textContent = "兌換，存入背包"; }
   }
 }
 
