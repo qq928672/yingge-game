@@ -1212,7 +1212,11 @@ function openStationRPG(st) {
   currentStationId = st.id;
   rpgState = { st, idx: 0, typing: false, typeTimer: null, resultsByQ: {}, wrongCount: 0, advanceAfterReaction: false, showingReaction: false };
   showScreen("screen-rpg");
-  renderRpgBackground(st.background);
+  // st.background 同時也拿去當地圖卡片縮圖／抵達畫面照片用，不一定跟劇情開場的畫面一樣
+  // （例如站點三縮圖用鶯歌石，但劇情是從步道入口開始）——一開始就照第一句台詞自己的
+  // background 顯示，才不會先閃一下 st.background 才淡出換成正確的畫面
+  const firstStep = st.dialogue[0];
+  renderRpgBackground((firstStep && firstStep.background) || st.background);
   renderRpgProgress();
   renderRpgStep();
 }
