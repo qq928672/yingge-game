@@ -473,7 +473,7 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
-        text: "先別急！在前往鶯歌石之前，這附近藏著一個和它名字有關的線索。",
+        text: "先別急！在前往鶯歌石之前，步道沿途藏著一個和它名字有關的線索。",
       },
       {
         type: "notice",
