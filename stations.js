@@ -47,18 +47,19 @@ const STATIONS = [
         type: "notice",
         text: "前往 ==建國路、文化路出口==\n【找到手扶梯旁的平台】\n⚠️請留意周遭環境，依照現場動線行走。",
         photo: "角色照片素材庫/站點一/鐵軌.jpg",
+        caption: "圖片中為文化路出口的平台",
       },
       {
         type: "line",
         char: "guide",
-        text: "到了嗎？往下看看，你發現了什麼？",
+        text: "觀察到了嗎？往下看看，你發現了什麼？",
         background: "角色照片素材庫/站點一/鐵軌.jpg",
       },
       {
         type: "question",
         qIndex: 0,
         char: "guide",
-        text: "數數看，現在這裡一共有幾條軌道？",
+        text: "數數看，鶯歌車站一共有幾條軌道？",
         correctReaction: "沒錯！以前的鶯歌車站，跟現在很不一樣",
         wrongHints: [
           "再靠近一點看，別漏數了最外側那一條……",
@@ -110,7 +111,7 @@ const STATIONS = [
       },
       {
         type: "notice",
-        text: "請前往 一樓前站廣場。\n⚠️ 移動時請留意周遭環境，並依照車站動線行走。",
+        text: "請前往 一樓建國路前站廣場。\n⚠️ 移動時請留意周遭環境，並依照車站動線行走。",
       },
       {
         type: "line",
@@ -192,7 +193,7 @@ const STATIONS = [
     ],
     background: "角色照片素材庫/站點一/火車站售票口.jpg",
     arrivePhoto: "角色照片素材庫/站點一/火車站售票口.jpg",
-    arriveHint: "請實際前往站點，抵達後搭手扶梯前往二樓售票處才開始遊戲",
+    arriveHint: "實際前往站點，搭手扶梯前往二樓售票處開始遊戲",
     characters: {
       guide: {
         name: "楊嚮導",
