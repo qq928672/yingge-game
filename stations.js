@@ -1513,7 +1513,7 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
-        text: "還記得一路探索過哪些地方嗎？想想看！",
+        text: "還記得一路走過哪些地方嗎？想想看！",
       },
       {
         type: "question",
@@ -1646,7 +1646,7 @@ const STATIONS = [
         qtype: "選擇題",
         question: "仔細觀察福興宮,你會發現有什麼特別之處?",
         options: [
-          "廟中廟建築",
+          "清代時期磚造建築",
           "日治時期仿巴洛克式建築",
           "子母廟建築",
           "石頭厝建築",
@@ -1700,12 +1700,12 @@ const STATIONS = [
         qIndex: 0,
         char: "guide",
         text: "仔細觀察福興宮，你會發現有什麼特別之處？",
-        correctReaction: "答對了！福興宮最特別的，就是「廟中廟」的建築格局。",
+        correctReaction: "答對了！福興宮最特別的，就是清代時期磚造建築的建築格局",
       },
       {
         type: "line",
         char: "hero",
-        text: "難怪看起來像一座廟裡，還留著另一座廟！",
+        text: "原來如此！難怪從外觀還能看到這些傳統建築的特色",
       },
       {
         type: "line",
@@ -1735,7 +1735,7 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
-        text: "是啊！所以製陶人家遇到困難時，常會來福興宮祈求燒窯、生意順利。",
+        text: "是啊！所以製陶人家遇到困難時，常會來福興宮祈求燒窯順利、生意興榮。",
       },
       {
         type: "line",
@@ -1745,12 +1745,12 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
-        text: "不只喔！這裡還奉祀著製陶人家崇敬的羅明先師。",
+        text: "不只喔！這裡還奉祀著製陶人家崇敬的陶神羅文與羅明。",
       },
       {
         type: "line",
         char: "hero",
-        text: "羅明先師？他和製陶也有關？",
+        text: "他們和製陶也有關？",
       },
       {
         type: "line",
@@ -1897,7 +1897,7 @@ const STATIONS = [
       {
         qtype: "選擇題",
         question: "古早窯主要是生產哪些產品？",
-        options: ["碗盤與茶具", "磁磚(馬賽克)", "花器與陶甕", "工業用磁器"],
+        options: ["碗盤與茶具", "磁磚(馬賽克)", "花器與陶甕", "工業用瓷器"],
       },
       {
         qtype: "選擇題",
