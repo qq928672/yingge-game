@@ -467,14 +467,55 @@ const STATIONS = [
       },
       {
         type: "notice",
-        text: "前往鶯歌石",
+        text: "前往鶯歌石碑",
+      },
+      {
+        type: "gpscheck",
+        text: "請找到鶯歌石碑，讓我們確認你已經抵達",
+        location: {
+          lat: 24.959073,
+          lng: 121.359348,
+          radius: 30,
+        },
+      },
+      {
+        type: "line",
+        char: "hero",
+        text: "找到了！這上面好像有寫鶯歌石的由來",
+      },
+      {
+        type: "line",
+        char: "guide",
+        text: "沒錯，仔細看看碑文",
+      },
+      {
+        type: "question",
+        qIndex: 1,
+        char: "guide",
+        text: "找到鶯歌石岩洞旁的石碑，仔細觀察碑文碑文中提到，這塊石頭最初為什麼被稱為「鸚哥石」？",
+        correctReaction:
+          "答對了，因為這顆石頭的形狀像鸚哥，所以早期被稱為「鸚哥石」",
+      },
+      {
+        type: "line",
+        char: "hero",
+        text: "原來鶯歌石的名字是這樣來的！",
+      },
+      {
+        type: "line",
+        char: "guide",
+        text: "走吧，帶你去看看鶯歌石本尊",
+      },
+      {
+        type: "notice",
+        text: "前往鶯歌石觀景平台",
       },
       {
         type: "gpscheck",
         text: "請爬到鶯歌石旁，讓我們確認你已經抵達",
         location: {
-          lat: 24.95877201729627,
-          lng: 121.36043833303971,
+          lat: 24.959074,
+          lng: 121.359387,
           radius: 30,
         },
       },
@@ -511,49 +552,6 @@ const STATIONS = [
         type: "line",
         char: "hero",
         text: "原來不是以前被人打掉的喔！",
-      },
-      {
-        type: "line",
-        char: "guide",
-        text: "關於鶯歌石，可不只有你眼前看到的這些。",
-      },
-      {
-        type: "line",
-        char: "hero",
-        text: "難道還有什麼秘密？",
-      },
-      {
-        type: "line",
-        char: "guide",
-        text: "找找附近的小石碑，也許會有答案",
-      },
-      {
-        type: "notice",
-        text: "尋找岩洞旁石碑",
-        // 待補：岩洞旁石碑授權照片
-      },
-      {
-        type: "line",
-        char: "hero",
-        text: "找到了！這上面好像有寫鶯歌石的由來",
-      },
-      {
-        type: "line",
-        char: "guide",
-        text: "沒錯，仔細看看碑文",
-      },
-      {
-        type: "question",
-        qIndex: 1,
-        char: "guide",
-        text: "找到鶯歌石岩洞旁的石碑，仔細觀察碑文碑文中提到，這塊石頭最初為什麼被稱為「鸚哥石」？",
-        correctReaction:
-          "答對了，因為這顆石頭的形狀像鸚哥，所以早期被稱為「鸚哥石」",
-      },
-      {
-        type: "line",
-        char: "hero",
-        text: "原來鶯歌石的名字是這樣來的！",
       },
       {
         type: "line",
