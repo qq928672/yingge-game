@@ -962,7 +962,7 @@ const STATIONS = [
         type: "line",
         char: "guide",
         text: "沒錯！沿著故事巷往前走，可以從不同角度看到更多建築細節。",
-        background: "角色照片素材庫/站點五/故事巷.jpg",
+        background: "角色照片素材庫/站點五/沿著故事巷.jpg",
       },
       {
         type: "notice",
