@@ -319,7 +319,7 @@ function initStationMap() {
   withLoc.forEach(st => {
     const done = !!state.progress[st.id];
     mapMarkers[st.id] = L.marker([st.location.lat, st.location.lng], { icon: mapPinIcon(st, done, false) })
-      .addTo(stationMap).on("click", () => openMapSheet(st, done));
+      .addTo(stationMap).on("click", () => openMapSheet(st, !!state.progress[st.id]));
   });
   setTimeout(locateForMap, 400);
 
