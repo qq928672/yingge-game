@@ -466,6 +466,16 @@ const STATIONS = [
         text: "沒錯！沿著這條步道往前，就能找到鶯歌很有代表性的地標——鶯歌石",
       },
       {
+        type: "line",
+        char: "hero",
+        text: "我們要直接去找鶯歌石嗎？",
+      },
+      {
+        type: "line",
+        char: "guide",
+        text: "先別急！在前往鶯歌石之前，這附近藏著一個和它名字有關的線索。",
+      },
+      {
         type: "notice",
         text: "前往鶯歌石碑",
       },
