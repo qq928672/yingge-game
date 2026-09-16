@@ -455,20 +455,15 @@ const STATIONS = [
     ],
     dialogue: [
       {
-        type: "notice",
-        text: "前往鶯歌石登山口",
-        photo: "角色照片素材庫/站點三/步道入口.jpg",
-      },
-      {
         type: "line",
         char: "hero",
-        text: "所以沿著這裡走上去，就能到鶯歌石了？",
+        text: "就是這裡嗎？看起來要沿著步道往上走耶。",
         background: "角色照片素材庫/站點三/步道入口.jpg",
       },
       {
         type: "line",
         char: "guide",
-        text: "沒錯，繼續往前走吧",
+        text: "沒錯！沿著這條步道往前，就能找到鶯歌很有代表性的地標——鶯歌石",
       },
       {
         type: "notice",
