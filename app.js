@@ -1886,9 +1886,16 @@ function closeFinaleOverlay() {
     loadPlayerIntoState(res);
     errEl.textContent = "";
     resetIdleTimer();
+    // 如果重新整理前人正在某一站的劇情裡，直接接回那個畫面問要不要接續進度，
+    // 不用先回到地圖再自己點回那一站
+    const rawRpg = localStorage.getItem(RPG_PROGRESS_KEY);
+    const savedRpg = rawRpg ? JSON.parse(rawRpg) : null;
+    const rpgSt = savedRpg && STATIONS.find(s => s.id === savedRpg.stationId);
     const pendingId = localStorage.getItem("yingge_pending_arrival");
     const pendingSt = pendingId && STATIONS.find(s => String(s.id) === String(pendingId));
-    if (pendingSt && !state.progress[pendingSt.id]) {
+    if (rpgSt && !state.progress[rpgSt.id]) {
+      openStationRPG(rpgSt);
+    } else if (pendingSt && !state.progress[pendingSt.id]) {
       openArrivalGate(pendingSt);
     } else {
       localStorage.removeItem("yingge_pending_arrival");
