@@ -1879,8 +1879,8 @@ const STATIONS = [
     },
     address: "新北市鶯歌區中正二路63號",
     location: {
-      lat: 24.9508,
-      lng: 121.3508,
+      lat: 24.950727385126346,
+      lng: 121.350359872294,
       radius: 40,
     },
     background: "角色照片素材庫/站點九/福興宮.jpg",
@@ -2094,8 +2094,8 @@ const STATIONS = [
     },
     address: "新北市鶯歌區重慶街65之1號",
     location: {
-      lat: 24.9516,
-      lng: 121.3505,
+      lat: 24.95160168602042,
+      lng: 121.34958176244301,
       radius: 40,
     },
     background: "角色照片素材庫/站點十/古早窯.jpg",
