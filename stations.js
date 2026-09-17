@@ -494,8 +494,8 @@ const STATIONS = [
         type: "gpscheck",
         text: "請找到鶯歌石碑，讓我們確認你已經抵達",
         location: {
-          lat: 24.959073,
-          lng: 121.359348,
+          lat: 24.958810504583525,
+          lng: 121.35945883009234,
           radius: 30,
         },
       },
@@ -536,8 +536,8 @@ const STATIONS = [
         type: "gpscheck",
         text: "請爬到鶯歌石旁，讓我們確認你已經抵達",
         location: {
-          lat: 24.959074,
-          lng: 121.359387,
+          lat: 24.95907252082534,
+          lng: 121.35940586280836,
           radius: 30,
         },
       },
@@ -656,8 +656,8 @@ const STATIONS = [
     },
     address: "孫龍步道內；入口可由中正一路一帶進入",
     location: {
-      lat: 24.958025499906736,
-      lng: 121.35701852069056,
+      lat: 24.958217500415497,
+      lng: 121.35952733153984,
       radius: 40,
     },
     background: "角色照片素材庫/站點三/鶯歌石.jpg",
@@ -1016,7 +1016,7 @@ const STATIONS = [
     location: {
       lat: 24.95353101601439,
       lng: 121.35555712927186,
-      radius: 40,
+      radius: 25,
     },
     background: "角色照片素材庫/站點五/烘爐窯.jpg",
   },
@@ -1227,7 +1227,7 @@ const STATIONS = [
     location: {
       lat: 24.95355320078445,
       lng: 121.35488296931761,
-      radius: 40,
+      radius: 25,
     },
     background: "角色照片素材庫/站點六/益成記.jpg",
   },
@@ -1376,7 +1376,7 @@ const STATIONS = [
     location: {
       lat: 24.952784092616902,
       lng: 121.35459372883528,
-      radius: 40,
+      radius: 25,
     },
     background: "角色照片素材庫/站點七/榕樹.jpg",
   },
@@ -1634,7 +1634,7 @@ const STATIONS = [
     location: {
       lat: 24.953384573507492,
       lng: 121.35443331698151,
-      radius: 40,
+      radius: 25,
     },
     background: "角色照片素材庫/站點八/陳映真故居.jpg",
   },
@@ -2094,8 +2094,8 @@ const STATIONS = [
     },
     address: "新北市鶯歌區重慶街65之1號",
     location: {
-      lat: 24.95160168602042,
-      lng: 121.34958176244301,
+      lat: 24.95162023486373,
+      lng: 121.34966091069627,
       radius: 40,
     },
     background: "角色照片素材庫/站點十/古早窯.jpg",
