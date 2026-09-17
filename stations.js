@@ -417,7 +417,7 @@ const STATIONS = [
     location: {
       lat: 24.957876912256797,
       lng: 121.35421614844424,
-      radius: 50,
+      radius: 40,
     },
     background: "角色照片素材庫/站點二/市拿陶藝.jpg",
   },
@@ -658,7 +658,7 @@ const STATIONS = [
     location: {
       lat: 24.958025499906736,
       lng: 121.35701852069056,
-      radius: 50,
+      radius: 40,
     },
     background: "角色照片素材庫/站點三/鶯歌石.jpg",
   },
@@ -1227,7 +1227,7 @@ const STATIONS = [
     location: {
       lat: 24.95355320078445,
       lng: 121.35488296931761,
-      radius: 65,
+      radius: 40,
     },
     background: "角色照片素材庫/站點六/益成記.jpg",
   },
@@ -1634,7 +1634,7 @@ const STATIONS = [
     location: {
       lat: 24.953384573507492,
       lng: 121.35443331698151,
-      radius: 65,
+      radius: 40,
     },
     background: "角色照片素材庫/站點八/陳映真故居.jpg",
   },
@@ -2096,7 +2096,7 @@ const STATIONS = [
     location: {
       lat: 24.9516,
       lng: 121.3505,
-      radius: 35,
+      radius: 40,
     },
     background: "角色照片素材庫/站點十/古早窯.jpg",
   },
