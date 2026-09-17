@@ -234,7 +234,7 @@ const STATIONS = [
       },
       {
         qtype: "選擇題",
-        question: "你知道市拿陶藝早期生產最有名的是哪一類陶瓷？",
+        question: "您知道市拿陶藝早期生產最有名的是哪一類陶瓷？",
         options: ["日用陶瓷", "建築陶瓷", "仿古藝術陶瓷", "衛浴陶瓷"],
       },
       {
@@ -263,7 +263,7 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
-        text: "先考考你，你知道是誰創辦的嗎？",
+        text: "先考考您，您知道是誰創辦的嗎？",
       },
       {
         type: "question",
@@ -291,7 +291,7 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
-        text: "這就有故事了！你先猜猜看，「市拿」代表什麼意思？",
+        text: "這就有故事了！您先猜猜看，「市拿」代表什麼意思？",
       },
       {
         type: "question",
@@ -308,7 +308,7 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
-        text: "那你猜猜，市拿陶藝早期最有名的是哪一類陶瓷？",
+        text: "那您猜猜，市拿陶藝早期最有名的是哪一類陶瓷？",
       },
       {
         type: "question",
@@ -361,7 +361,7 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
-        text: "你知道後來主要引進了哪一種能源嗎？",
+        text: "您知道後來主要引進了哪一種能源嗎？",
       },
       {
         type: "question",
@@ -449,7 +449,7 @@ const STATIONS = [
       {
         qtype: "選擇題",
         question:
-          "現在的孫龍步道是一條登山步道，但在百年前，這裡曾有另一種用途。你知道它的前身是什麼嗎？",
+          "現在的孫龍步道是一條登山步道，但在百年前，這裡曾有另一種用途。您知道它的前身是什麼嗎？",
         options: [
           "運送陶土的道路",
           "採礦台車行駛的輕便鐵道",
@@ -492,7 +492,7 @@ const STATIONS = [
       },
       {
         type: "gpscheck",
-        text: "請找到鶯歌石碑，讓我們確認你已經抵達",
+        text: "請找到鶯歌石碑，讓我們確認您已經抵達",
         location: {
           lat: 24.958810504583525,
           lng: 121.35945883009234,
@@ -525,7 +525,7 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
-        text: "走吧，帶你去看看鶯歌石本尊",
+        text: "走吧，帶您去看看鶯歌石本尊",
       },
       {
         type: "notice",
@@ -534,7 +534,7 @@ const STATIONS = [
       },
       {
         type: "gpscheck",
-        text: "請爬到鶯歌石旁，讓我們確認你已經抵達",
+        text: "請爬到鶯歌石旁，讓我們確認您已經抵達",
         location: {
           lat: 24.95907252082534,
           lng: 121.35940586280836,
@@ -560,7 +560,7 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
-        text: "觀察得很仔細！你猜猜看，這一角為什麼會不見呢？",
+        text: "觀察得很仔細！您猜猜看，這一角為什麼會不見呢？",
       },
       {
         type: "question",
@@ -578,7 +578,7 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
-        text: "你觀察得很仔細！那再看看鶯歌石的岩石表面，有沒有發現什麼特別的痕跡？",
+        text: "您觀察得很仔細！那再看看鶯歌石的岩石表面，有沒有發現什麼特別的痕跡？",
       },
       {
         type: "line",
@@ -599,7 +599,7 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
-        text: "對了小明，剛才登山口前那一小段路，你有注意到嗎？",
+        text: "對了小明，剛才登山口前那一小段路，您有注意到嗎？",
       },
       {
         type: "line",
@@ -625,7 +625,7 @@ const STATIONS = [
         type: "question",
         qIndex: 2,
         char: "guide",
-        text: "現在的孫龍步道是一條登山步道，但在百年前，這裡曾有另一種用途。你知道它的前身是什麼嗎？",
+        text: "現在的孫龍步道是一條登山步道，但在百年前，這裡曾有另一種用途。您知道它的前身是什麼嗎？",
         correctReaction: "沒錯！昔日台車行駛的路線，如今成了人們健行的步道。",
       },
       {
@@ -740,7 +740,7 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
-        text: "沒錯！而且你有沒有發現，以前窯廠的煙囪都蓋得特別高？",
+        text: "沒錯！而且您有沒有發現，以前窯廠的煙囪都蓋得特別高？",
       },
       {
         type: "line",
@@ -893,7 +893,7 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
-        text: "先看看附近的古厝，你有沒有發現牆面有點特別？",
+        text: "先看看附近的古厝，您有沒有發現牆面有點特別？",
       },
       {
         type: "line",
@@ -976,7 +976,7 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
-        text: "看來你觀察得很仔細，那我考考下面哪一個「不是」烘爐窯的建築特色？",
+        text: "看來您觀察得很仔細，那我考考下面哪一個「不是」烘爐窯的建築特色？",
       },
       {
         type: "question",
@@ -1071,7 +1071,7 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
-        text: "讓你猜猜，益成記是誰創辦的？",
+        text: "讓您猜猜，益成記是誰創辦的？",
       },
       {
         type: "question",
@@ -1108,7 +1108,7 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
-        text: "先讓你猜看看，等等再告訴你",
+        text: "先讓您猜看看，等等再告訴您",
       },
       {
         type: "question",
@@ -1141,7 +1141,7 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
-        text: "當時還特別從外地請來師傅傳授技術，你猜他們是從哪裡來的？",
+        text: "當時還特別從外地請來師傅傳授技術，您猜他們是從哪裡來的？",
       },
       {
         type: "question",
@@ -1182,7 +1182,7 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
-        text: "你猜得沒錯，以前窯廠燒壞的器皿，有些會打碎後掩埋，後來這些老瓷片又被重新利用",
+        text: "您猜得沒錯，以前窯廠燒壞的器皿，有些會打碎後掩埋，後來這些老瓷片又被重新利用",
       },
       {
         type: "question",
@@ -1200,7 +1200,7 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
-        text: "所以你看到的這些老瓷片，其實也是鶯歌陶業留下來的記憶",
+        text: "所以您看到的這些老瓷片，其實也是鶯歌陶業留下來的記憶",
       },
       {
         type: "line",
@@ -1277,7 +1277,7 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
-        text: "你知道嗎？以前這棵榕樹可是很重要的「界線」",
+        text: "您知道嗎？以前這棵榕樹可是很重要的「界線」",
       },
       {
         type: "question",
@@ -1425,7 +1425,7 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
-        text: "這次帶你認識一位曾在鶯歌生活過的作家——陳映真",
+        text: "這次帶您認識一位曾在鶯歌生活過的作家——陳映真",
       },
       {
         type: "line",
@@ -1445,7 +1445,7 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
-        text: "當然不一樣，你看看以前長什麼樣子",
+        text: "當然不一樣，您看看以前長什麼樣子",
       },
       {
         type: "knowledge",
@@ -1476,7 +1476,7 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
-        text: "那你覺得，這段經歷帶給他什麼影響？",
+        text: "那您覺得，這段經歷帶給他什麼影響？",
       },
       {
         type: "question",
@@ -1570,7 +1570,7 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
-        text: "這個答案，就換你自己找找看吧！",
+        text: "這個答案，就換您自己找找看吧！",
       },
       {
         type: "question",
@@ -1644,7 +1644,7 @@ const STATIONS = [
     questions: [
       {
         qtype: "選擇題",
-        question: "仔細觀察福興宮,你會發現有什麼特別之處?",
+        question: "仔細觀察福興宮,您會發現有什麼特別之處?",
         options: [
           "清代時期磚造建築",
           "日治時期仿巴洛克式建築",
@@ -1693,13 +1693,13 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
-        text: "仔細看看眼前的福興宮，你能發現它特別的地方嗎？",
+        text: "仔細看看眼前的福興宮，您能發現它特別的地方嗎？",
       },
       {
         type: "question",
         qIndex: 0,
         char: "guide",
-        text: "仔細觀察福興宮，你會發現有什麼特別之處？",
+        text: "仔細觀察福興宮，您會發現有什麼特別之處？",
         correctReaction: "答對了！福興宮最特別的，就是清代時期磚造建築的建築格局",
       },
       {
@@ -1775,7 +1775,7 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
-        text: "很接近！那你猜猜，現代哪種製陶方式最接近「車製」？",
+        text: "很接近！那您猜猜，現代哪種製陶方式最接近「車製」？",
       },
       {
         type: "question",
@@ -1812,7 +1812,7 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
-        text: "沒錯！考考你，羅明先師的聖誕慶典是哪一天？",
+        text: "沒錯！考考您，羅明先師的聖誕慶典是哪一天？",
       },
       {
         type: "question",
@@ -1924,7 +1924,7 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
-        text: "沒錯！不過你知道眼前這座是什麼窯嗎？",
+        text: "沒錯！不過您知道眼前這座是什麼窯嗎？",
       },
       {
         type: "line",
@@ -2037,7 +2037,7 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
-        text: "最後再來看看你能不能答對！",
+        text: "最後再來看看您能不能答對！",
       },
       {
         type: "question",
