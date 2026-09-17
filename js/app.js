@@ -623,11 +623,23 @@ async function openItemDetail(merchantId, itemId) {
       ${photoCarouselHtml(photos, merchantId)}
       <div class="shop-card-name">${it.name}</div>
       <div class="shop-item-desc">${it.desc || ""}</div>
+      ${itemDetailNotesHtml(it)}
       <div class="shop-item-cost-big">🏅 ${it.cost} 枚</div>
       <button class="shop-buy-btn" ${can ? "" : "disabled"} onclick="buyItem('${escapeAttr(itemId)}', this)">${can ? "兌換，存入背包" : "獎章不足"}</button>
     </div>
   `);
   initShopCarousel(photos);
+}
+
+// 兌換品項除了基本說明外，還可能有：要先預約的表單連結、年齡別折抵不同的兌換說明、
+// 使用期限、限購一次/需帶證件之類的其他備註——四個欄位都是選填，有填才顯示對應那一行
+function itemDetailNotesHtml(it) {
+  const rows = [];
+  if (it.redeemNote) rows.push(`<div class="shop-item-note"><span class="shop-item-note-label">📋 兌換說明</span>${escapeHtmlText(it.redeemNote)}</div>`);
+  if (it.validPeriod) rows.push(`<div class="shop-item-note"><span class="shop-item-note-label">⏳ 使用期限</span>${escapeHtmlText(it.validPeriod)}</div>`);
+  if (it.otherNote) rows.push(`<div class="shop-item-note"><span class="shop-item-note-label">📌 其他備註</span>${escapeHtmlText(it.otherNote)}</div>`);
+  if (it.formUrl) rows.push(`<a class="shop-item-form-link" href="${escapeAttr(it.formUrl)}" target="_blank" rel="noopener">📝 前往預約表單</a>`);
+  return rows.length ? `<div class="shop-item-notes">${rows.join("")}</div>` : "";
 }
 
 // 商品照片輪播——只有一張圖時直接顯示（不用輪播的複雜度），兩張以上才會出現左右箭頭／圓點／可滑動
