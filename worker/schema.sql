@@ -4,6 +4,7 @@
 CREATE TABLE IF NOT EXISTS players (
   code TEXT PRIMARY KEY,          -- 遊戲序號（跟 Google Sheets 產生的序號一致）
   name TEXT NOT NULL DEFAULT '',
+  phone TEXT NOT NULL DEFAULT '', -- 給商家查看購買人資料用，從 Google 表單同步過來
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
   last_login TEXT
 );

@@ -234,7 +234,7 @@ async function handleRedeemItem(env, rawCode, invRow, staffPasscode) {
 }
 
 // Apps Script 表單產生序號後呼叫這個，把新序號同步進 D1，兩邊序號才會一致
-async function handleSyncCode(env, code, name, syncSecret) {
+async function handleSyncCode(env, code, name, phone, syncSecret) {
   if (syncSecret !== env.SYNC_SECRET) {
     return { ok: false, error: "sync secret 不符" };
   }
@@ -242,8 +242,8 @@ async function handleSyncCode(env, code, name, syncSecret) {
   if (!normalized) return { ok: false, error: "序號為空" };
 
   await env.DB.prepare(
-    "INSERT INTO players (code, name) VALUES (?, ?) ON CONFLICT(code) DO UPDATE SET name = excluded.name"
-  ).bind(normalized, name || "").run();
+    "INSERT INTO players (code, name, phone) VALUES (?, ?, ?) ON CONFLICT(code) DO UPDATE SET name = excluded.name, phone = excluded.phone"
+  ).bind(normalized, name || "", phone || "").run();
 
   return { ok: true };
 }
@@ -366,7 +366,7 @@ export default {
           return json(await handleRedeemItem(env, body.code, body.invRow, body.staffPasscode));
         }
         if (action === "syncCode") {
-          return json(await handleSyncCode(env, body.code, body.name, body.syncSecret));
+          return json(await handleSyncCode(env, body.code, body.name, body.phone, body.syncSecret));
         }
         return json({ ok: false, error: "未知的 action: " + action }, 404);
       }
