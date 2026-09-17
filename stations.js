@@ -6,18 +6,18 @@ const STATIONS = [
     questions: [
       {
         qtype: "選擇題",
-        question: "仔細觀察鶯歌火車站的鐵道，你能數出幾條軌道？",
-        options: ["6條", "8條", "10條", "12條"],
+        question: "數數看，鶯歌車站一共有幾條軌道？",
+        options: ["13條", "8條", "10條", "12條"],
       },
       {
         qtype: "選擇題",
-        question: "觀察車站最上方，兩個相望的動物造型是什麼？",
+        question: "觀察火車站最上方，兩個相望的動物造型是什麼？",
         options: ["魚", "貓", "狗", "鳥"],
       },
       {
         qtype: "選擇題",
-        question: "你知道當時鶯歌車站主要轉運哪一種礦產嗎？",
-        options: ["金礦", "鐵礦", "煤礦", "石灰石"],
+        question: "你知道當時鶯歌火車站主要轉運那一種礦產嗎？",
+        options: ["金礦", "陶土", "煤礦", "砂石"],
         fact: "",
       },
       {
@@ -31,7 +31,7 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
-        text: "小明，我們到鶯歌車站了！你以前來過嗎？",
+        text: "您好，我們到鶯歌火車站了！您以前來過嗎？",
       },
       {
         type: "line",
@@ -41,18 +41,18 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
-        text: "那正好，先跟我來，我帶你去看看",
+        text: "那正好，先跟我來，我帶您去看看",
       },
       {
         type: "notice",
-        text: "前往 ==建國路、文化路出口==\n【找到手扶梯旁的平台】\n⚠️請留意周遭環境，依照現場動線行走。",
+        text: "前往 ==建國路與文化路出口==\n【找到手扶梯旁的平台】\n⚠️請留意周遭環境，依照現場動線行走。",
         photo: "角色照片素材庫/站點一/鐵軌.jpg",
         caption: "圖片中為文化路出口的平台",
       },
       {
         type: "line",
         char: "guide",
-        text: "觀察到了嗎？往下看看，你發現了什麼？",
+        text: "觀察到了嗎？往下看看，您發現了什麼？",
         background: "角色照片素材庫/站點一/鐵軌.jpg",
       },
       {
@@ -60,7 +60,7 @@ const STATIONS = [
         qIndex: 0,
         char: "guide",
         text: "數數看，鶯歌車站一共有幾條軌道？",
-        correctReaction: "沒錯！以前的鶯歌車站，跟現在很不一樣",
+        correctReaction: "沒錯！以前的鶯歌火車站，跟現在很不一樣",
         wrongHints: [
           "再靠近一點看，別漏數了最外側那一條……",
           "試著用手指一條一條數過去，仔細一點",
@@ -73,41 +73,41 @@ const STATIONS = [
       },
       {
         type: "story",
-        text: "以前住在車站附近，吃飯時常會碰上煤灰\n風一吹，煤灰就飄進附近住家，有時飯還沒吃完，連湯上都浮著一層煤灰",
+        text: "以前住在車站附近，吃飯時常會碰上煤灰。風一吹，煤灰就飄進附近住家，有時飯還沒吃完，連湯表面都浮著一層煤灰",
         photo: "角色照片素材庫/站點一/舊照片.jpg",
       },
       {
         type: "line",
         char: "guide",
-        text: "那時候鐵路不只是載人，也跟附近的礦業有很大的關係",
+        text: "那時候鐵路不只是載人，也跟附近的煤礦產業有很大的關係",
       },
       {
         type: "question",
         qIndex: 2,
         char: "guide",
-        text: "你知道當時鶯歌車站主要轉運哪一種礦產嗎？",
+        text: "你知道當時鶯歌火車站主要轉運那一種礦產嗎？",
         correctReaction: "沒錯，就是煤礦！",
         wrongHints: ["再想想，剛才提到的「煤灰」就是線索喔！"],
       },
       {
         type: "line",
         char: "guide",
-        text: "以前三峽、大溪採出的煤，會送到鶯歌車站，再運往全台。",
+        text: "以前三峽、龜山採出的煤礦，都會送到鶯歌車站再轉運至全台各地。",
       },
       {
         type: "line",
         char: "guide",
-        text: "當時鶯歌貨運繁盛，貨運量一度高居全台第二！",
+        text: "當時鶯歌貨運繁盛，貨運量一度高居全台第二名！",
       },
       {
         type: "line",
         char: "hero",
-        text: "沒想到以前的鶯歌車站這麼熱鬧！",
+        text: "沒想到以前的鶯歌火車站這麼熱鬧！",
       },
       {
         type: "line",
         char: "guide",
-        text: "走吧！我們到前站看看",
+        text: "走吧！我們到站外走走看看",
       },
       {
         type: "notice",
@@ -116,13 +116,13 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
-        text: "剛才看了鐵軌，接著來看看車站本身吧！",
+        text: "剛才看了鐵軌，接著來看看火車站本身吧！",
         background: "角色照片素材庫/站點一/台鐵鶯歌火車站.jpg",
       },
       {
         type: "line",
         char: "hero",
-        text: "車站？有什麼特別的嗎？",
+        text: "火車站？有什麼特別的嗎？",
       },
       {
         type: "line",
@@ -133,7 +133,7 @@ const STATIONS = [
         type: "question",
         qIndex: 1,
         char: "guide",
-        text: "觀察車站最上方，兩個相望的動物造型是什麼？",
+        text: "觀察火車站最上方，兩個相望的動物造型是什麼？",
         correctReaction: "沒錯，就是那兩隻鳥",
         wrongHints: ["再看清楚一點，牠們有翅膀會飛..."],
       },
@@ -146,7 +146,7 @@ const STATIONS = [
       {
         type: "line",
         char: "guide",
-        text: "看來你已經發現車站的特色了！再來考考你。",
+        text: "看來你已經發現火車站的特色了！再來考考你。",
       },
       {
         type: "line",
