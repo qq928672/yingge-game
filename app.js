@@ -1211,8 +1211,8 @@ let rpgState = null;
 
 // 玩家在關卡對話中途，如果畫面被切掉、滑掉，甚至手機瀏覽器直接把分頁殺掉重載，
 // 原本 rpgState 只存在記憶體裡，重新整理就會歸零，逼玩家從頭把整站劇情、題目再走一次。
-// 這裡把「目前站點、講到第幾句、答對了哪幾題」存進 localStorage，開站時如果發現是
-// 同一個站點就直接接回中斷點，而不是每次都從頭開始。
+// 這裡把「目前站點、講到第幾句、答對了哪幾題」存進 localStorage，重新打開同一站時
+// 跳出選擇彈窗，讓玩家自己決定要接回中斷點，還是乾脆從頭開始。
 const RPG_PROGRESS_KEY = "yingge_rpg_progress";
 function saveRpgProgress() {
   if (!rpgState) return;
@@ -1241,13 +1241,23 @@ function loadRpgProgress(stationId) {
 function openStationRPG(st) {
   currentStationId = st.id;
   const saved = loadRpgProgress(st.id);
-  const resume = saved && saved.idx > 0 && saved.idx < st.dialogue.length;
+  const canResume = saved && saved.idx > 0 && saved.idx < st.dialogue.length;
+  if (canResume) {
+    const wantsResume = confirm("偵測到您在這一站還有尚未走完的進度，要接續上次中斷的地方嗎？\n（選「取消」則從頭開始）");
+    if (!wantsResume) clearRpgProgress();
+    startRpgState(st, wantsResume ? saved : null);
+    return;
+  }
+  startRpgState(st, null);
+}
+
+function startRpgState(st, saved) {
   rpgState = {
     st,
-    idx: resume ? saved.idx : 0,
+    idx: saved ? saved.idx : 0,
     typing: false, typeTimer: null,
-    resultsByQ: resume ? saved.resultsByQ : {},
-    wrongCount: resume ? saved.wrongCount || 0 : 0,
+    resultsByQ: saved ? saved.resultsByQ : {},
+    wrongCount: saved ? saved.wrongCount || 0 : 0,
     advanceAfterReaction: false, showingReaction: false,
   };
   showScreen("screen-rpg");
