@@ -3,15 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>鶯歌壯遊實境解謎</title>
+<title>鶯歌壯遊實境解謎（試玩版）</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Cinzel:wght@600;700&family=Noto+Serif+TC:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <link rel="stylesheet" href="styles.css">
+<style>
+  /* 試玩版限定：把站點一、二的圖標亮出來，一眼就看得出這兩個可以玩 */
+  .map-pin-wrap.demo-highlight .map-pin-ring { display: block; animation: mapPinRing 1.4s ease-out infinite; background: rgba(255,207,63,0.5); }
+  .map-pin-wrap.demo-highlight .map-pin { background: var(--yellow-dark); animation: mapPinBob 1.4s ease-in-out infinite; }
+  .demo-reset-link { color: var(--accent-dark); font-weight: 700; text-decoration: underline; cursor: pointer; }
+  /* 試玩版限定：GPS 到站驗證畫面加一句明顯的提示，告訴評審可以用測試工具模擬抵達 */
+  .demo-arrive-hint {
+    margin: 16px 0 6px; font-size: 13.5px; font-weight: 800; color: var(--accent-dark);
+    text-align: center; line-height: 1.5;
+  }
+  .arrive-debug-toggle.demo-arrive-toggle {
+    opacity: 1; font-weight: 800; font-size: 13px; color: var(--purple-dark);
+    text-decoration: underline; margin-top: 4px;
+  }
+</style>
 </head>
 <body>
 
-<!-- LOGIN SCREEN -->
+<!-- LOGIN SCREEN（試玩版：不用真的登入，按鈕直接開始體驗） -->
 <div id="screen-login" class="screen active">
   <div class="login-wrap">
     <div class="wrap">
@@ -19,19 +34,15 @@
         <div class="guide-portrait">
           <img src="角色照片素材庫/角色/楊嚮導.png" alt="楊嚮導">
         </div>
-        <div class="guide-bubble">歡迎來到鶯歌，請出示通關密令。</div>
+        <div class="guide-bubble">歡迎來到鶯歌，這是試玩版體驗！</div>
       </div>
       <div class="login-card" id="login-card">
-        <div class="dossier-kicker">任 務 委 託 書</div>
+        <div class="dossier-kicker">試 玩 版</div>
         <h2>鶯歌壯遊實境解謎</h2>
-        <p class="desc">你收到一份<strong>祕密委託</strong></p>
-        <label class="field-label" for="code-input">通關密令</label>
-        <input type="text" id="code-input" placeholder="直接輸入英文和數字組合" maxlength="20" autocomplete="off">
-        <button id="login-btn" onclick="handleLogin()">開始任務</button>
+        <p class="desc">正式版需要<strong>信箱與序號</strong>登入</p>
+        <p class="desc" style="margin-top:-18px;">試玩版直接按下方按鈕即可開始體驗</p>
+        <button id="login-btn" onclick="startDemo()">開始遊戲</button>
         <div class="error-msg" id="login-error"></div>
-      </div>
-      <div class="login-card" id="login-restoring" style="display:none;">
-        <p class="desc" style="margin:0;">登入中...</p>
       </div>
       <div class="login-links">
         <div class="stores-entry-link" onclick="openStores()">查看合作店家與兌換資訊</div>
@@ -89,12 +100,30 @@
   </div>
 </div>
 
+<!-- 試玩版限定：取代瀏覽器內建 alert/confirm 的風格化彈窗 -->
+<div class="overlay" id="demoNoticeOverlay">
+  <div class="modal">
+    <div class="emoji">🎫</div>
+    <h3 id="demoNoticeTitle"></h3>
+    <p id="demoNoticeText" style="white-space:pre-line;"></p>
+    <button onclick="closeDemoNotice()">我知道了</button>
+  </div>
+</div>
+<div class="overlay" id="demoConfirmOverlay">
+  <div class="modal">
+    <div class="emoji">🔄</div>
+    <h3>重置進度？</h3>
+    <p>這個功能只在試玩版才有：會把劇情進度、獎章、背包全部歸零，方便重新從頭體驗站點一、二的故事。</p>
+    <button onclick="confirmResetProgress()">重置進度</button>
+    <button class="secondary" style="margin-top:10px;" onclick="closeDemoConfirm()">取消</button>
+  </div>
+</div>
+
 <script>
-  // avoid a flash of the empty login form while we auto-restore a saved session below
-  if (localStorage.getItem("yingge_last_code")) {
-    document.getElementById("login-card").style.display = "none";
-    document.getElementById("login-restoring").style.display = "block";
-  }
+  // 試玩版不走真的登入流程，先把本機瀏覽器裡可能殘留的正式版登入紀錄清掉，
+  // 避免 app.js 最下面那段「自動用上次序號重新登入」的邏輯偷偷跑去打正式後端
+  localStorage.removeItem("yingge_last_code");
+  localStorage.removeItem("yingge_pending_arrival");
   function openAbout() { document.getElementById("about-overlay").classList.add("active"); }
   function closeAbout() { document.getElementById("about-overlay").classList.remove("active"); }
 </script>
@@ -125,9 +154,6 @@
           </div>
           <div class="dist" id="nearestDist">—</div>
         </div>
-        <button type="button" class="locate-me-btn" id="locateMeBtn" style="display:none;" onclick="retryLocateForMap()">
-          📍 開啟定位，看看哪個站點離你最近
-        </button>
         <div id="stationMap"></div>
         <button type="button" class="map-recenter-btn" id="mapRecenterBtn" onclick="recenterStationMap()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -217,7 +243,8 @@
 
       <button class="start-btn" id="arrive-start-btn" onclick="confirmArrivalAndStart()" disabled>抵達後即可開始關卡</button>
 
-      <div class="arrive-debug-toggle" id="arrive-debug-toggle" onclick="toggleArriveDebug()">🧪 測試工具</div>
+      <p class="demo-arrive-hint">💡 試玩版提示：點選下方「測試工具」可模擬抵達現場，不用真的跑一趟</p>
+      <div class="arrive-debug-toggle demo-arrive-toggle" id="arrive-debug-toggle" onclick="toggleArriveDebug()">🧪 測試工具</div>
       <div class="arrive-debug" id="arrive-debug" style="display:none;">
         <div class="arrive-debug-title">測試用模擬定位（正式上線前記得移除這個區塊）</div>
         <div class="arrive-debug-row">
@@ -292,7 +319,6 @@
         </div>
         <div class="img-loading-hint" id="rpg-notice-loading" style="display:none;">圖片載入中…</div>
         <img class="rpg-notice-img" id="rpg-notice-img" alt="" style="display:none;">
-        <div class="rpg-notice-cap" id="rpg-notice-cap"></div>
         <div class="rpg-notice-hint">點一下畫面繼續 <span class="rpg-notice-hint-arrow">›</span></div>
       </div>
     </div>
@@ -345,7 +371,8 @@
     <span style="width:20px"></span>
   </div>
   <div class="content">
-    <p style="color:var(--sub);font-size:13px;margin:0 0 16px;">鶯歌壯遊合作店家一覽</p>
+    <p style="color:var(--sub);font-size:13px;margin:0 0 4px;">鶯歌壯遊合作店家一覽</p>
+    <p style="color:var(--accent-dark);font-size:12px;font-weight:700;margin:0 0 16px;">⚠️ 目前顯示為示範資料</p>
     <div id="stores-list"></div>
   </div>
 </div>
@@ -424,5 +451,204 @@
 <script src="js/app.js"></script>
 <script src="js/rpg.js"></script>
 <script src="js/main.js"></script>
+<script>
+  // ---------- 試玩版限定：不用登入，只有站點一、二可以完整體驗 ----------
+  // 給評審用的試玩版：跳過登入、直接進地圖，只有站點一、二有完整劇情，
+  // 其他站點點下去顯示提示文字。答題/兌換都在瀏覽器本機模擬，不會真的打正式後端。
+  const DEMO_PLAYABLE_IDS = new Set([1, 2]);
+
+  // 試玩版專用的簡化答案索引，只為了讓「答錯會顯示提示」這個真實遊戲機制在試玩版也能體驗到，
+  // 跟正式版後端 ANSWER_KEY 的真實正確答案無關（那組資料不會、也不能放進任何公開檔案）。
+  // 大部分是直接從劇情對白裡明確講出來的答案反推的，只有站點一第 1 題（軌道數量）劇情裡沒明講，
+  // 先暫定「8條」，之後可以再調整。
+  const DEMO_ANSWERS = {
+    "1-0": "10條",          // 站點一 Q1：軌道數量
+    "1-1": "鳥",             // 車站頂端動物造型
+    "1-2": "煤礦",           // 早期轉運礦產
+    "1-3": "鶯歌石驛",        // 車站最早站名
+    "2-0": "許自然",         // 市拿陶藝創辦人
+    "2-1": "與英文China有關", // 「市拿」名字意涵
+    "2-2": "仿古藝術陶瓷",    // 早期最有名的陶瓷類別
+    "2-3": "天然氣",         // 窯業改用的能源
+  };
+
+  const realApiPost = apiPost;
+  window.apiPost = async function (body) {
+    if (body.action === "submitAnswer") {
+      const key = body.stationId + "-" + body.qIndex;
+      const correct = key in DEMO_ANSWERS ? body.answer === DEMO_ANSWERS[key] : true;
+      return { ok: true, correct };
+    }
+    if (body.action === "complete") {
+      // 已經拿過這站的獎章就不會再加一次，重玩同一站不會重複累加
+      const progress = { ...state.progress, [body.stationId]: true };
+      const completed = Object.keys(progress).length;
+      const spent = state.inventory.reduce((sum, it) => sum + it.cost, 0);
+      return { ok: true, name: state.name, progress, balance: completed - spent, inventory: state.inventory };
+    }
+    if (body.action === "purchase") {
+      const catalog = await getRewardsCatalog();
+      let item = null, merchant = null;
+      for (const m of catalog) {
+        const it = (m.items || []).find(x => x.id === body.itemId);
+        if (it) { item = it; merchant = m; break; }
+      }
+      if (!item) return { ok: false, error: "查無此商品" };
+      if (state.balance < item.cost) return { ok: false, error: "獎章不足，無法兌換" };
+      const inventory = [...state.inventory, {
+        row: state.inventory.length + 1, itemId: item.id, merchant: merchant.name || "",
+        name: item.name, cost: item.cost, boughtAt: new Date().toISOString(), used: false, usedAt: "",
+      }];
+      return { ok: true, balance: state.balance - item.cost, inventory };
+    }
+    if (body.action === "redeemItem") {
+      return { ok: false, error: "試玩版不提供店家核銷功能，正式版才有" };
+    }
+    return realApiPost(body);
+  };
+
+  // 商城的兌換品項目錄還是抓正式版的真實資料，但售價在試玩版裡先降到 1～2 枚，
+  // 讓評審用重玩站點一、二拿到的一點點獎章，就能實際試玩「兌換」這個動作
+  const realGetRewardsCatalog = getRewardsCatalog;
+  window.getRewardsCatalog = async function () {
+    const catalog = await realGetRewardsCatalog();
+    return catalog.map(m => ({
+      ...m,
+      items: (m.items || []).map(it => ({ ...it, cost: it.cost <= 3 ? 1 : 2 })),
+    }));
+  };
+
+  // 登入頁的「查看合作店家與兌換資訊」試玩版裡改抓獎章商城（交換所）的商家資料，
+  // 而不是另一份獨立的 stores 名單——評審應該看到的是遊戲裡實際會用到的那份商家範例
+  window.renderStores = async function () {
+    const list = document.getElementById("stores-list");
+    list.innerHTML = `<div class="stores-empty">載入中...</div>`;
+    // 河濱單車租借站在試玩版的合作店家清單裡先拿掉（正式版的獎章商城不受影響，還是看得到）
+    const catalog = (await getRewardsCatalog()).filter(m => m.id !== "riverside-bike");
+    if (!catalog.length) {
+      list.innerHTML = `<div class="stores-empty">目前還沒有可兌換的好禮，請稍後再來看看</div>`;
+      return;
+    }
+    list.innerHTML = catalog.map(m => `
+      <div class="store-card">
+        ${m.photo ? `<div class="store-photo" style="background-image:url('${encodeURI(m.photo)}')"></div>` : ""}
+        <div class="store-body">
+          <div class="store-name">${m.name}</div>
+          ${m.tagline ? `<div class="store-offer">🎁 ${m.tagline}</div>` : ""}
+          ${(m.items || []).map(it => `<div class="store-row">🏅 ${it.name}</div>`).join("")}
+        </div>
+      </div>
+    `).join("");
+  };
+
+  // 用符合遊戲風格的彈窗取代瀏覽器內建的 alert/confirm
+  function showDemoNotice(title, text) {
+    document.getElementById("demoNoticeTitle").textContent = title;
+    document.getElementById("demoNoticeText").textContent = text;
+    document.getElementById("demoNoticeOverlay").classList.add("active");
+  }
+  function closeDemoNotice() { document.getElementById("demoNoticeOverlay").classList.remove("active"); }
+  function closeDemoConfirm() { document.getElementById("demoConfirmOverlay").classList.remove("active"); }
+
+  window.openStation = function (id) {
+    if (!DEMO_PLAYABLE_IDS.has(id)) {
+      showDemoNotice("正式版已完成", "此關卡內容在正式版中已完整呈現，這份試玩版僅開放站點一、二供體驗，其餘站點請至正式版遊玩。");
+      return;
+    }
+    currentStationId = id;
+    const st = STATIONS.find(s => s.id === id);
+    const done = !!state.progress[id];
+    // 第一次玩、且這站有設定 GPS 座標的話，跟正式版一樣先走「抵達驗證」畫面，
+    // 讓評審也能體驗到 GPS 定位這個機制（可以用畫面下方收合的「測試工具」模擬在現場，不用真的跑一趟）；
+    // 重玩已經過關的站點就不用再驗證一次，直接重新進入劇情
+    if (st.location && !done) {
+      openArrivalGate(st);
+      return;
+    }
+    openStationRPG(st);
+  };
+
+  // 已完成的站點一、二，地圖上的「開始關卡」按鈕原本會變成「已完成關卡」且點了只會跳提示、
+  // 不能再進去——試玩版要能重玩，這裡把按鈕行為換回可以再點一次
+  const realOpenMapSheet = openMapSheet;
+  window.openMapSheet = function (st, done) {
+    realOpenMapSheet(st, done);
+    if (DEMO_PLAYABLE_IDS.has(st.id)) {
+      const goBtn = document.getElementById("mapSheetGo");
+      goBtn.textContent = done ? "🔁 重新遊玩" : "開始關卡";
+      goBtn.onclick = () => { closeMapSheet(); openStation(st.id); };
+    }
+  };
+
+  // 地圖上把站點一、二的圖標亮出來（尚未完成時），讓玩家一眼就知道這兩個可以玩
+  const realMapPinIcon = mapPinIcon;
+  window.mapPinIcon = function (st, done, isNearest) {
+    if (DEMO_PLAYABLE_IDS.has(st.id) && !done) {
+      const html = `<div class="map-pin-wrap demo-highlight">
+        <div class="map-pin-ring"></div>
+        <div class="map-pin">${st.id}</div>
+        <div class="map-pin-tail"></div>
+      </div>`;
+      return L.divIcon({ className: "", html, iconSize: [38, 48], iconAnchor: [19, 46] });
+    }
+    return realMapPinIcon(st, done, isNearest);
+  };
+
+  // 地圖頂部補一行指引文字，說明這份試玩版可以玩哪些站點，再加一個重置進度的連結
+  const realRenderMap = renderMap;
+  window.renderMap = function () {
+    realRenderMap();
+    document.getElementById("reward-hint").innerHTML =
+      "🟡 試玩版開放站點一、二完整體驗，其餘站點請至正式版遊玩<br>" +
+      '<span class="demo-reset-link" onclick="resetDemoProgress()">🔄 重置進度</span>';
+  };
+
+  window.resetIdleTimer = function () {}; // 試玩版不強制登出
+
+  // 登出跟正式版一樣，回到登入頁面，並把這輪體驗的狀態整個清掉重新開始
+  window.logout = function () {
+    state.code = null;
+    state.name = "";
+    state.progress = {};
+    state.balance = 0;
+    state.inventory = [];
+    showScreen("screen-login");
+  };
+
+  // 「重置進度」只在試玩版才有：把劇情進度、獎章、背包都歸零，方便重新體驗站點一、二的故事，
+  // 跟登出的差別只在於重置完還是留在地圖上，不用跳回登入頁
+  function resetDemoProgress() {
+    document.getElementById("demoConfirmOverlay").classList.add("active");
+  }
+  function confirmResetProgress() {
+    state.progress = {};
+    state.balance = 0;
+    state.inventory = [];
+    document.getElementById("demoConfirmOverlay").classList.remove("active");
+    showMap();
+  }
+
+  // 也順手修正：重玩已完成過的站點時，原本「已經拿過獎章」會被判定成不用再跑完成流程，
+  // 導致劇情結束後卡住回不了地圖——這裡確保無論有沒有拿過獎章，玩完都會回到地圖
+  window.markStationComplete = async function (st) {
+    const alreadyDone = !!state.progress[st.id];
+    if (!alreadyDone) {
+      const res = await apiPost({ action: "complete", code: state.code, stationId: st.id });
+      if (res.ok) loadPlayerIntoState(res);
+    }
+    setTimeout(() => afterStationComplete(), 500);
+    return true;
+  };
+
+  // 按下登入頁的「開始遊戲」才真正進入試玩版，不用等頁面一載入就跳過登入畫面
+  function startDemo() {
+    state.code = "DEMO-JUDGE";
+    state.name = "評審體驗";
+    state.progress = {};
+    state.balance = 0; // 初始獎章歸零，靠重玩站點一、二實際拿獎章
+    state.inventory = [];
+    showMap();
+  }
+</script>
 </body>
 </html>

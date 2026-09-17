@@ -641,8 +641,16 @@ function finishRpgStation() {
 }
 
 function exitRpgToMap() {
+  if (!rpgState) { goToMap(); return; }
+  document.getElementById("exit-rpg-overlay").classList.add("active");
+}
+
+function confirmExitRpg(leave) {
+  document.getElementById("exit-rpg-overlay").classList.remove("active");
+  if (!leave) return;
   if (rpgState) clearInterval(rpgState.typeTimer);
   rpgState = null;
+  clearRpgProgress();
   goToMap();
 }
 
