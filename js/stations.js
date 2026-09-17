@@ -1225,8 +1225,8 @@ const STATIONS = [
     },
     address: "文化路、現順億窯業一帶",
     location: {
-      lat: 24.95355320078445,
-      lng: 121.35488296931761,
+      lat: 24.9532920,
+      lng: 121.3550210,
       radius: 25,
     },
     background: "角色照片素材庫/站點六/益成記.jpg",
