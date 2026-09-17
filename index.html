@@ -386,6 +386,17 @@
   <div id="shop-overlay-card"></div>
 </div>
 
+<!-- RESUME PROGRESS OVERLAY (shown when reopening a station with unfinished RPG dialogue) -->
+<div class="overlay" id="resume-overlay">
+  <div class="modal resume-modal">
+    <div class="emoji">📍</div>
+    <h3>發現尚未完成的進度</h3>
+    <p>偵測到你在這一站還有尚未走完的劇情，要接續上次中斷的地方嗎？</p>
+    <button onclick="resumeRpgChoice(true)">接續進度</button>
+    <button class="secondary" onclick="resumeRpgChoice(false)">從頭開始</button>
+  </div>
+</div>
+
 <!-- FINALE OVERLAY (shown once when all stations are completed) -->
 <div class="overlay" id="finale-overlay" onclick="if(event.target===this) closeFinaleOverlay()">
   <div class="modal finale-modal">

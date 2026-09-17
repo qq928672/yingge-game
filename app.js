@@ -1238,17 +1238,26 @@ function loadRpgProgress(stationId) {
   return null;
 }
 
+let resumePromptCtx = null;
 function openStationRPG(st) {
   currentStationId = st.id;
   const saved = loadRpgProgress(st.id);
   const canResume = saved && saved.idx > 0 && saved.idx < st.dialogue.length;
   if (canResume) {
-    const wantsResume = confirm("偵測到您在這一站還有尚未走完的進度，要接續上次中斷的地方嗎？\n（選「取消」則從頭開始）");
-    if (!wantsResume) clearRpgProgress();
-    startRpgState(st, wantsResume ? saved : null);
+    resumePromptCtx = { st, saved };
+    document.getElementById("resume-overlay").classList.add("active");
     return;
   }
   startRpgState(st, null);
+}
+
+function resumeRpgChoice(wantsResume) {
+  const ctx = resumePromptCtx;
+  resumePromptCtx = null;
+  document.getElementById("resume-overlay").classList.remove("active");
+  if (!ctx) return;
+  if (!wantsResume) clearRpgProgress();
+  startRpgState(ctx.st, wantsResume ? ctx.saved : null);
 }
 
 function startRpgState(st, saved) {
