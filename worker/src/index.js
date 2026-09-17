@@ -18,6 +18,10 @@ const RATE_LIMIT_MAX_ATTEMPTS = 15;
 // 商城目錄（Merchants/RewardItems）還在 Google Sheets，purchase 時要回頭查這裡拿權威價格
 const GAS_URL = "https://script.google.com/macros/s/AKfycbytcB8w4wDFOK32d8g4FrcEiK3TQNDj0Ob8aFPINFo5t7c_jqMDfzBgnVcyailEjpPMeg/exec";
 
+// Google 帳號登入用——要跟前端 js/app.js 裡的 GOOGLE_CLIENT_ID 是同一組，
+// 從 Google Cloud Console 申請 OAuth 用戶端 ID 後填進來（這組本身不是密鑰，前端本來就會公開帶著它，不用當 secret）
+const GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
+
 function json(obj, status = 200) {
   return new Response(JSON.stringify(obj), {
     status,
@@ -36,6 +40,10 @@ function normalizeCode(c) {
 
 function normalizeAnswer(s) {
   return (s || "").toString().trim().replace(/\s+/g, "").toUpperCase();
+}
+
+function normalizeEmail(e) {
+  return (e || "").toString().trim().toLowerCase();
 }
 
 function getAnswerKey(env) {
@@ -100,6 +108,16 @@ async function getBalance(env, code) {
 
 // ---------- action handlers ----------
 
+async function buildLoginResponse(env, code, name) {
+  await env.DB.prepare("UPDATE players SET last_login = datetime('now') WHERE code = ?").bind(code).run();
+  return {
+    ok: true, code, name,
+    progress: await getProgressForCode(env, code),
+    balance: await getBalance(env, code),
+    inventory: await getInventoryForCode(env, code),
+  };
+}
+
 async function handleLogin(env, rawCode) {
   const code = normalizeCode(rawCode);
   if (!code) return { ok: false, error: "序號為空" };
@@ -107,14 +125,34 @@ async function handleLogin(env, rawCode) {
   const player = await env.DB.prepare("SELECT code, name FROM players WHERE code = ?").bind(code).first();
   if (!player) return { ok: false, error: "查無此序號，請確認報名信件內容" };
 
-  await env.DB.prepare("UPDATE players SET last_login = datetime('now') WHERE code = ?").bind(code).run();
+  return buildLoginResponse(env, code, player.name);
+}
 
-  return {
-    ok: true, code, name: player.name,
-    progress: await getProgressForCode(env, code),
-    balance: await getBalance(env, code),
-    inventory: await getInventoryForCode(env, code),
-  };
+// 用 Google 帳號登入：前端把 Google 回傳的 ID Token 交上來，這裡驗證是不是真的 Google 簽發、
+// 拿裡面已驗證過的 email，去比對報名名單（players.email，從 GAS 那邊同步過來的）
+async function handleGoogleLogin(env, idToken) {
+  if (!idToken) return { ok: false, error: "缺少登入憑證" };
+
+  let payload;
+  try {
+    const res = await fetch("https://oauth2.googleapis.com/tokeninfo?id_token=" + encodeURIComponent(idToken));
+    if (!res.ok) return { ok: false, error: "Google 登入憑證驗證失敗" };
+    payload = await res.json();
+  } catch (e) {
+    return { ok: false, error: "無法連線至 Google 驗證登入憑證" };
+  }
+
+  if (payload.aud !== GOOGLE_CLIENT_ID) return { ok: false, error: "登入憑證不符，請重新整理頁面再試一次" };
+  if (payload.email_verified !== "true" && payload.email_verified !== true) {
+    return { ok: false, error: "這個 Google 帳號的信箱尚未驗證" };
+  }
+  const email = normalizeEmail(payload.email);
+  if (!email) return { ok: false, error: "無法取得 Google 帳號信箱" };
+
+  const player = await env.DB.prepare("SELECT code, name FROM players WHERE email = ?").bind(email).first();
+  if (!player) return { ok: false, error: "查無這個信箱的報名資料，請確認是否已完成報名表單" };
+
+  return buildLoginResponse(env, player.code, player.name);
 }
 
 async function handleSubmitAnswer(env, rawCode, stationId, qIndex, rawAnswer) {
@@ -234,7 +272,7 @@ async function handleRedeemItem(env, rawCode, invRow, staffPasscode) {
 }
 
 // Apps Script 表單產生序號後呼叫這個，把新序號同步進 D1，兩邊序號才會一致
-async function handleSyncCode(env, code, name, phone, syncSecret) {
+async function handleSyncCode(env, code, name, phone, email, syncSecret) {
   if (syncSecret !== env.SYNC_SECRET) {
     return { ok: false, error: "sync secret 不符" };
   }
@@ -242,8 +280,8 @@ async function handleSyncCode(env, code, name, phone, syncSecret) {
   if (!normalized) return { ok: false, error: "序號為空" };
 
   await env.DB.prepare(
-    "INSERT INTO players (code, name, phone) VALUES (?, ?, ?) ON CONFLICT(code) DO UPDATE SET name = excluded.name, phone = excluded.phone"
-  ).bind(normalized, name || "", phone || "").run();
+    "INSERT INTO players (code, name, phone, email) VALUES (?, ?, ?, ?) ON CONFLICT(code) DO UPDATE SET name = excluded.name, phone = excluded.phone, email = excluded.email"
+  ).bind(normalized, name || "", phone || "", normalizeEmail(email)).run();
 
   return { ok: true };
 }
@@ -366,7 +404,10 @@ export default {
           return json(await handleRedeemItem(env, body.code, body.invRow, body.staffPasscode));
         }
         if (action === "syncCode") {
-          return json(await handleSyncCode(env, body.code, body.name, body.phone, body.syncSecret));
+          return json(await handleSyncCode(env, body.code, body.name, body.phone, body.email, body.syncSecret));
+        }
+        if (action === "googleLogin") {
+          return json(await handleGoogleLogin(env, body.idToken));
         }
         return json({ ok: false, error: "未知的 action: " + action }, 404);
       }

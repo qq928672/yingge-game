@@ -8,6 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Cinzel:wght@600;700&family=Noto+Serif+TC:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <link rel="stylesheet" href="styles.css">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
@@ -24,7 +25,9 @@
       <div class="login-card" id="login-card">
         <div class="dossier-kicker">任 務 委 託 書</div>
         <h2>鶯歌壯遊實境解謎</h2>
-        <p class="desc">你收到一份<strong>祕密委託</strong></p>
+        <p class="desc">您收到一份<strong>神祕委託</strong></p>
+        <div id="google-signin-btn" class="google-signin-wrap"></div>
+        <div class="login-divider"><span>或</span></div>
         <label class="field-label" for="code-input">通關密令</label>
         <input type="text" id="code-input" placeholder="直接輸入英文和數字組合" maxlength="20" autocomplete="off">
         <button id="login-btn" onclick="handleLogin()">開始任務</button>

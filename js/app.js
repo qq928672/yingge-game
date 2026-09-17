@@ -8,7 +8,11 @@ const IS_LOCAL_DEV = ["localhost", "127.0.0.1"].includes(location.hostname);
 // 改走 Cloudflare Workers + D1（並發撐得比 GAS 高很多），靠 action 名稱分流。
 const API_URL = "https://script.google.com/macros/s/AKfycbytcB8w4wDFOK32d8g4FrcEiK3TQNDj0Ob8aFPINFo5t7c_jqMDfzBgnVcyailEjpPMeg/exec";
 const WORKER_API_URL = "https://yingge-game-api.ntcecea.workers.dev";
-const WORKER_ACTIONS = new Set(["login", "state", "submitAnswer", "complete", "purchase", "redeemItem"]);
+const WORKER_ACTIONS = new Set(["login", "state", "submitAnswer", "complete", "purchase", "redeemItem", "googleLogin"]);
+
+// Google 帳號登入用——要跟 worker/src/index.js 裡的 GOOGLE_CLIENT_ID 是同一組，
+// 從 Google Cloud Console 申請 OAuth 用戶端 ID 後填進來
+const GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
 
 // 地圖圖磚：透過 Worker 的 /tile 路由轉發（OSM 官方的 tile.openstreetmap.org 只供輕量測試，正式流量
 // 會被擋，之前上線後地圖直接被 OSM 回 403 就是這個原因）。實際的 Thunderforest API Key 藏在 Worker
@@ -119,6 +123,42 @@ function speak(text) {
     return;
   }
   speakNow(text);
+}
+
+// 用 Google 帳號登入：表單本來就設定「自動收集信箱」，代表報名時填表人已經是登入 Google 帳號的狀態，
+// 所以直接讓玩家用 Google 帳號登入、拿已驗證過的信箱去比對報名名單，就不用再另外產生序號、寄信通知，
+// 序號查登入還是保留在下面當備用方式（例如玩家换了 Google 帳號、或現場沒帶信箱那組帳號登入等情況）
+function initGoogleSignIn() {
+  const btnEl = document.getElementById("google-signin-btn");
+  if (!btnEl) return; // 這個畫面沒有 Google 登入按鈕（例如 demo 版有自己的登入方式），不用做任何事
+  if (typeof google === "undefined" || !google.accounts) {
+    setTimeout(initGoogleSignIn, 300); // GIS 的 script 是 async 載入，晚一點才會有 window.google，稍後重試
+    return;
+  }
+  google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleGoogleCredential });
+  google.accounts.id.renderButton(btnEl, {
+    theme: "outline", size: "large", width: 280, text: "signin_with", shape: "pill",
+  });
+}
+
+async function handleGoogleCredential(response) {
+  const errEl = document.getElementById("login-error");
+  errEl.textContent = "登入中...";
+  try {
+    const res = await apiPost({ action: "googleLogin", idToken: response.credential });
+    if (!res.ok) {
+      errEl.textContent = res.error || "登入失敗，請確認是否已完成報名表單";
+      return;
+    }
+    errEl.textContent = "";
+    state.code = res.code;
+    loadPlayerIntoState(res);
+    localStorage.setItem("yingge_last_code", res.code);
+    resetIdleTimer();
+    showMap();
+  } catch (e) {
+    errEl.textContent = "連線失敗，請檢查網路後再試一次";
+  }
 }
 
 async function handleLogin() {

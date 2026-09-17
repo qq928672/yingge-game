@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS players (
   code TEXT PRIMARY KEY,          -- 遊戲序號（跟 Google Sheets 產生的序號一致）
   name TEXT NOT NULL DEFAULT '',
   phone TEXT NOT NULL DEFAULT '', -- 給商家查看購買人資料用，從 Google 表單同步過來
+  email TEXT NOT NULL DEFAULT '', -- 用 Google 帳號登入時比對用（表單「自動收集信箱」寫入的那組）
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
   last_login TEXT
 );
@@ -46,3 +47,4 @@ CREATE TABLE IF NOT EXISTS rate_limits (
 CREATE INDEX IF NOT EXISTS idx_progress_code ON progress(code);
 CREATE INDEX IF NOT EXISTS idx_answers_code_station ON answers(code, station_id);
 CREATE INDEX IF NOT EXISTS idx_inventory_code ON inventory(code);
+CREATE INDEX IF NOT EXISTS idx_players_email ON players(email);

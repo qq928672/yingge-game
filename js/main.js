@@ -1,6 +1,7 @@
 // stay logged in across page refreshes (until the 15-minute idle timeout above):
 // auto re-login with the last used code as soon as the script runs, without waiting for full page load
 (async () => {
+  initGoogleSignIn(); // 不管等等要不要自動還原登入，登入畫面都可能會顯示，按鈕先渲染好
   const last = localStorage.getItem("yingge_last_code");
   if (!last) return;
   document.getElementById("code-input").value = last;
