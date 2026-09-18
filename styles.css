@@ -97,7 +97,8 @@
   .login-card h2 { margin: 0 0 6px; font-size: 22px; font-family: "Baloo 2", "Noto Sans TC", sans-serif; font-weight: 700; }
   .login-card p.desc { color: var(--sub); font-size: 13px; margin: 0 0 26px; white-space: nowrap; }
   .login-card p.desc strong { color: var(--ink); }
-  .google-signin-wrap { display: flex; justify-content: center; margin-bottom: 14px; min-height: 40px; }
+  .google-signin-wrap { display: flex; justify-content: center; margin-bottom: 8px; min-height: 40px; }
+  .google-signin-hint { color: var(--sub); font-size: 11px; margin: 0 0 16px; }
   .login-divider {
     display: flex; align-items: center; gap: 10px; margin: 0 0 16px; color: var(--sub); font-size: 12px; font-weight: 700;
   }
