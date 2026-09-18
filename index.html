@@ -28,10 +28,12 @@
         <p class="desc">您收到一份<strong>神祕委託</strong></p>
         <div id="google-signin-btn" class="google-signin-wrap"></div>
         <p class="google-signin-hint">請先完成報名表單，才能使用 Google 帳戶登入</p>
-        <div class="login-divider"><span>或</span></div>
-        <label class="field-label" for="code-input">通關密令</label>
-        <input type="text" id="code-input" placeholder="直接輸入英文和數字組合" maxlength="20" autocomplete="off">
-        <button id="login-btn" onclick="handleLogin()">開始任務</button>
+        <div class="code-login-toggle" id="code-login-toggle" onclick="toggleCodeLogin()">沒有 Google 帳號嗎？改用序號登入</div>
+        <div id="code-login-fields" style="display:none;">
+          <label class="field-label" for="code-input">通關密令</label>
+          <input type="text" id="code-input" placeholder="直接輸入英文和數字組合" maxlength="20" autocomplete="off">
+          <button id="login-btn" onclick="handleLogin()">開始任務</button>
+        </div>
         <div class="error-msg" id="login-error"></div>
       </div>
       <div class="login-card" id="login-restoring" style="display:none;">

@@ -161,6 +161,15 @@ async function handleGoogleCredential(response) {
   }
 }
 
+function toggleCodeLogin() {
+  const fields = document.getElementById("code-login-fields");
+  const toggle = document.getElementById("code-login-toggle");
+  const showing = fields.style.display !== "none";
+  fields.style.display = showing ? "none" : "block";
+  toggle.style.display = showing ? "block" : "none";
+  if (!showing) document.getElementById("code-input").focus();
+}
+
 async function handleLogin() {
   const raw = document.getElementById("code-input").value;
   const code = normalize(raw);
