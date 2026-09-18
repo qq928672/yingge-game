@@ -4,7 +4,6 @@
   initGoogleSignIn(); // 不管等等要不要自動還原登入，登入畫面都可能會顯示，按鈕先渲染好
   const last = localStorage.getItem("yingge_last_code");
   if (!last) return;
-  document.getElementById("code-input").value = last;
   const errEl = document.getElementById("login-error");
   try {
     const res = await apiGet({ action: "login", code: last });

@@ -60,10 +60,6 @@ async function apiPost(body) {
 
 let state = { code: null, progress: {}, name: "", balance: 0, inventory: [] };
 
-function normalize(str) {
-  return (str || "").trim().replace(/\s+/g, "").toUpperCase();
-}
-
 // ---------- Text-to-speech (accessibility for players who have trouble reading) ----------
 // Android Chrome loads its voice list asynchronously — calling speak() before that finishes
 // silently produces no sound at all (no error). We warm the list up on load and, if it's
@@ -161,42 +157,6 @@ async function handleGoogleCredential(response) {
   }
 }
 
-function toggleCodeLogin() {
-  const fields = document.getElementById("code-login-fields");
-  const toggle = document.getElementById("code-login-toggle");
-  const showing = fields.style.display !== "none";
-  fields.style.display = showing ? "none" : "block";
-  toggle.style.display = showing ? "block" : "none";
-  if (!showing) document.getElementById("code-input").focus();
-}
-
-async function handleLogin() {
-  const raw = document.getElementById("code-input").value;
-  const code = normalize(raw);
-  const errEl = document.getElementById("login-error");
-  const btn = document.getElementById("login-btn");
-  if (!code) { errEl.textContent = "請輸入序號"; return; }
-  errEl.textContent = "登入中...";
-  if (btn) btn.disabled = true;
-  try {
-    const res = await apiGet({ action: "login", code });
-    if (!res.ok) {
-      errEl.textContent = res.error || "序號錯誤，請確認報名信件內容";
-      return;
-    }
-    errEl.textContent = "";
-    state.code = res.code;
-    loadPlayerIntoState(res);
-    localStorage.setItem("yingge_last_code", res.code);
-    resetIdleTimer();
-    showMap();
-  } catch (e) {
-    errEl.textContent = "連線失敗，請檢查網路後再試一次";
-  } finally {
-    if (btn) btn.disabled = false;
-  }
-}
-
 function loadPlayerIntoState(data) {
   state.name = data.name;
   state.progress = data.progress || {};
@@ -208,7 +168,6 @@ function logout() {
   state = { code: null, progress: {}, name: "", balance: 0, inventory: [] };
   localStorage.removeItem("yingge_last_code");
   localStorage.removeItem("yingge_pending_arrival");
-  document.getElementById("code-input").value = "";
   document.getElementById("login-error").textContent = "";
   document.getElementById("login-card").style.display = "";
   document.getElementById("login-restoring").style.display = "none";
