@@ -20,7 +20,7 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbytcB8w4wDFOK32d8g4FrcE
 
 // Google 帳號登入用——要跟前端 js/app.js 裡的 GOOGLE_CLIENT_ID 是同一組，
 // 從 Google Cloud Console 申請 OAuth 用戶端 ID 後填進來（這組本身不是密鑰，前端本來就會公開帶著它，不用當 secret）
-const GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
+const GOOGLE_CLIENT_ID = "423812002134-e7iebeorhcjvqk173tt559ngd59cfipl.apps.googleusercontent.com";
 
 function json(obj, status = 200) {
   return new Response(JSON.stringify(obj), {

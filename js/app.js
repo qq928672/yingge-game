@@ -12,7 +12,7 @@ const WORKER_ACTIONS = new Set(["login", "state", "submitAnswer", "complete", "p
 
 // Google 帳號登入用——要跟 worker/src/index.js 裡的 GOOGLE_CLIENT_ID 是同一組，
 // 從 Google Cloud Console 申請 OAuth 用戶端 ID 後填進來
-const GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
+const GOOGLE_CLIENT_ID = "423812002134-e7iebeorhcjvqk173tt559ngd59cfipl.apps.googleusercontent.com";
 
 // 地圖圖磚：透過 Worker 的 /tile 路由轉發（OSM 官方的 tile.openstreetmap.org 只供輕量測試，正式流量
 // 會被擋，之前上線後地圖直接被 OSM 回 403 就是這個原因）。實際的 Thunderforest API Key 藏在 Worker
